@@ -20,6 +20,7 @@
     "swr": "2.2.5"
   },
   "devDependencies": {
+    "@types/node": "20.14.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-redux": "7.1.33",
