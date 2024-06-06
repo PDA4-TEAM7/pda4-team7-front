@@ -1,8 +1,13 @@
+import { RouterProvider } from 'react-router-dom';
+import MainRouter from './routes/main-router';
+import { Provider } from 'react-redux';
+import store from './store/store';
+
 function App() {
   return (
-    <>
-      <p className="m-20 text-3xl font-bold text-navy">init page</p>
-    </>
+    <Provider store={store}>
+      <RouterProvider router={MainRouter}></RouterProvider>
+    </Provider>
   );
 }
 
