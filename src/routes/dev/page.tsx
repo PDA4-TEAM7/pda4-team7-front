@@ -1,5 +1,3 @@
-import { ShinhanApi, IStockData } from "@/apis/shinhanAPI";
-import useSWR from "swr";
 import useModal from "@/hooks/useModal";
 import IconHeart from "@/assets/icon-heart.svg?react";
 import Chart from "./components/Chart";
@@ -7,15 +5,11 @@ import LineChart from "./components/LineChart";
 
 //테스트용 페이지
 export default function Dev() {
-  const service = new ShinhanApi();
-  const { data, isLoading } = useSWR<IStockData[]>(`shinhanRecommend`, () => service.getRecommendPortfolio());
   const { open, close } = useModal();
   const handleModal = () => {
     open("title", "이런식으로 모달을 사용하면 됩니다.", close);
   };
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+
   return (
     <div>
       <p>test page</p>
@@ -26,7 +20,6 @@ export default function Dev() {
       <button className="btn border m-2 p-1" onClick={handleModal}>
         모달 버튼
       </button>
-      <div>{data && data.map((item) => <div>{item.stbdName}</div>)}</div>
       <div>
         <p>chart example </p>
         <p>Pie chart</p>
