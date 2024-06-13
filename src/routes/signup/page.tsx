@@ -31,14 +31,19 @@ export default function SignUp() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (formData.password !== "" && formData.password !== formData.confirm_password) {
-      alert("비밀번호가 일치하지 않습니다.");
+      handleModal({ title: "알림", message: "비밀번호가 일치하지 않습니다!" });
       return;
     }
+
     // TODO: 회원가입 API 로직 구현하기
     console.log("Submitted Data:", formData);
+    // try{
 
+    // }catch(error){
+    //   console.error('회원가입 에러: ', error);
+    // }
     // TODO: 모달로 변경 및 네비게이터 사용하기
-    alert("회원가입 완료!");
+    handleModal({ title: "환영합니다", message: "회원가입 완료!" });
     setFormData({
       user_id: "",
       username: "",
@@ -55,7 +60,7 @@ export default function SignUp() {
     const message = isDuplicate
       ? `${field === "user_id" ? "아이디가" : "닉네임이"} 이미 사용 중입니다.`
       : `${field === "user_id" ? "사용 가능한 아이디" : "사용 가능한 닉네임"} 입니다.`;
-    handleModal({ title: "중복체크", message });
+    handleModal({ title: "중복확인", message });
   };
   return (
     <>
