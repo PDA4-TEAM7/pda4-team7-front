@@ -4,6 +4,8 @@ import Layout from "./Layout";
 import Portfolio from "./portfolio/page";
 import Dev from "./dev/page";
 import SignUp from "./signup/page";
+import MyPage from "./mypage/page";
+import DetailPage from "./portfolio/detail/page";
 
 const routers = [
   {
@@ -19,7 +21,16 @@ const routers = [
         element: <Portfolio />,
         index: true,
       },
+      {
+        path: "detail",
+        element: <DetailPage />,
+        index: true,
+      },
     ],
+  },
+  {
+    path: "/mypage",
+    element: <MyPage />,
   },
   {
     path: "/dev",
