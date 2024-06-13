@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from "./Layout";
 import Portfolio from "./portfolio/page";
 import Dev from "./dev/page";
+import SignUp from "./signup/page";
 import MyPage from "./mypage/page";
 import DetailPage from "./portfolio/detail/page";
 
@@ -34,6 +35,10 @@ const routers = [
   {
     path: "/dev",
     element: <Dev />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
   },
 ];
 
