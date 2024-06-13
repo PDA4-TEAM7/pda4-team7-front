@@ -38,14 +38,7 @@ const routers = [
   },
   {
     path: "/signup",
-    element: <Layout />,
-    children: [
-      {
-        path: "",
-        element: <SignUp />,
-        index: true,
-      },
-    ],
+    element: <SignUp />,
   },
 ];
 
