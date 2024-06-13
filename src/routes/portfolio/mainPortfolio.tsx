@@ -1,6 +1,7 @@
 import React from "react";
 // import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
+import Subscribe from "../../assets/subscribe.png";
 
 export default function mainPortfolio() {
   const portfolioData = [
@@ -74,7 +75,7 @@ export default function mainPortfolio() {
     // 추가 데이터는 삽입
   ];
   const data = {
-    // labels: ["에코프로", "에코프로비엠", "POSCO홀딩스", "코스모신소재", "LG화학", "삼성전자"],
+    labels: ["에코프로", "에코프로비엠", "POSCO홀딩스", "코스모신소재", "LG화학", "삼성전자"],
     datasets: [
       {
         label: "비율",
@@ -96,7 +97,7 @@ export default function mainPortfolio() {
     <div>
       <header className="flex justify-between items-center p-4 border-b bg-gray-100">
         <div className="flex items-center">
-          <input type="text" placeholder="이름, 직책으로 검색" className="p-2 border rounded-l-md" />
+          <input type="text" placeholder="원하는 포트폴리오를 검색" className="p-2 border rounded-l-md" />
           <button className="p-2 bg-gray-300 border rounded-r-md">
             <img src="search-icon.png" alt="검색" className="w-4 h-4" />
           </button>
@@ -114,7 +115,19 @@ export default function mainPortfolio() {
             <div key={item.id} className="border p-4 rounded-md">
               <div className="flex">
                 <div className="w-1/2">
-                  <Pie data={data} options={{ maintainAspectRatio: false }} width={200} height={200} />
+                  <Pie
+                    data={data}
+                    options={{
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                      },
+                    }}
+                    width={200}
+                    height={200}
+                  />
                 </div>
                 <div className="w-1/2 pl-4 flex flex-col justify-center">
                   <div>
@@ -127,9 +140,19 @@ export default function mainPortfolio() {
               <div className="mt-4">
                 <h3 className="font-bold">{item.title}</h3>
                 <p>{item.description}</p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-sm text-gray-500">업데이트 {item.time} 전</span>
-                  <span className="text-sm text-gray-500">by {item.username}</span>
+                <div className="mt-4">
+                  <span className="text-base text-gray-500">업데이트 {item.time} 전</span>
+                  <div className="flex items-center mt-2">
+                    <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
+                    <span className="text-base text-gray-500">
+                      {/* {item.username} */}
+                      임찬솔
+                    </span>
+                    <div className="flex items-center ml-auto">
+                      <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
+                      <span className="text-base text-gray-500">구독자 수</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
