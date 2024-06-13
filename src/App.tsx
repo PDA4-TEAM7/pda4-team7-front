@@ -1,8 +1,8 @@
-import { RouterProvider } from 'react-router-dom';
-import MainRouter from './routes/main-router';
-import { Provider } from 'react-redux';
-import store from './store/store';
-import CommonPopup from './components/CommonPopup';
+import { RouterProvider } from "react-router-dom";
+import MainRouter from "./routes/main-router";
+import { Provider } from "react-redux";
+import store from "./store/store";
+import CommonPopup from "./components/CommonPopup";
 
 function App() {
   return (
