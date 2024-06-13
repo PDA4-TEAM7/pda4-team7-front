@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 
+type Comment = {
+  id: number;
+  author: string;
+  date: string;
+  text: string;
+  replies: {
+    author: string;
+    role: string;
+    date: string;
+    text: string;
+  }[];
+  replyText?: string;
+};
+
 const CommPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState([
+  const [comments, setComments] = useState<Comment[]>([
     {
       id: 1,
       author: '임찬솔',
@@ -16,7 +30,8 @@ const CommPage = () => {
           date: '2024.05.31',
           text: '저는 이득 봤습니다'
         }
-      ]
+      ],
+      replyText: ''
     },
     {
       id: 2,
@@ -30,14 +45,15 @@ const CommPage = () => {
           date: '2024.05.31',
           text: '인정합니다.'
         }
-      ]
+      ],
+      replyText: ''
     }
   ]);
 
   const [ownerInfo, setOwnerInfo] = useState({
     name: '박소연',
     updateDate: '3일 전',
-    profileImage: 'src/img/soya_profile.png'
+    profileImage: '/img/soya_profile.png'
   });
 
   const handleSubscribe = () => {
@@ -50,13 +66,15 @@ const CommPage = () => {
 
   const handleCommentSubmit = () => {
     if (comment.trim()) {
-      const newComment = {
+      const newComment: Comment = {
         id: comments.length + 1,
         author: '현재 사용자 (쿠키써서 현재 로그인한 사람 하면 될듯?)',
         date: new Date().toISOString().split('T')[0],
         text: comment,
-        replies: []
+        replies: [],
+        replyText: ''
       };
+      console.log("New comment:", newComment); // 디버깅을 위한 로그 추가
       setComments([...comments, newComment]);
       setComment('');
     }
@@ -95,6 +113,18 @@ const CommPage = () => {
     setComments(newComments);
   };
 
+  const activecommentEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleCommentSubmit();  // handleCommentSubmit 함수를 호출합니다.
+    }
+  };
+
+  const activereplyEnter = (e:React.KeyboardEvent<HTMLInputElement>,commentId : number)=>{
+    if(e.key === 'Enter'){
+      handleReplySubmit(commentId);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg">
       <h1 className="text-2xl font-bold mb-6">PORTFOLIO TITLE</h1>
@@ -104,6 +134,7 @@ const CommPage = () => {
           placeholder="의견을 남겨주세요 :)"
           value={comment}
           onChange={handleCommentChange}
+          onKeyDown={activecommentEnter}
           className="w-full p-2 border border-gray-300 rounded mb-2 outline-none"
         />
         <button
@@ -116,7 +147,7 @@ const CommPage = () => {
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2">
           {comments.map(comment => (
-            <div key={comment.id} className="mb-6 p-4  rounded-lg">
+            <div key={comment.id} className="mb-6 p-4 rounded-lg">
               <div className="flex items-center mb-2">
                 <div className="font-semibold">{comment.author}</div>
                 <div className="ml-4 text-gray-500">{comment.date}</div>
@@ -139,6 +170,7 @@ const CommPage = () => {
                     placeholder="답글을 입력하세요 :)"
                     value={comment.replyText || ''}
                     onChange={(e) => handleReplyChange(e, comment.id)}
+                    onKeyDown={(e)=>activereplyEnter(e,comment.id)}
                     className="w-full p-2 border border-gray-300 rounded mb-2 outline-none"
                   />
                   <button

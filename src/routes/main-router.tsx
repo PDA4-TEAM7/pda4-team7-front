@@ -22,6 +22,10 @@ const routers = [
         element: <Portfolio />,
         index: true,
       },
+      {
+        path: 'comm',
+        element: <CommPage/>,
+      },
 
     ],
   },
@@ -33,10 +37,7 @@ const routers = [
     path: "/dev",
     element: <Dev />,
   },
-  {
-    path: '/commpage',
-    element: <CommPage/>,
-  }
+  
 ];
 
 const router = createBrowserRouter(routers);
