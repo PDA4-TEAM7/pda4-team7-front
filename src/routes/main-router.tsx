@@ -31,7 +31,14 @@ const routers = [
   },
   {
     path: "/mypage",
-    element: <MyPage />,
+    element: <Layout />,
+    children: [
+      {
+        path: "",
+        element: <MyPage />,
+        index: true,
+      },
+    ],
   },
   {
     path: "/dev",
