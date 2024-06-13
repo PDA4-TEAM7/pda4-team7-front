@@ -1,9 +1,20 @@
-import React from "react";
+import * as React from "react";
 // import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import Subscribe from "../../assets/subscribe.png";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 export default function mainPortfolio() {
+  const [sort, setSort] = React.useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setSort(event.target.value as string);
+  };
+
   const portfolioData = [
     {
       id: 1,
@@ -109,7 +120,23 @@ export default function mainPortfolio() {
         </div>
       </header>
       <main className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Stock Portfolio</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Stock Portfolio</h1>
+          <FormControl fullWidth style={{ maxWidth: 200 }}>
+            <InputLabel id="demo-simple-select-label">정렬 순</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={sort}
+              label="정렬 순"
+              onChange={handleChange}
+            >
+              <MenuItem value={10}>수익률 순</MenuItem>
+              <MenuItem value={20}>구독자 순</MenuItem>
+              <MenuItem value={30}>최신 순</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         <div className="grid grid-cols-3 gap-4">
           {portfolioData.map((item) => (
             <div key={item.id} className="border p-4 rounded-md">
