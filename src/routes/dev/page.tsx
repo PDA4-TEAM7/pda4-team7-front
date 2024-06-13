@@ -2,7 +2,7 @@ import useModal from "@/hooks/useModal";
 import IconHeart from "@/assets/icon-heart.svg?react";
 import Chart from "./components/Chart";
 import LineChart from "./components/LineChart";
-
+import { Button } from "@/components/ui/button";
 //테스트용 페이지
 export default function Dev() {
   const { open, close } = useModal();
@@ -26,6 +26,11 @@ export default function Dev() {
         <Chart />
         <p>Line chart</p>
         <LineChart />
+        <p>button shadcn</p>
+        {/* className으로 색상및 디자인 변경 가능합니다. */}
+        <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" variant="outline">
+          버튼버튼
+        </Button>
       </div>
     </div>
   );
