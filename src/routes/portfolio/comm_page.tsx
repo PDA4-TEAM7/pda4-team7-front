@@ -126,26 +126,26 @@ const CommPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg">
-      <h1 className="text-2xl font-bold mb-6">PORTFOLIO TITLE</h1>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="의견을 남겨주세요 :)"
-          value={comment}
-          onChange={handleCommentChange}
-          onKeyDown={activecommentEnter}
-          className="w-full p-2 border border-gray-300 rounded mb-2 outline-none"
-        />
-        <button
-          onClick={handleCommentSubmit}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          댓글 작성
-        </button>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2">
+    <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2">
+          <h1 className="text-2xl font-bold mb-6">PORTFOLIO TITLE</h1>
+          <div className="mb-4 flex items-stretch gap-1">
+            <input
+              type="text"
+              placeholder="의견을 남겨주세요 :)"
+              value={comment}
+              onChange={handleCommentChange}
+              onKeyDown={activecommentEnter}
+              className="w-full p-2 border border-gray-300 rounded outline-none"
+            />
+            <button
+              onClick={handleCommentSubmit}
+              className="px-4 py-2 bg-blue-500 text-white rounded whitespace-nowrap"
+            >
+              댓글 작성
+            </button>
+          </div>
           {comments.map(comment => (
             <div key={comment.id} className="mb-6 p-4 rounded-lg">
               <div className="flex items-center mb-2">
@@ -164,18 +164,18 @@ const CommPage = () => {
                 </div>
               ))}
               {ownerInfo.name === '박소연' && (
-                <div className="ml-8 mt-4">
+                <div className="ml-8 mt-4 flex flex-row gap-1">
                   <input
                     type="text"
                     placeholder="답글을 입력하세요 :)"
                     value={comment.replyText || ''}
                     onChange={(e) => handleReplyChange(e, comment.id)}
                     onKeyDown={(e)=>activereplyEnter(e,comment.id)}
-                    className="w-full p-2 border border-gray-300 rounded mb-2 outline-none"
+                    className="w-full p-2 border border-gray-300 rounded outline-none"
                   />
                   <button
                     onClick={() => handleReplySubmit(comment.id)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                    className="px-4 py-2 bg-blue-500 text-white rounded whitespace-nowrap"
                   >
                     답글 작성
                   </button>
