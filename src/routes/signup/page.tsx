@@ -1,5 +1,7 @@
+import { Button } from "@/components/ui/button";
 import useModal from "@/hooks/useModal";
 import React, { useState, FormEvent } from "react";
+import authAPI from "@/apis/authAPI";
 
 interface SignUpFormState {
   user_id: string;
@@ -53,14 +55,16 @@ export default function SignUp() {
   };
 
   const checkDuplicate = async (field: "user_id" | "username") => {
-    // TODO: API요청하여 중복 검사로직 구현하기
-
-    // 현재는 더미데이터
-    const isDuplicate = Math.random() > 0.5; // 50% 확률로 중복이라고 가정
-    const message = isDuplicate
-      ? `${field === "user_id" ? "아이디가" : "닉네임이"} 이미 사용 중입니다.`
-      : `${field === "user_id" ? "사용 가능한 아이디" : "사용 가능한 닉네임"} 입니다.`;
-    handleModal({ title: "중복확인", message });
+    const authService = new authAPI();
+    if (field === "user_id") {
+      const available = await authService.validateUserId(formData["user_id"]);
+      const message = available ? "사용 가능한 아이디" : "이미 사용중인 아이디";
+      handleModal({ title: "알림", message: message });
+    } else if (field === "username") {
+      const available = await authService.validateUsername(formData["username"]);
+      const message = available ? "사용 가능한 닉네임" : "이미 사용중인 닉네임";
+      handleModal({ title: "알림", message: message });
+    }
   };
   return (
     <>
@@ -84,13 +88,13 @@ export default function SignUp() {
                   value={formData.user_id}
                   onChange={(e) => handleChange(e)}
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => checkDuplicate("user_id")}
                   className="whitespace-nowrap ml-2 px-4 py-2 bg-blue-500 text-white rounded-r-md"
                 >
                   중복 확인
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -105,17 +109,17 @@ export default function SignUp() {
                   name="username"
                   type="text"
                   placeholder="닉네임을 입력해주세요"
-                  className="flex-grow px-4 py-2 border rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  className="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                   value={formData.username}
                   onChange={(e) => handleChange(e)}
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => checkDuplicate("username")}
                   className="whitespace-nowrap ml-2 px-4 py-2 bg-blue-500 text-white rounded-r-md"
                 >
                   중복 확인
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -129,7 +133,7 @@ export default function SignUp() {
                 name="password"
                 type="password"
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full px-4 py-2 border rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -153,9 +157,9 @@ export default function SignUp() {
 
             {/* 가입하기 버튼 */}
             <div className="mt-1"></div>
-            <button type="submit" className="w-full px-4 py-2  bg-blue-500 text-white rounded-md">
+            <Button type="submit" className="w-full px-4 py-2  bg-blue-500 text-white rounded-md">
               가입하기
-            </button>
+            </Button>
           </form>
           <div className="mt-10">
             <p className="text-gray-600">이미 계정이 있습니다.</p>
