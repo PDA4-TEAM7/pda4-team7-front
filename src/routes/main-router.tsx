@@ -9,6 +9,7 @@ import DetailPage from "./portfolio/detail/page";
 import StockList from "./portfolio/stockList";
 import SignUp from "./signup/page";
 import CommPage from "./portfolio/comm_page";
+import SignIn from "./signin/page";
 
 const routers = [
   {
@@ -33,7 +34,8 @@ const routers = [
         path: "stockList/:id",
         element: <StockList />,
         index: true,
-      },{
+      },
+      {
         path: "comm",
         element: <CommPage />,
         index: true,
@@ -58,6 +60,10 @@ const routers = [
   {
     path: "/signup",
     element: <SignUp />,
+  },
+  {
+    path: "/signin",
+    element: <SignIn />,
   },
 ];
 
