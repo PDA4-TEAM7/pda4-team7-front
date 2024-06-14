@@ -7,6 +7,9 @@ import MainPortfolio from "./portfolio/mainPortfolio";
 import MyPage from "./mypage/page";
 import DetailPage from "./portfolio/detail/page";
 import StockList from "./portfolio/stockList";
+import SignUp from "./signup/page";
+import CommPage from "./portfolio/comm_page";
+
 const routers = [
   {
     path: "/",
@@ -30,16 +33,31 @@ const routers = [
         path: "stockList/:id",
         element: <StockList />,
         index: true,
+      },{
+        path: "comm",
+        element: <CommPage />,
+        index: true,
       },
     ],
   },
   {
     path: "/mypage",
-    element: <MyPage />,
+    element: <Layout />,
+    children: [
+      {
+        path: "",
+        element: <MyPage />,
+        index: true,
+      },
+    ],
   },
   {
     path: "/dev",
     element: <Dev />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
   },
 ];
 
