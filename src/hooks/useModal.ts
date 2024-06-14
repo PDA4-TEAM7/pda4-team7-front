@@ -1,5 +1,5 @@
-import { showModal, closeModal } from '@/store/modal';
-import { useDispatch } from 'react-redux';
+import { showModal, closeModal } from "@/store/modal";
+import { useDispatch } from "react-redux";
 export default function useModal() {
   const dispatch = useDispatch();
 
