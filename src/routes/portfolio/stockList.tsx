@@ -1,26 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import * as d3 from "d3";
 import { useParams } from "react-router-dom";
+
 // 단어 데이터의 인터페이스를 정의
 interface WordData {
   text: string;
   value: number;
 }
-
-// 단어 데이터 배열을 정의
-// API 값 연동해서 가져와 WordData에 저장하면 될 듯
-const data: WordData[] = [
-  { text: "IT. 인터넷", value: 83 },
-  { text: "우주항공과국방", value: 20 },
-  { text: "금융", value: 40 },
-  { text: "운송체", value: 30 },
-  { text: "건설교육업", value: 50 },
-  { text: "무역회사와판매업체", value: 60 },
-  { text: "서비스업", value: 40 },
-  { text: "2차 전지", value: 50 },
-  { text: "교육서비스업", value: 65 },
-  // { text: "2차 전지", value: 50 },
-];
 
 // 긴 텍스트를 줄여서 표시하는 함수
 const truncateText = (text, maxLength) => {
@@ -30,6 +17,7 @@ const truncateText = (text, maxLength) => {
 // StockList 컴포넌트 정의
 const StockList: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null); // SVG 요소에 대한 참조를 생성
+  const [stocks, setStocks] = useState<WordData[]>([]);
   const { id } = useParams();
 
   useEffect(() => {
@@ -37,9 +25,32 @@ const StockList: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const response = await axios.post("http://localhost:3000/api/stock");
+        const fetchedStocks = response.data;
+
+        // stocks의 값들을 WordData 배열의 text에 넣고 value는 임의의 값으로 설정
+        const updatedData = fetchedStocks.map((stock, index) => ({
+          text: stock.std_idst_clsf_cd_name,
+          value: Math.floor(Math.random() * 60) + 40, // 1에서 100 사이의 임의의 값
+        }));
+
+        setStocks(updatedData);
+      } catch (error) {
+        console.error("Error fetching stocks:", error);
+      }
+    };
+
+    fetchStocks();
+  }, []);
+
+  useEffect(() => {
+    if (stocks.length === 0) return;
+
     // 워드 클라우드 상위 5개의 데이터 선택
-    const topData = data.sort((a, b) => b.value - a.value).slice(0, 7);
-    const totalValue = d3.sum(data.map((item) => item.value));
+    const topData = stocks.sort((a, b) => b.value - a.value).slice(0, 5);
+    const totalValue = d3.sum(stocks.map((item) => item.value));
 
     // 커스텀 툴팁 스타일 추가
     const tooltipStyle = `
@@ -78,7 +89,7 @@ const StockList: React.FC = () => {
       .force("center", d3.forceCenter(0, 0))
       .force(
         "collision",
-        d3.forceCollide().radius((d) => d.value - 10) // 충돌 반경 조정
+        d3.forceCollide().radius((d) => d.value - 20) // 충돌 반경 조정
       )
       .on("tick", ticked);
 
@@ -130,12 +141,12 @@ const StockList: React.FC = () => {
       tooltip.remove(); // 툴팁 요소 제거
       document.head.removeChild(styleSheet); // 스타일 요소 제거
     };
-  }, []); // 빈 배열을 두 번째 인자로 전달하여 컴포넌트가 마운트될 때 한 번만 실행
+  }, [stocks]);
 
   // 상위 7개 데이터를 컴포넌트 내에서도 참조
-  const topData = data.sort((a, b) => b.value - a.value).slice(0, 7);
+  const topData = stocks.sort((a, b) => b.value - a.value).slice(0, 7);
   // 오른쪽 텍스트 7개까지 출력 나머지는 그 외로 표시
-  const totalValue = d3.sum(data.map((item) => item.value));
+  const totalValue = d3.sum(stocks.map((item) => item.value));
 
   // 나머지 데이터의 합계 계산
   const otherDataValue = totalValue - d3.sum(topData.map((item) => item.value));
