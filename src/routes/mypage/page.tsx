@@ -1,4 +1,6 @@
 import AccountPopup from "@/components/AccountPopup";
+import AddAccountPopup from "@/components/AddAccountPopup";
+import ChargePopup from "@/components/ChargePopup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,8 +11,10 @@ export default function MyPage() {
   const name = "소연";
   const userId = "soyalattee";
   const introduce = "";
-  const charge = 0;
+  const charge = "314,140";
   const [showModal, setShowModal] = useState(false);
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const [showChargeModal, setShowChargeModal] = useState(false);
   const handleAccountModal = () => {
     setShowModal(true);
   };
@@ -56,7 +60,16 @@ export default function MyPage() {
               <Label htmlFor="charge" className="text-lg">
                 Charge
               </Label>
-              <p className="w-1/3">{charge} 원</p>
+              <div className="flex flex-row gap-1 justify-between">
+                <p className="w-2/3">{charge} 원</p>
+                <Button
+                  onClick={() => {
+                    setShowChargeModal(true);
+                  }}
+                >
+                  충전하기
+                </Button>
+              </div>
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <Label htmlFor="account" className="text-lg">
@@ -74,6 +87,22 @@ export default function MyPage() {
         modalShow={showModal}
         modalClose={() => {
           setShowModal(false);
+        }}
+        openAddAccountModal={() => {
+          setShowModal(false);
+          setShowAddAccountModal(true);
+        }}
+      />
+      <AddAccountPopup
+        modalShow={showAddAccountModal}
+        modalClose={() => {
+          setShowAddAccountModal(false);
+        }}
+      />
+      <ChargePopup
+        modalShow={showChargeModal}
+        modalClose={() => {
+          setShowChargeModal(false);
         }}
       />
     </>
