@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-
+import { useParams } from "react-router-dom";
 // 단어 데이터의 인터페이스를 정의
 interface WordData {
   text: string;
@@ -30,10 +30,15 @@ const truncateText = (text, maxLength) => {
 // StockList 컴포넌트 정의
 const StockList: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null); // SVG 요소에 대한 참조를 생성
+  const { id } = useParams();
+
+  useEffect(() => {
+    console.log(`${id}`);
+  }, [id]);
 
   useEffect(() => {
     // 워드 클라우드 상위 5개의 데이터 선택
-    const topData = data.sort((a, b) => b.value - a.value).slice(0, 5);
+    const topData = data.sort((a, b) => b.value - a.value).slice(0, 7);
     const totalValue = d3.sum(data.map((item) => item.value));
 
     // 커스텀 툴팁 스타일 추가

@@ -27,7 +27,7 @@ const routers = [
         index: true,
       },
       {
-        path: "stockList",
+        path: "stockList/:id",
         element: <StockList />,
         index: true,
       },

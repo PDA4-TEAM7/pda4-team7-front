@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 // import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import Subscribe from "../../assets/subscribe.png";
@@ -11,9 +12,14 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 export default function mainPortfolio() {
   const [sort, setSort] = React.useState("");
+  const navigate = useNavigate();
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value as string);
+  };
+
+  const handlePortfolioClick = (id) => {
+    navigate(`/portfolio/stockList/${id}`);
   };
 
   const portfolioData = [
@@ -140,7 +146,7 @@ export default function mainPortfolio() {
         </div>
         <div className="grid grid-cols-3 gap-4">
           {portfolioData.map((item) => (
-            <div key={item.id} className="border p-4 rounded-md">
+            <div key={item.id} className="border p-4 rounded-md" onClick={() => handlePortfolioClick(item.id)}>
               <div className="flex">
                 <div className="w-1/2">
                   <Pie
