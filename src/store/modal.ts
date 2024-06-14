@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface IModal {
   show: boolean;
@@ -9,13 +9,13 @@ export interface IModal {
 
 const initState: IModal = {
   show: false,
-  title: '',
-  message: '',
+  title: "",
+  message: "",
   onClick: () => {},
 };
 
 const modalSlice = createSlice({
-  name: 'modal',
+  name: "modal",
   initialState: initState,
   reducers: {
     showModal: (state, action: PayloadAction<IModal>) => {
@@ -25,7 +25,7 @@ const modalSlice = createSlice({
         (state.onClick = action.payload.onClick);
     },
     closeModal: (state) => {
-      (state.show = false), (state.title = ''), (state.message = ''), (state.onClick = () => {});
+      (state.show = false), (state.title = ""), (state.message = ""), (state.onClick = () => {});
     },
   },
 });

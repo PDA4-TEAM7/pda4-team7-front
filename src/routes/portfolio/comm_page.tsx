@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 type Comment = {
   id: number;
@@ -16,44 +16,44 @@ type Comment = {
 
 const CommPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([
     {
       id: 1,
-      author: '임찬솔',
-      date: '2024.05.31',
-      text: '아니 삼전 겁나 떨어졌는데 왜 사셨나요',
+      author: "임찬솔",
+      date: "2024.05.31",
+      text: "아니 삼전 겁나 떨어졌는데 왜 사셨나요",
       replies: [
         {
-          author: '박소연',
-          role: '작성자',
-          date: '2024.05.31',
-          text: '저는 이득 봤습니다'
-        }
+          author: "박소연",
+          role: "작성자",
+          date: "2024.05.31",
+          text: "저는 이득 봤습니다",
+        },
       ],
-      replyText: ''
+      replyText: "",
     },
     {
       id: 2,
-      author: '오수연',
-      date: '2024.05.28',
-      text: '아 집가고 싶다.',
+      author: "오수연",
+      date: "2024.05.28",
+      text: "아 집가고 싶다.",
       replies: [
         {
-          author: '박소연',
-          role: '작성자',
-          date: '2024.05.31',
-          text: '인정합니다.'
-        }
+          author: "박소연",
+          role: "작성자",
+          date: "2024.05.31",
+          text: "인정합니다.",
+        },
       ],
-      replyText: ''
-    }
+      replyText: "",
+    },
   ]);
 
   const [ownerInfo, setOwnerInfo] = useState({
-    name: '박소연',
-    updateDate: '3일 전',
-    profileImage: '/img/soya_profile.png'
+    name: "박소연",
+    updateDate: "3일 전",
+    profileImage: "/img/soya_profile.png",
   });
 
   const handleSubscribe = () => {
@@ -68,24 +68,24 @@ const CommPage = () => {
     if (comment.trim()) {
       const newComment: Comment = {
         id: comments.length + 1,
-        author: '현재 사용자 (쿠키써서 현재 로그인한 사람 하면 될듯?)',
-        date: new Date().toISOString().split('T')[0],
+        author: "현재 사용자 (쿠키써서 현재 로그인한 사람 하면 될듯?)",
+        date: new Date().toISOString().split("T")[0],
         text: comment,
         replies: [],
-        replyText: ''
+        replyText: "",
       };
       console.log("New comment:", newComment); // 디버깅을 위한 로그 추가
       setComments([...comments, newComment]);
-      setComment('');
+      setComment("");
     }
   };
 
   const handleReplyChange = (e: React.ChangeEvent<HTMLInputElement>, commentId: number) => {
-    const newComments = comments.map(comment => {
+    const newComments = comments.map((comment) => {
       if (comment.id === commentId) {
         return {
           ...comment,
-          replyText: e.target.value
+          replyText: e.target.value,
         };
       }
       return comment;
@@ -94,18 +94,18 @@ const CommPage = () => {
   };
 
   const handleReplySubmit = (commentId: number) => {
-    const newComments = comments.map(comment => {
+    const newComments = comments.map((comment) => {
       if (comment.id === commentId && comment.replyText?.trim()) {
         const newReply = {
           author: ownerInfo.name,
-          role: '작성자',
-          date: new Date().toISOString().split('T')[0],
-          text: comment.replyText
+          role: "작성자",
+          date: new Date().toISOString().split("T")[0],
+          text: comment.replyText,
         };
         return {
           ...comment,
           replies: [...comment.replies, newReply],
-          replyText: ''
+          replyText: "",
         };
       }
       return comment;
@@ -114,13 +114,13 @@ const CommPage = () => {
   };
 
   const activecommentEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleCommentSubmit();  // handleCommentSubmit 함수를 호출합니다.
+    if (e.key === "Enter") {
+      handleCommentSubmit(); // handleCommentSubmit 함수를 호출합니다.
     }
   };
 
-  const activereplyEnter = (e:React.KeyboardEvent<HTMLInputElement>,commentId : number)=>{
-    if(e.key === 'Enter'){
+  const activereplyEnter = (e: React.KeyboardEvent<HTMLInputElement>, commentId: number) => {
+    if (e.key === "Enter") {
       handleReplySubmit(commentId);
     }
   };
@@ -146,7 +146,7 @@ const CommPage = () => {
               댓글 작성
             </button>
           </div>
-          {comments.map(comment => (
+          {comments.map((comment) => (
             <div key={comment.id} className="mb-6 p-4 rounded-lg">
               <div className="flex items-center mb-2">
                 <div className="font-semibold">{comment.author}</div>
@@ -163,14 +163,14 @@ const CommPage = () => {
                   <p className="mb-2">{reply.text}</p>
                 </div>
               ))}
-              {ownerInfo.name === '박소연' && (
+              {ownerInfo.name === "박소연" && (
                 <div className="ml-8 mt-4 flex flex-row gap-1">
                   <input
                     type="text"
                     placeholder="답글을 입력하세요 :)"
-                    value={comment.replyText || ''}
+                    value={comment.replyText || ""}
                     onChange={(e) => handleReplyChange(e, comment.id)}
-                    onKeyDown={(e)=>activereplyEnter(e,comment.id)}
+                    onKeyDown={(e) => activereplyEnter(e, comment.id)}
                     className="w-full p-2 border border-gray-300 rounded outline-none"
                   />
                   <button
@@ -194,9 +194,9 @@ const CommPage = () => {
             <div className="text-sm text-gray-500 mb-4">마지막 업데이트: {ownerInfo.updateDate}</div>
             <button
               onClick={handleSubscribe}
-              className={`px-4 py-2 text-white rounded ${isSubscribed ? 'bg-red-500' : 'bg-blue-500'}`}
+              className={`px-4 py-2 text-white rounded ${isSubscribed ? "bg-red-500" : "bg-blue-500"}`}
             >
-              {isSubscribed ? '구독 취소' : '구독하기'}
+              {isSubscribed ? "구독 취소" : "구독하기"}
             </button>
             <div className="mt-4">
               <button className="px-4 py-2 bg-gray-200 rounded">다른 포트폴리오 보기</button>
