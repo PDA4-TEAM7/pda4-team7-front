@@ -39,10 +39,7 @@ export default function CommonPopup() {
         <div className="modal-content py-4 text-left px-6">
           <div className="flex justify-between items-center pb-3">
             <p className="text-2xl font-bold">{modal.title}</p>
-            <div
-              className="modal-close cursor-pointer z-50"
-              onClick={() => dispatch(closeModal())}
-            >
+            <div className="modal-close cursor-pointer z-50" onClick={() => dispatch(closeModal())}>
               <svg
                 className="fill-current text-black"
                 xmlns="http://www.w3.org/2000/svg"
