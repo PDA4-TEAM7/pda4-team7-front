@@ -10,17 +10,20 @@ interface SignUpFormState {
   confirm_password: string;
 }
 
+const SignUpInitValue = {
+  user_id: "",
+  username: "",
+  password: "",
+  confirm_password: "",
+};
+
 export default function SignUp() {
-  const [formData, setFormData] = useState<SignUpFormState>({
-    user_id: "",
-    username: "",
-    password: "",
-    confirm_password: "",
-  });
+  const [formData, setFormData] = useState<SignUpFormState>(SignUpInitValue);
   const { open, close } = useModal();
   const handleModal = ({ title, message }: { title: string; message: string }) => {
     open(title, message, close);
   };
+  const authService = new authAPI();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,41 +33,61 @@ export default function SignUp() {
     }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const isBlankValue = (val: string) => {
+    return val.trim() === "";
+  };
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (formData.password !== "" && formData.password !== formData.confirm_password) {
-      handleModal({ title: "알림", message: "비밀번호가 일치하지 않습니다!" });
+    const fields = Object.values(formData);
+    if (fields.some(isBlankValue)) {
+      handleModal({ title: "오류", message: "모든 필드를 채워주세요!" });
       return;
     }
 
-    // TODO: 회원가입 API 로직 구현하기
-    console.log("Submitted Data:", formData);
-    // try{
+    try {
+      const valiable = checkPassword(formData.password, formData.confirm_password);
+      if (!valiable) return;
+      const { message, status } = await authService.signUp(formData);
+      handleModal({ title: "알림", message: message });
+      if (status === 200) {
+        setFormData(SignUpInitValue);
+      } else {
+        setFormData({ ...SignUpInitValue, password: "", confirm_password: "" });
+      }
+    } catch (error) {
+      console.error("회원가입 에러: ", error);
+    }
 
-    // }catch(error){
-    //   console.error('회원가입 에러: ', error);
-    // }
     // TODO: 모달로 변경 및 네비게이터 사용하기
-    handleModal({ title: "환영합니다", message: "회원가입 완료!" });
-    setFormData({
-      user_id: "",
-      username: "",
-      password: "",
-      confirm_password: "",
-    });
   };
 
   const checkDuplicate = async (field: "user_id" | "username") => {
-    const authService = new authAPI();
-    if (field === "user_id") {
-      const available = await authService.validateUserId(formData["user_id"]);
-      const message = available ? "사용 가능한 아이디" : "이미 사용중인 아이디";
-      handleModal({ title: "알림", message: message });
-    } else if (field === "username") {
-      const available = await authService.validateUsername(formData["username"]);
-      const message = available ? "사용 가능한 닉네임" : "이미 사용중인 닉네임";
+    const id_or_username = formData[field];
+    if (!isBlankValue(id_or_username)) {
+      if (field === "user_id") {
+        const available = await authService.validateUserId(formData["user_id"]);
+        const message = available ? "사용 가능한 아이디" : "이미 사용중인 아이디";
+        handleModal({ title: "알림", message: message });
+      } else if (field === "username") {
+        const available = await authService.validateUsername(formData["username"]);
+        const message = available ? "사용 가능한 닉네임" : "이미 사용중인 닉네임";
+        handleModal({ title: "알림", message: message });
+      }
+    } else {
+      const message = "원하시는 값을 입력해주세요";
       handleModal({ title: "알림", message: message });
     }
+  };
+
+  const checkPassword = (pass: string, re_pass: string) => {
+    if (isBlankValue(pass) || isBlankValue(re_pass)) {
+      handleModal({ title: "알림", message: "비밀번호를 모두 입력해주세요" });
+      return false;
+    } else if (pass !== re_pass) {
+      handleModal({ title: "알림", message: "동일한 비밀번호를 입력해주세요" });
+      return false;
+    }
+    return true;
   };
   return (
     <>
@@ -135,7 +158,7 @@ export default function SignUp() {
                 placeholder="비밀번호를 입력해주세요"
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
               />
             </div>
 
@@ -151,7 +174,7 @@ export default function SignUp() {
                 placeholder="비밀번호를 다시 입력해주세요"
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 value={formData.confirm_password}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
               />
             </div>
 
