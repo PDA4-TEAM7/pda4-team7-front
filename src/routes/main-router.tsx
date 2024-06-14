@@ -1,3 +1,4 @@
+
 import Home from "@/routes/home/page";
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./Layout";
@@ -22,10 +23,10 @@ const routers = [
         index: true,
       },
       {
-        path: "detail",
-        element: <DetailPage />,
-        index: true,
+        path: 'comm',
+        element: <CommPage/>,
       },
+
     ],
   },
   {
@@ -36,6 +37,7 @@ const routers = [
     path: "/dev",
     element: <Dev />,
   },
+
   {
     path: "/signup",
     element: <SignUp />,
