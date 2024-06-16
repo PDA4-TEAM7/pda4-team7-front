@@ -86,7 +86,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 
 export default function Layout() {
   const [open, setOpen] = useState(true);
-  const { user, logOut } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const handleDrawerOpen = () => {
