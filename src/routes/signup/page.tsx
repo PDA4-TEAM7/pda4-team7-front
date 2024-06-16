@@ -47,7 +47,7 @@ export default function SignUp() {
     try {
       const valiable = checkPassword(formData.password, formData.confirm_password);
       if (!valiable) return;
-      const { message, status } = await authService.signUp(formData);
+      const { message, status } = await authService.signUp({ ...formData });
       handleModal({ title: "알림", message: message });
       if (status === 200) {
         setFormData(SignUpInitValue);
