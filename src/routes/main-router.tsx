@@ -5,11 +5,11 @@ import Portfolio from "./portfolio/page";
 import Dev from "./dev/page";
 import MainPortfolio from "./portfolio/mainPortfolio";
 import MyPage from "./mypage/page";
-import DetailPage from "./portfolio/detail/page";
 import StockList from "./portfolio/stockList";
 import SignUp from "./signup/page";
 import CommPage from "./portfolio/comm_page";
 import SignIn from "./signin/page";
+import SubscribePortfolio from "./portfolio/subscribe/page";
 
 const routers = [
   {
@@ -28,6 +28,11 @@ const routers = [
       {
         path: "mainPortfolio",
         element: <MainPortfolio />,
+        index: true,
+      },
+      {
+        path: "subscribe",
+        element: <SubscribePortfolio />,
         index: true,
       },
       {
