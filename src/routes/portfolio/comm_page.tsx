@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { commentApi } from "@/apis/commentAPI";
 import { replyApi } from "@/apis/replyAPI";
@@ -70,7 +71,7 @@ const CommPage = () => {
             console.log("Replies API response for comment_id:", comment.comment_id, repliesResponse.data); // Debugging line
             return {
               ...comment,
-              replies: repliesResponse.data.replies.map((reply: Reply) => ({
+              replies: repliesResponse.data.replies.map((reply: any) => ({
                 author: reply.author,
                 user_id: reply.user_id,
                 role: reply.user_id === ownerInfo.uid ? "작성자" : "",
