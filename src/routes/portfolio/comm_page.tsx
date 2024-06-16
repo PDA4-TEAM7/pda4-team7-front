@@ -45,7 +45,7 @@ const CommPage = () => {
             return {
               ...comment,
               replies: repliesResponse.data.replies.map((reply: any) => ({
-                author: reply.username,
+                author: reply.author,
                 user_id: reply.user_id,
                 role: "작성자",
                 date: new Date(reply.create_dt).toISOString().split("T")[0],
