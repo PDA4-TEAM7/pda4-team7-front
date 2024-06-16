@@ -186,7 +186,7 @@ export default function SignUp() {
           </form>
           <div className="mt-10">
             <p className="text-gray-600">이미 계정이 있습니다.</p>
-            <a href="#" className="text-blue-500">
+            <a href="/signin" className="text-blue-500">
               로그인하기
             </a>
           </div>
