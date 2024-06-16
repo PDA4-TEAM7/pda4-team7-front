@@ -67,7 +67,6 @@ const StockList: React.FC = () => {
         }));
 
         setAccountdata(updatedData);
-        console.log("Account Data:", updatedData); // Account Data 로깅
       } catch (error) {
         console.error("Error fetching stocks:", error);
       }
@@ -83,8 +82,6 @@ const StockList: React.FC = () => {
         const response = await axios.post("http://localhost:3000/api/stock");
         const fetchedStocks = response.data;
 
-        console.log("Fetched Stocks:", fetchedStocks); // Fetched Stocks 로깅
-
         // stocks의 값들을 WordData 배열의 text에 넣고 value는 임의의 값으로 설정
         const updatedData = fetchedStocks.map((stock, index) => ({
           text: stock.std_idst_clsf_cd_name,
@@ -93,7 +90,6 @@ const StockList: React.FC = () => {
 
         setStocks(updatedData);
         setStockList(fetchedStocks); // 추가: 전체 주식 데이터를 저장
-        console.log("Stock List:", fetchedStocks); // Stock List 로깅
       } catch (error) {
         console.error("Error fetching stocks:", error);
       }
@@ -105,10 +101,6 @@ const StockList: React.FC = () => {
   // 주식 수량과 이름 넣어주기
   useEffect(() => {
     if (accountdata.length > 0 && stockList.length > 0) {
-      console.log("Account Data and Stock List are available");
-      console.log("Account Data:", accountdata);
-      console.log("Stock List:", stockList);
-
       // accountdata에서 quantity 값 추출
       const quantities = accountdata.map((item) => item.quantity);
 
