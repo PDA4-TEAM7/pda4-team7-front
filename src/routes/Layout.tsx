@@ -1,5 +1,5 @@
-import { ReactElement, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { styled, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -22,18 +22,22 @@ const userId = "soyalattee";
 const navMenu = [
   {
     text: "포트폴리오",
+    page: "/portfolio/mainPortfolio",
     icon: <IconPortfolio width={24} height={24} />,
   },
   {
     text: "구독 포트폴리오",
+    page: "/portfolio/subscribe",
     icon: <IconSub width={24} height={24} />,
   },
   {
     text: "마이 페이지",
+    page: "/mypage",
     icon: <IconMy width={24} height={24} />,
   },
   {
     text: "추천 포트폴리오",
+    page: "#",
     icon: <IconCalender width={24} height={24} />,
   },
 ];
@@ -83,7 +87,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 
 export default function Layout() {
   const [open, setOpen] = useState(true);
-
+  const location = useLocation();
+  const navigate = useNavigate();
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -92,6 +97,10 @@ export default function Layout() {
     setOpen(false);
   };
 
+  const handleNavigate = (page: string) => {
+    navigate(page);
+    console.log("lcoa:", location.pathname);
+  };
   return (
     <div className="flex">
       <Drawer variant="permanent" open={open} className="[&_div]:bg-[#23272c]">
@@ -112,6 +121,7 @@ export default function Layout() {
             sx={{
               ...(!open && { display: "none" }),
             }}
+            className="!text-white"
           >
             <ChevronLeftIcon />
           </IconButton>
@@ -128,14 +138,15 @@ export default function Layout() {
           <p>{userId}</p>
         </div>
         <List>
-          {navMenu.map(({ text, icon }, index) => (
-            <ListItem key={text + index} disablePadding sx={{ display: "block" }}>
+          {navMenu.map(({ text, page, icon }, index) => (
+            <ListItem onClick={() => handleNavigate(page)} key={text + index} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
+                className={`${location.pathname === page && "!bg-[#121417]"}`}
               >
                 <ListItemIcon
                   sx={{
@@ -143,11 +154,15 @@ export default function Layout() {
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
                   }}
-                  className="center"
+                  className="center !bg-transparent"
                 >
                   {icon}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} className="text-[#E0E4EA]" />
+                <ListItemText
+                  primary={text}
+                  sx={{ opacity: open ? 1 : 0 }}
+                  className="text-[#E0E4EA] !bg-transparent"
+                />
               </ListItemButton>
             </ListItem>
           ))}
