@@ -103,7 +103,7 @@ export default function SignIn() {
           </form>
           <div className="mt-10">
             <p className="text-gray-600">계정이 없습니다.</p>
-            <a href="#" className="text-blue-500">
+            <a href="/signup" className="text-blue-500">
               가입하기
             </a>
           </div>
