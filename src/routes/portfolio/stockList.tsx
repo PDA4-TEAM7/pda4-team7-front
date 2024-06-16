@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import * as d3 from "d3";
 import { useParams } from "react-router-dom";
+import { Pie } from "react-chartjs-2";
 
 // 단어 데이터의 인터페이스를 정의
 interface WordData {
@@ -18,17 +19,71 @@ const truncateText = (text, maxLength) => {
 const StockList: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null); // SVG 요소에 대한 참조를 생성
   const [stocks, setStocks] = useState<WordData[]>([]);
+  const [accountdata, setAccountdata] = useState([]);
+  const [stockList, setStockList] = useState([]);
+  const [stockdata, setStockdata] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "수량",
+        data: [],
+        backgroundColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  });
+
   const { id } = useParams();
 
   useEffect(() => {
-    console.log(`${id}`);
+    console.log(`params id: ${id}`);
   }, [id]);
 
+  // DB stock_in_account에서 보유종목, 가격, 평가손익, 수익률(%) 값 가져오기
+  useEffect(() => {
+    const fetchAccount = async () => {
+      try {
+        const response = await axios.post("http://localhost:3000/api/stockaccount");
+        const fetchedAccount = response.data;
+
+        // 데이터 가공
+        const updatedData = fetchedAccount.map((account) => ({
+          holdings_id: account.holdings_id,
+          account_id: account.account_id,
+          stock_id: account.stock_id,
+          market_id: account.market_id,
+          quantity: account.quantity,
+          pchs_amt: account.pchs_amt,
+          evlu_amt: account.evlu_amt,
+          evlu_pfls_amt: account.evlu_pfls_amt,
+          profit_rate: ((account.evlu_pfls_amt / account.pchs_amt) * 100).toFixed(2), // 수익률 계산
+        }));
+
+        setAccountdata(updatedData);
+        console.log("Account Data:", updatedData); // Account Data 로깅
+      } catch (error) {
+        console.error("Error fetching stocks:", error);
+      }
+    };
+
+    fetchAccount();
+  }, []);
+
+  // DB stock에서 주식 섹터 값 가져오기
   useEffect(() => {
     const fetchStocks = async () => {
       try {
         const response = await axios.post("http://localhost:3000/api/stock");
         const fetchedStocks = response.data;
+
+        console.log("Fetched Stocks:", fetchedStocks); // Fetched Stocks 로깅
 
         // stocks의 값들을 WordData 배열의 text에 넣고 value는 임의의 값으로 설정
         const updatedData = fetchedStocks.map((stock, index) => ({
@@ -37,6 +92,8 @@ const StockList: React.FC = () => {
         }));
 
         setStocks(updatedData);
+        setStockList(fetchedStocks); // 추가: 전체 주식 데이터를 저장
+        console.log("Stock List:", fetchedStocks); // Stock List 로깅
       } catch (error) {
         console.error("Error fetching stocks:", error);
       }
@@ -44,6 +101,38 @@ const StockList: React.FC = () => {
 
     fetchStocks();
   }, []);
+
+  // 주식 수량과 이름 넣어주기
+  useEffect(() => {
+    if (accountdata.length > 0 && stockList.length > 0) {
+      console.log("Account Data and Stock List are available");
+      console.log("Account Data:", accountdata);
+      console.log("Stock List:", stockList);
+
+      // accountdata에서 quantity 값 추출
+      const quantities = accountdata.map((item) => item.quantity);
+
+      // stock_id에 해당하는 name 값을 찾기
+      const stockNames = accountdata.map((item) => {
+        const stock = stockList.find((stockItem) => stockItem.stock_id === item.stock_id);
+        return stock ? stock.name : "Unknown";
+      });
+
+      console.log("Quantities:", quantities);
+      console.log("Stock Names:", stockNames);
+
+      // stockdata 상태 업데이트
+      setStockdata((prevState) => ({
+        labels: stockNames,
+        datasets: [
+          {
+            ...prevState.datasets[0],
+            data: quantities,
+          },
+        ],
+      }));
+    }
+  }, [accountdata, stockList]);
 
   useEffect(() => {
     if (stocks.length === 0) return;
@@ -166,6 +255,10 @@ const StockList: React.FC = () => {
         <div style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
           <span style={{ color: "gray", marginRight: "5px" }}>●</span>그 외 ({otherDataPercentage}%)
         </div>
+      </div>
+      <div style={{ marginLeft: "20px", width: "50%" }}>
+        <h2>Stock Chart</h2>
+        <Pie data={stockdata} />
       </div>
     </div>
   );
