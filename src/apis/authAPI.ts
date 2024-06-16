@@ -64,7 +64,6 @@ export default class authAPI extends BaseApi {
         };
       }
     } catch (error) {
-      console.error(error);
       return { status: 500, message: "로그인 처리 중 오류 발생" };
     }
   }

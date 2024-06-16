@@ -48,7 +48,6 @@ export default function SignIn() {
     if (status === 200) {
       // 로그인 성공, 서버가 쿠키를 설정했으므로 추가적인 처리가 필요 없음
       // 사용자를 홈으로 리다이렉트
-      handleModal({ title: "알림", message: message });
       window.location.href = "/";
     } else {
       handleModal({ title: "알림", message: message });
