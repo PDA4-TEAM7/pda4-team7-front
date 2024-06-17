@@ -49,12 +49,11 @@ export default class authAPI extends BaseApi {
       const response = await this.fetcher.post("auth/signin", {
         ...auth,
       });
-
       if (response.status === 200) {
         // 로그인 성공
         return {
           status: 200,
-          message: "로그인 성공",
+          message: `${response.data.user.user_id}님, 환영합니다!`,
         };
       } else {
         // 로그인 실패 시의 처리
@@ -64,7 +63,7 @@ export default class authAPI extends BaseApi {
         };
       }
     } catch (error) {
-      return { status: 500, message: "로그인 처리 중 오류 발생" };
+      return { status: 500, message: "로그인을 실패했습니다. 다시 시도해주세요." };
     }
   }
 }

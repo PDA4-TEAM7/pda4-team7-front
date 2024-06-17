@@ -19,6 +19,12 @@ export default function SignIn() {
   const handleModal = ({ title, message }: { title: string; message: string }) => {
     open(title, message, close);
   };
+
+  const signInHandleModal = ({ title, message }: { title: string; message: string }) => {
+    open(title, message, () => {
+      window.location.href = "/";
+    });
+  };
   const authService = new authAPI();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,12 +49,9 @@ export default function SignIn() {
 
     // TODO: 로그인 요청
     const { message, status } = await authService.signIn(formData);
-    handleModal({ title: "알림", message: message });
 
     if (status === 200) {
-      // 로그인 성공, 서버가 쿠키를 설정했으므로 추가적인 처리가 필요 없음
-      // 사용자를 홈으로 리다이렉트
-      window.location.href = "/";
+      signInHandleModal({ title: "알림", message: message });
     } else {
       handleModal({ title: "알림", message: message });
     }
