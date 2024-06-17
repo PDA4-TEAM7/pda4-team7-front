@@ -63,7 +63,7 @@ const StockList: React.FC = () => {
           pchs_amt: account.pchs_amt,
           evlu_amt: account.evlu_amt,
           evlu_pfls_amt: account.evlu_pfls_amt,
-          profit_rate: ((account.evlu_pfls_amt / account.pchs_amt) * 100).toFixed(2), // 수익률 계산
+          evlu_pfls_rt: account.evlu_pfls_rt,
         }));
 
         setAccountdata(updatedData);
@@ -73,6 +73,8 @@ const StockList: React.FC = () => {
     };
 
     fetchAccount();
+
+    console.log(accountdata);
   }, []);
 
   // DB stock에서 주식 섹터 값 가져오기
@@ -82,6 +84,7 @@ const StockList: React.FC = () => {
         const response = await axios.post("http://localhost:3000/api/stock");
         const fetchedStocks = response.data;
 
+        console.log(fetchedStocks);
         // stocks의 값들을 WordData 배열의 text에 넣고 value는 임의의 값으로 설정
         const updatedData = fetchedStocks.map((stock, index) => ({
           text: stock.std_idst_clsf_cd_name,
@@ -98,6 +101,8 @@ const StockList: React.FC = () => {
     fetchStocks();
   }, []);
 
+  // console.log(`stocklist는 ${stockList}`);
+
   // 주식 수량과 이름 넣어주기
   useEffect(() => {
     if (accountdata.length > 0 && stockList.length > 0) {
@@ -109,9 +114,6 @@ const StockList: React.FC = () => {
         const stock = stockList.find((stockItem) => stockItem.stock_id === item.stock_id);
         return stock ? stock.name : "Unknown";
       });
-
-      console.log("Quantities:", quantities);
-      console.log("Stock Names:", stockNames);
 
       // stockdata 상태 업데이트
       setStockdata((prevState) => ({
@@ -204,7 +206,7 @@ const StockList: React.FC = () => {
       texts
         .enter()
         .append("text")
-        .style("font-size", (d) => `${d.value / 4}px`) // 텍스트 크기 조정
+        .style("font-size", (d) => `${d.value / 4}px`) // 텍스트 크기 4정도가 적당한 듯
         .attr("text-anchor", "middle")
         .attr("dy", ".35em")
         .style("fill", "#fff")
@@ -233,24 +235,60 @@ const StockList: React.FC = () => {
   const otherDataValue = totalValue - d3.sum(topData.map((item) => item.value));
   const otherDataPercentage = ((otherDataValue / totalValue) * 100).toFixed(1);
 
+  console.log(accountdata);
   return (
-    <div style={{ display: "flex", height: "50vh", width: "50%" }}>
-      <svg ref={svgRef} style={{ flex: "1", maxWidth: "100%", maxHeight: "100%" }}></svg>{" "}
-      {/* SVG 요소를 렌더링하고 참조를 설정 */}
-      <div style={{ marginLeft: "20px" }}>
-        {topData.map((d, i) => (
-          <div key={i} style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
-            <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
-            {d.text} ({((d.value / totalValue) * 100).toFixed(1)}%)
-          </div>
-        ))}
-        <div style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
-          <span style={{ color: "gray", marginRight: "5px" }}>●</span>그 외 ({otherDataPercentage}%)
+    <div>
+      <div>
+        <Pie
+          data={stockdata}
+          options={{
+            maintainAspectRatio: true,
+            responsive: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          }}
+        />
+      </div>
+      <div class="space-y-4">
+        <div>
+          {stockList.map((stock, i) => (
+            <div key={i} class="flex items-center space-x-2">
+              <div class="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stock.color }}></div>
+              <span>{stock.name}</span>
+            </div>
+          ))}
+        </div>
+        <div>
+          {accountdata.map((stock, i) => (
+            <div key={i} class="flex justify-between items-center">
+              <span>{stock.quantity}주</span>
+              <div class="text-right">
+                <span class="block">{stock.evlu_amt}원</span>
+                <span class={`block ${stock.evlu_pfls_amt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                  {stock.evlu_pfls_amt}원 ({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div style={{ marginLeft: "20px", width: "50%" }}>
-        <h2>Stock Chart</h2>
-        <Pie data={stockdata} />
+
+      <div>
+        <svg ref={svgRef}></svg>{" "}
+        <div>
+          {topData.map((d, i) => (
+            <div key={i} style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
+              <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
+              {d.text} ({((d.value / totalValue) * 100).toFixed(1)}%)
+            </div>
+          ))}
+          <div style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
+            <span style={{ color: "gray", marginRight: "5px" }}>●</span>그 외 ({otherDataPercentage}%)
+          </div>
+        </div>
       </div>
     </div>
   );
