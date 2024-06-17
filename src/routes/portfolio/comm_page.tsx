@@ -34,12 +34,11 @@ const CommPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
-  const [portfolioId, setPortfolioId] = useState(1); // 실제 포트폴리오 ID로 대체하세요.
-  const [ownerInfo, setOwnerInfo] = useState<OwnerInfo>({
-    name: "",
-    updateDate: "",
-    uid: 0,
-    profileImage: "",
+  const [portfolioId, setPortfolioId] = useState(2); // 실제 포트폴리오 ID로 대체하세요.
+  const [ownerInfo, setOwnerInfo] = useState({
+    name: "박소연",
+    updateDate: "3일 전",
+    profileImage: "/img/soya_profile.png",
   });
 
   useEffect(() => {
@@ -74,7 +73,7 @@ const CommPage = () => {
               replies: repliesResponse.data.replies.map((reply: any) => ({
                 author: reply.author,
                 user_id: reply.user_id,
-                role: reply.user_id === ownerInfo.uid ? "작성자" : "",
+                role: reply.user_id === ownerInfo.userId ? "작성자" : "",
                 date: new Date(reply.create_dt).toISOString().split("T")[0],
                 text: reply.description,
               })),
@@ -157,6 +156,12 @@ const CommPage = () => {
 
         // 백엔드 API 호출
         const response = await replyApi.writeReply(newReplyData);
+
+        // API 응답에서 userId와 포트폴리오 ownerId를 비교
+        if (response.data.newReply.user_id !== comment.user_id) {
+          alert("작성자만 답글을 쓸 수 있습니다.");
+          return;
+        }
 
         const newReply = {
           author: response.data.newReply.username,
