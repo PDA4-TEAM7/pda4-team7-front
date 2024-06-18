@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import * as d3 from "d3";
@@ -11,9 +12,6 @@ interface WordData {
 }
 
 // 긴 텍스트를 줄여서 표시하는 함수
-const truncateText = (text, maxLength) => {
-  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-};
 
 // StockList 컴포넌트 정의
 const StockList: React.FC = () => {
@@ -21,7 +19,7 @@ const StockList: React.FC = () => {
   const [stocks, setStocks] = useState<WordData[]>([]);
   const [accountdata, setAccountdata] = useState([]);
   const [stockList, setStockList] = useState([]);
-  const [stockdata, setStockdata] = useState({
+  const [stockdata, setStockdata] = useState<any>({
     labels: [],
     datasets: [
       {
@@ -54,7 +52,7 @@ const StockList: React.FC = () => {
         const fetchedAccount = response.data;
 
         // 데이터 가공
-        const updatedData = fetchedAccount.map((account) => ({
+        const updatedData = fetchedAccount.map((account: any) => ({
           holdings_id: account.holdings_id,
           account_id: account.account_id,
           stock_id: account.stock_id,
@@ -86,7 +84,7 @@ const StockList: React.FC = () => {
 
         console.log(fetchedStocks);
         // stocks의 값들을 WordData 배열의 text에 넣고 value는 임의의 값으로 설정
-        const updatedData = fetchedStocks.map((stock, index) => ({
+        const updatedData = fetchedStocks.map((stock: any) => ({
           text: stock.std_idst_clsf_cd_name,
           value: Math.floor(Math.random() * 60) + 40, // 1에서 100 사이의 임의의 값
         }));
@@ -107,16 +105,15 @@ const StockList: React.FC = () => {
   useEffect(() => {
     if (accountdata.length > 0 && stockList.length > 0) {
       // accountdata에서 quantity 값 추출
-      const quantities = accountdata.map((item) => item.quantity);
+      const quantities = accountdata.map((item: any) => item.quantity);
 
       // stock_id에 해당하는 name 값을 찾기
-      const stockNames = accountdata.map((item) => {
-        const stock = stockList.find((stockItem) => stockItem.stock_id === item.stock_id);
+      const stockNames = accountdata.map((item: any) => {
+        const stock: any = stockList.find((stockItem: any) => stockItem.stock_id === item.stock_id);
         return stock ? stock.name : "Unknown";
       });
-
       // stockdata 상태 업데이트
-      setStockdata((prevState) => ({
+      setStockdata((prevState: any) => ({
         labels: stockNames,
         datasets: [
           {
@@ -132,8 +129,6 @@ const StockList: React.FC = () => {
     if (stocks.length === 0) return;
 
     // 워드 클라우드 상위 5개의 데이터 선택
-    const topData = stocks.sort((a, b) => b.value - a.value).slice(0, 5);
-    const totalValue = d3.sum(stocks.map((item) => item.value));
 
     // 커스텀 툴팁 스타일 추가
     const tooltipStyle = `
@@ -160,63 +155,11 @@ const StockList: React.FC = () => {
       .attr("preserveAspectRatio", "xMidYMid slice"); // 비율을 유지하며 중앙에 맞춤
 
     // 그룹 요소 추가
-    const g = svg.append("g"); // 그룹 요소 추가
 
     // 커스텀 툴팁 요소 추가
     const tooltip = d3.select("body").append("div").attr("class", "tooltip"); // 툴팁에 클래스 적용
 
     // 원형 배치를 위한 시뮬레이션 설정
-    const simulation = d3
-      .forceSimulation(topData)
-      .force("charge", d3.forceManyBody().strength(10))
-      .force("center", d3.forceCenter(0, 0))
-      .force(
-        "collision",
-        d3.forceCollide().radius((d) => d.value - 20) // 충돌 반경 조정
-      )
-      .on("tick", ticked);
-
-    function ticked() {
-      const circles = g.selectAll("circle").data(topData);
-
-      circles
-        .enter()
-        .append("circle")
-        .attr("r", (d) => d.value / 1.25) // 원의 반지름 설정
-        .style("fill", (d, i) => d3.schemeCategory10[i % 10])
-        .merge(circles)
-        .attr("cx", (d) => d.x)
-        .attr("cy", (d) => d.y)
-        .on("mouseover", (event, d) => {
-          const percentage = ((d.value / totalValue) * 100).toFixed(1);
-          // 소수점 한 자리까지 -> toFixed
-          tooltip.style("opacity", 1).html(`${d.text} : ${percentage}%`);
-        })
-        .on("mousemove", (event, d) => {
-          tooltip.style("left", event.pageX + 10 + "px").style("top", event.pageY - 10 + "px");
-        })
-        .on("mouseout", () => {
-          tooltip.style("opacity", 0);
-        });
-
-      circles.exit().remove();
-
-      const texts = g.selectAll("text").data(topData);
-
-      texts
-        .enter()
-        .append("text")
-        .style("font-size", (d) => `${d.value / 4}px`) // 텍스트 크기 4정도가 적당한 듯
-        .attr("text-anchor", "middle")
-        .attr("dy", ".35em")
-        .style("fill", "#fff")
-        .merge(texts)
-        .attr("x", (d) => d.x)
-        .attr("y", (d) => d.y)
-        .text((d) => truncateText(d.text, 5)); // 5글자가 넘으면 그 나머지 글자를 버리고 ...을 붙여줌
-
-      texts.exit().remove();
-    }
 
     return () => {
       // 클린업: 기존 SVG 요소 제거
@@ -252,22 +195,22 @@ const StockList: React.FC = () => {
           }}
         />
       </div>
-      <div class="space-y-4">
+      <div className="space-y-4">
         <div>
-          {stockList.map((stock, i) => (
-            <div key={i} class="flex items-center space-x-2">
-              <div class="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stock.color }}></div>
+          {stockList.map((stock: any, i) => (
+            <div key={i} className="flex items-center space-x-2">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stock.color }}></div>
               <span>{stock.name}</span>
             </div>
           ))}
         </div>
         <div>
-          {accountdata.map((stock, i) => (
-            <div key={i} class="flex justify-between items-center">
+          {accountdata.map((stock: any, i) => (
+            <div key={i} className="flex justify-between items-center">
               <span>{stock.quantity}주</span>
-              <div class="text-right">
-                <span class="block">{stock.evlu_amt}원</span>
-                <span class={`block ${stock.evlu_pfls_amt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+              <div className="text-right">
+                <span className="block">{stock.evlu_amt}원</span>
+                <span className={`block ${stock.evlu_pfls_amt >= 0 ? "text-red-600" : "text-blue-600"}`}>
                   {stock.evlu_pfls_amt}원 ({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
                 </span>
               </div>
