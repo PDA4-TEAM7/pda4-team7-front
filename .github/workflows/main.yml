@@ -39,6 +39,8 @@ jobs:
           git config --global --add safe.directory /home/ubuntu/frontend/pda4-team7-front
           
           # 최신 코드 가져오기
+          git fetch origin
+          git checkout -b release-dev origin/release-dev
           git pull origin release-dev
           
           # 환경 변수 파일 생성
