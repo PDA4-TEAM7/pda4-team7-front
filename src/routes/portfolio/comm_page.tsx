@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { commentApi } from "@/apis/commentAPI";
 import { replyApi } from "@/apis/replyAPI";
@@ -22,9 +24,12 @@ const CommPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
-  const [portfolioId, setPortfolioId] = useState(2); // 실제 포트폴리오 ID로 대체하세요.
-  const [ownerInfo, setOwnerInfo] = useState({
+  // TODO: set우선 안써서 제거
+  const [portfolioId] = useState(2); // 실제 포트폴리오 ID로 대체하세요.
+  const [ownerInfo] = useState({
     name: "박소연",
+    // DUMMY: 더미로 넣어놨어용
+    userId: 1,
     updateDate: "3일 전",
     profileImage: "/img/soya_profile.png",
   });
@@ -75,6 +80,8 @@ const CommPage = () => {
     if (comment.trim()) {
       try {
         const newCommentData = {
+          // DUMMY: 더미로 넣어놨어용
+          userId: 1,
           description: comment,
           portfolioId: portfolioId,
         };
@@ -122,6 +129,8 @@ const CommPage = () => {
       try {
         const newReplyData = {
           description: comment.replyText,
+          // DUMMY: 더미로 넣어놨어용
+          userId: 1,
           comment_id: commentId,
         };
 
@@ -152,7 +161,7 @@ const CommPage = () => {
           return comment;
         });
         setComments(newComments);
-      } catch (error) {
+      } catch (error: any) {
         if (error.response && error.response.status === 403) {
           alert("작성자만 답글을 쓸 수 있습니다.");
         } else {
