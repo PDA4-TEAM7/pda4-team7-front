@@ -3,12 +3,12 @@ name: Main Branch Deployment
 on:
   push:
     branches:
-      - main
+      - release/dev
 
   pull_request:
     branches:
-      - main
-    types: [closed] # 풀 리퀘스트가 닫힐 때 이벤트를 트리거
+      - release/dev
+    types: [closed]  # 풀 리퀘스트가 닫힐 때 이벤트를 트리거
 
 jobs:
   deploy:
