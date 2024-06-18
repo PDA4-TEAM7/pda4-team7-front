@@ -3,11 +3,11 @@ name: Main Branch Deployment
 on:
   push:
     branches:
-      - release-dev
+      - main
 
   pull_request:
     branches:
-      - release-dev
+      - main
     types: [closed] # 풀 리퀘스트가 닫힐 때 이벤트를 트리거
 
 jobs:
@@ -33,21 +33,35 @@ jobs:
             sudo chown -R $(whoami):$(whoami) /home/ubuntu/frontend/pda4-team7-front/.git
 
             # 로컬 변경 사항을 stash
-            # git stash
-            # git checkout
+            git stash
 
             # 안전 디렉토리 추가
             git config --global --add safe.directory /home/ubuntu/frontend/pda4-team7-front
 
             # 최신 코드 가져오기
-            # git pull origin release-dev
-            git reset --hard origin/release-dev
+            git pull
 
             # 환경 변수 파일 생성
             echo "${{ secrets.PROD_ENV_FILE }}" | sudo tee .env
 
             # 필요한 npm 패키지 설치
-            sudo npm ci --production
+            sudo npm ci
+            sudo npm install --production
 
             # tsc로 컴파일
-            sudo npm run build
+            sudo tsc
+
+            # PM2를 사용하여 애플리케이션 재시작
+            sudo pm2 stop main || true  # 프로세스를 중지, 없으면 무시
+            sudo pm2 delete main || true  # 프로세스를 삭제, 없으면 무시
+
+            # Ensure app.js exists before starting PM2
+            if [ -f /home/ubuntu/frontend/pda4-team7-front/dist/main.js ]; then
+              sudo pm2 start /home/ubuntu/frontend/pda4-team7-front/dist/main.js --name "main"  # "main" 이름으로 main.js 시작
+            else
+              echo "Error: /home/ubuntu/frontend/pda4-team7-front/dist/main.js not found"
+              exit 1
+            fi
+
+            # 작업 후 권한 원래 상태로 되돌리기
+            sudo chown -R root:root /home/ubuntu/frontend/pda4-team7-front
