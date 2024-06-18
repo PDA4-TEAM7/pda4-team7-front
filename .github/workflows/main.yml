@@ -39,7 +39,7 @@ jobs:
           git config --global --add safe.directory /home/ubuntu/frontend/pda4-team7-front
           
           # 최신 코드 가져오기
-          git pull
+          git pull origin release-dev
           
           # 환경 변수 파일 생성
           echo "${{ secrets.PROD_ENV_FILE }}" | sudo tee .env
