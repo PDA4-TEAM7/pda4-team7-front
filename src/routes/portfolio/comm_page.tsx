@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { commentApi } from "@/apis/commentAPI";
 import { replyApi } from "@/apis/replyAPI";
@@ -33,7 +34,7 @@ const CommPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
-  const [portfolioId, setPortfolioId] = useState(1); // 실제 포트폴리오 ID로 대체하세요.
+  const [portfolioId] = useState(1); // 실제 포트폴리오 ID로 대체하세요.
   const [ownerInfo, setOwnerInfo] = useState<OwnerInfo>({
     name: "",
     updateDate: "",
@@ -170,7 +171,7 @@ const CommPage = () => {
               ...comment,
               replies: [...comment.replies, newReply],
               replyText: "",
-            };
+            } as Comment;
           }
           return comment;
         });

@@ -2,7 +2,6 @@ import { BaseApi } from "./baseAPI";
 
 interface Comment {
   description: string;
-  userId: number;
   portfolioId: number;
 }
 
