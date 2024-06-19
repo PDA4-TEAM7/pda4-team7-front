@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { commentApi } from "@/apis/commentAPI";
+import { replyApi } from "@/apis/replyAPI";
 
 type Comment = {
-  id: number;
+  comment_id: number;
   author: string;
-  date: string;
-  text: string;
+  user_id: number;
+  description: string;
+  create_dt: string;
   replies: {
     author: string;
+    user_id: number;
     role: string;
     date: string;
     text: string;
@@ -17,44 +21,47 @@ type Comment = {
 const CommPage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: 1,
-      author: "임찬솔",
-      date: "2024.05.31",
-      text: "아니 삼전 겁나 떨어졌는데 왜 사셨나요",
-      replies: [
-        {
-          author: "박소연",
-          role: "작성자",
-          date: "2024.05.31",
-          text: "저는 이득 봤습니다",
-        },
-      ],
-      replyText: "",
-    },
-    {
-      id: 2,
-      author: "오수연",
-      date: "2024.05.28",
-      text: "아 집가고 싶다.",
-      replies: [
-        {
-          author: "박소연",
-          role: "작성자",
-          date: "2024.05.31",
-          text: "인정합니다.",
-        },
-      ],
-      replyText: "",
-    },
-  ]);
-
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [portfolioId, setPortfolioId] = useState(2); // 실제 포트폴리오 ID로 대체하세요.
   const [ownerInfo, setOwnerInfo] = useState({
     name: "박소연",
     updateDate: "3일 전",
     profileImage: "/img/soya_profile.png",
   });
+
+  useEffect(() => {
+    // 초기 로드 시 포트폴리오의 댓글을 가져옵니다.
+    const fetchComments = async () => {
+      try {
+        const response = await commentApi.readComments(portfolioId);
+        console.log("Comments API response:", response.data); // Debugging line
+
+        const commentsData = await Promise.all(
+          response.data.comments.map(async (comment: any) => {
+            console.log("Fetching replies for comment_id:", comment.comment_id); // Debugging line
+            const repliesResponse = await replyApi.readReplies(comment.comment_id);
+            console.log("Replies API response for comment_id:", comment.comment_id, repliesResponse.data); // Debugging line
+            return {
+              ...comment,
+              replies: repliesResponse.data.replies.map((reply: any) => ({
+                author: reply.author,
+                user_id: reply.user_id,
+                role: reply.user_id === ownerInfo.userId ? "작성자" : "",
+                date: new Date(reply.create_dt).toISOString().split("T")[0],
+                text: reply.description,
+              })),
+              replyText: "",
+            };
+          })
+        );
+        setComments(commentsData);
+      } catch (error) {
+        console.error("댓글을 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchComments();
+  }, [portfolioId]);
 
   const handleSubscribe = () => {
     setIsSubscribed(!isSubscribed);
@@ -64,25 +71,41 @@ const CommPage = () => {
     setComment(e.target.value);
   };
 
-  const handleCommentSubmit = () => {
+  const handleCommentSubmit = async () => {
     if (comment.trim()) {
-      const newComment: Comment = {
-        id: comments.length + 1,
-        author: "현재 사용자 (쿠키써서 현재 로그인한 사람 하면 될듯?)",
-        date: new Date().toISOString().split("T")[0],
-        text: comment,
-        replies: [],
-        replyText: "",
-      };
-      console.log("New comment:", newComment); // 디버깅을 위한 로그 추가
-      setComments([...comments, newComment]);
-      setComment("");
+      try {
+        const newCommentData = {
+          description: comment,
+          portfolioId: portfolioId,
+        };
+        const response = await commentApi.writeComment(newCommentData);
+        const newCommentResponse = response.data.newComment;
+
+        if (!newCommentResponse || !newCommentResponse.user) {
+          throw new Error("댓글 작성 응답에서 사용자 정보가 없습니다.");
+        }
+
+        const newComment: Comment = {
+          comment_id: newCommentResponse.comment_id,
+          author: newCommentResponse.user.username,
+          user_id: newCommentResponse.user.uid,
+          description: newCommentResponse.description,
+          create_dt: new Date(newCommentResponse.create_dt).toISOString().split("T")[0],
+          replies: [],
+          replyText: "",
+        };
+
+        setComments([...comments, newComment]);
+        setComment("");
+      } catch (error) {
+        console.error("댓글 작성 중 오류 발생:", error);
+      }
     }
   };
 
   const handleReplyChange = (e: React.ChangeEvent<HTMLInputElement>, commentId: number) => {
     const newComments = comments.map((comment) => {
-      if (comment.id === commentId) {
+      if (comment.comment_id === commentId) {
         return {
           ...comment,
           replyText: e.target.value,
@@ -93,33 +116,59 @@ const CommPage = () => {
     setComments(newComments);
   };
 
-  const handleReplySubmit = (commentId: number) => {
-    const newComments = comments.map((comment) => {
-      if (comment.id === commentId && comment.replyText?.trim()) {
-        const newReply = {
-          author: ownerInfo.name,
-          role: "작성자",
-          date: new Date().toISOString().split("T")[0],
-          text: comment.replyText,
+  const handleReplySubmit = async (commentId: number) => {
+    const comment = comments.find((comment) => comment.comment_id === commentId);
+    if (comment && comment.replyText?.trim()) {
+      try {
+        const newReplyData = {
+          description: comment.replyText,
+          comment_id: commentId,
         };
-        return {
-          ...comment,
-          replies: [...comment.replies, newReply],
-          replyText: "",
-        };
-      }
-      return comment;
-    });
-    setComments(newComments);
-  };
 
-  const activecommentEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleCommentSubmit(); // handleCommentSubmit 함수를 호출합니다.
+        // 백엔드 API 호출
+        const response = await replyApi.writeReply(newReplyData);
+
+        // API 응답에서 userId와 포트폴리오 ownerId를 비교
+        if (response.data.newReply.user_id !== comment.user_id) {
+          alert("작성자만 답글을 쓸 수 있습니다.");
+          return;
+        }
+
+        const newReply = {
+          author: response.data.newReply.username,
+          user_id: response.data.newReply.user_id,
+          role: "작성자",
+          date: new Date(response.data.newReply.create_dt).toISOString().split("T")[0],
+          text: response.data.newReply.description,
+        };
+        const newComments = comments.map((comment) => {
+          if (comment.comment_id === commentId) {
+            return {
+              ...comment,
+              replies: [...comment.replies, newReply],
+              replyText: "",
+            };
+          }
+          return comment;
+        });
+        setComments(newComments);
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          alert("작성자만 답글을 쓸 수 있습니다.");
+        } else {
+          console.error("답글 작성 중 오류 발생:", error);
+        }
+      }
     }
   };
 
-  const activereplyEnter = (e: React.KeyboardEvent<HTMLInputElement>, commentId: number) => {
+  const activeCommentEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleCommentSubmit();
+    }
+  };
+
+  const activeReplyEnter = (e: React.KeyboardEvent<HTMLInputElement>, commentId: number) => {
     if (e.key === "Enter") {
       handleReplySubmit(commentId);
     }
@@ -136,7 +185,7 @@ const CommPage = () => {
               placeholder="의견을 남겨주세요 :)"
               value={comment}
               onChange={handleCommentChange}
-              onKeyDown={activecommentEnter}
+              onKeyDown={activeCommentEnter}
               className="w-full p-2 border border-gray-300 rounded outline-none"
             />
             <button
@@ -147,12 +196,12 @@ const CommPage = () => {
             </button>
           </div>
           {comments.map((comment) => (
-            <div key={comment.id} className="mb-6 p-4 rounded-lg">
+            <div key={comment.comment_id} className="mb-6 p-4 rounded-lg">
               <div className="flex items-center mb-2">
                 <div className="font-semibold">{comment.author}</div>
-                <div className="ml-4 text-gray-500">{comment.date}</div>
+                <div className="ml-4 text-gray-500">{new Date(comment.create_dt).toISOString().split("T")[0]}</div>
               </div>
-              <p className="mb-2">{comment.text}</p>
+              <p className="mb-2">{comment.description}</p>
               {comment.replies.map((reply, index) => (
                 <div key={index} className="ml-8 mt-4 p-4 border border-gray-300 rounded-lg">
                   <div className="flex items-center mb-2">
@@ -169,12 +218,12 @@ const CommPage = () => {
                     type="text"
                     placeholder="답글을 입력하세요 :)"
                     value={comment.replyText || ""}
-                    onChange={(e) => handleReplyChange(e, comment.id)}
-                    onKeyDown={(e) => activereplyEnter(e, comment.id)}
+                    onChange={(e) => handleReplyChange(e, comment.comment_id)}
+                    onKeyDown={(e) => activeReplyEnter(e, comment.comment_id)}
                     className="w-full p-2 border border-gray-300 rounded outline-none"
                   />
                   <button
-                    onClick={() => handleReplySubmit(comment.id)}
+                    onClick={() => handleReplySubmit(comment.comment_id)}
                     className="px-4 py-2 bg-blue-500 text-white rounded whitespace-nowrap"
                   >
                     답글 작성
