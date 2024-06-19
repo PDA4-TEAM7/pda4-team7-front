@@ -1,6 +1,21 @@
 import { BaseApi } from "./baseAPI";
 
+export interface IUserInfo {
+  userId: string;
+  userName: string;
+  introduce: string;
+  credit: number;
+}
+
+export interface ISetUserData {
+  userName: string;
+  introduce: string;
+}
 export default class userAPI extends BaseApi {
+  async getUserInfo() {
+    const resp = await this.fetcher.get("/user/me");
+    return resp.data;
+  }
   //post credit충전
   async charge(addCredit: number) {
     const resp = await this.fetcher.post("/user/charge", {
@@ -10,8 +25,8 @@ export default class userAPI extends BaseApi {
     return resp.data;
   }
   //post 유저 정보 수정
-  async setUserInfo() {
-    const resp = await this.fetcher.post(`/user`, {});
+  async setUserInfo(userData: ISetUserData) {
+    const resp = await this.fetcher.post(`/user`, { username: userData.userName, introduce: userData.introduce });
     console.log(resp.data);
     return resp.data;
   }
