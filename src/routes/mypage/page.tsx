@@ -41,7 +41,7 @@ export default function MyPage() {
                 Password
               </Label>
               <div className="flex flex-row gap-1">
-                <Input type="password" id="password" />
+                <Input type="password" id="password" placeholder="enter password" />
                 <Button>변경하기</Button>
               </div>
             </div>
