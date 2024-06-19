@@ -35,9 +35,8 @@ export default function MainPortfolio() {
     },
     {
       id: 2,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
+      title: "2번",
+      description: "2번",
       username: "얼굴을",
       time: "20 min",
       totalAsset: "$111,483.87",

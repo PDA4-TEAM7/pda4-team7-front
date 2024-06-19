@@ -47,7 +47,6 @@ jobs:
             echo "${{ secrets.PROD_ENV_FILE }}" | sudo tee .env
 
             # 필요한 npm 패키지 설치
-            sudo npm ci
             sudo npm install
 
             # tsc로 컴파일
