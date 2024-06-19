@@ -40,6 +40,7 @@ const CommPage = () => {
     updateDate: "",
     uid: 0,
     profileImage: "",
+
   });
 
   useEffect(() => {
@@ -105,6 +106,8 @@ const CommPage = () => {
     if (comment.trim()) {
       try {
         const newCommentData = {
+          // DUMMY: 더미로 넣어놨어용
+          userId: 1,
           description: comment,
           portfolioId: portfolioId,
         };
@@ -152,6 +155,8 @@ const CommPage = () => {
       try {
         const newReplyData = {
           description: comment.replyText,
+          // DUMMY: 더미로 넣어놨어용
+          userId: 1,
           comment_id: commentId,
         };
 
