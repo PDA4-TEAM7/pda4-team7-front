@@ -88,7 +88,7 @@ export default class authAPI extends BaseApi {
       const resp = await this.fetcher.post("/auth/signout");
       return resp.data;
     } catch {
-      console.log("로그아웃 에러  ");
+      console.log("로그아웃 에러");
     }
   }
 

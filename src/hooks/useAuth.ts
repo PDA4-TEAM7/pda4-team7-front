@@ -20,7 +20,7 @@ export function useAuth() {
             userId: res.user.user_id,
           })
         );
-        return true;
+        return res.user;
       } else {
         throw Error;
       }
@@ -94,8 +94,8 @@ export function useAuth() {
         if (res) {
           dispatch(
             setUser({
-              userName: res.user.username,
-              userId: res.user.user_id,
+              userName: res.username,
+              userId: res.user_id,
             })
           );
         }
@@ -103,6 +103,7 @@ export function useAuth() {
     }
     init();
   }, []);
+
   return {
     user,
     signIn,

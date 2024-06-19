@@ -17,7 +17,7 @@ const SignInInitValue = {
 export default function SignIn() {
   const [formData, setFormData] = useState<SignInFormState>(SignInInitValue);
   const { open, close } = useModal();
-  const { signIn, user } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
   const handleModal = ({ title, message }: { title: string; message: string }) => {
     open(title, message, close);
@@ -44,10 +44,10 @@ export default function SignIn() {
     }
 
     // TODO: 로그인 요청
-    const isSuc = await signIn(formData);
+    const res = await signIn(formData);
 
-    if (isSuc) {
-      open("알림", `${user.userName}님 환영합니다!`, () => {
+    if (res) {
+      open("알림", `${res.username}님 환영합니다!`, () => {
         navigate("/portfolio/mainPortfolio");
       });
     } else {
