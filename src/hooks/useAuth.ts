@@ -10,9 +10,9 @@ export function useAuth() {
   const service = new authAPI();
 
   // POST signIn
-  async function signIn(user_id: string, password: string) {
+  async function signIn(auth: { user_id: string; password: string }) {
     try {
-      const res = await service.signIn({ user_id, password });
+      const res = await service.signIn(auth);
       if (res && res.user) {
         dispatch(
           setUser({
@@ -20,10 +20,10 @@ export function useAuth() {
             userId: res.user.user_id,
           })
         );
+        return true;
       } else {
-        console.error("Login failed");
+        throw Error;
       }
-      return true;
     } catch (err) {
       //복구
       console.log("Error to login", err);
