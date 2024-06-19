@@ -8,18 +8,27 @@ export interface IAuth {
 }
 
 export default class authAPI extends BaseApi {
-  async signUp(auth: IAuth): Promise<{ status: number; message: string }> {
+  async signUp(
+    auth: IAuth
+  ): Promise<{ status: number; message: string; user: { user_id: string; username: string } | null }> {
     try {
       const resp = await this.fetcher.post("auth/signup", {
         ...auth,
       });
       console.log(resp.data);
       console.log(resp.data.message);
-
-      return resp.data;
+      if (resp.status === 200 && resp.data.user) {
+        // 로그인 성공
+        return {
+          status: 200,
+          message: "회원가입 성공",
+          user: resp.data.user,
+        };
+      }
+      throw Error("실패");
     } catch (error) {
       console.error(error);
-      return { status: 500, message: "회원가입 실패!!!" };
+      return { status: 500, message: "회원가입 실패!!!", user: null };
     }
   }
   async validateUserId(user_id: string) {
@@ -44,7 +53,10 @@ export default class authAPI extends BaseApi {
     }
   }
 
-  async signIn(auth: { user_id: string; password: string }): Promise<{ status: number; message: string }> {
+  async signIn(auth: {
+    user_id: string;
+    password: string;
+  }): Promise<{ status: number; message: string; user: { user_id: string; username: string } | null }> {
     try {
       const response = await this.fetcher.post("auth/signin", {
         ...auth,
@@ -55,16 +67,38 @@ export default class authAPI extends BaseApi {
         return {
           status: 200,
           message: "로그인 성공",
+          user: response.data.user,
         };
       } else {
         // 로그인 실패 시의 처리
         return {
           status: response.status,
           message: response.data.message,
+          user: null,
         };
       }
     } catch (error) {
-      return { status: 500, message: "로그인 처리 중 오류 발생" };
+      return { status: 500, message: "로그인 처리 중 오류 발생", user: null };
+    }
+  }
+
+  //post 로그아웃
+  async signOut() {
+    try {
+      const resp = await this.fetcher.post("/auth/signout");
+      return resp.data;
+    } catch {
+      console.log("로그아웃 에러  ");
+    }
+  }
+
+  //post 로그인중인지 체크
+  async isLogin() {
+    try {
+      const resp = await this.fetcher.post("/auth/islogin");
+      return resp.data;
+    } catch {
+      console.log("isLogin 에러  ");
     }
   }
 }
