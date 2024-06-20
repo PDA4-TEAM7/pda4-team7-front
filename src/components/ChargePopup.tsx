@@ -3,20 +3,23 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import useModal from "@/hooks/useModal";
+import useUser from "@/hooks/useUser";
 
+type Props = { modalShow: boolean; modalClose: () => void; setCredit: (addCredit: number) => void };
 //TODO: userId 로 계좌 조회 해서 리스트 표시
-export default function ChargePopup({ modalShow, modalClose }: { modalShow: boolean; modalClose: () => void }) {
+export default function ChargePopup({ modalShow, modalClose, setCredit }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { open, close } = useModal();
-
+  const { charge } = useUser();
   const closeAddModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
     }
   };
-  const handleModal = ({ title, text }: { title: string; text: string }) => {
+  const handleModal = ({ title, text, success }: { title: string; text: string; success: boolean }) => {
     // DUMMY: 성공여부추가하기
-    const success = true;
+
     //TODO: 성공하면 닫기
     open(title, text, () => {
       modalClose();
@@ -24,6 +27,16 @@ export default function ChargePopup({ modalShow, modalClose }: { modalShow: bool
     //TODO: 실패하면 공용모달만닫기.
     if (!success) {
       open(title, text, close);
+    }
+  };
+  const handleCharge = async () => {
+    // TODO: 계좌 추가 API연결
+    if (inputRef.current && +inputRef.current?.value > 0) {
+      const res = await charge(+inputRef.current?.value);
+      if (res) {
+        handleModal({ title: "성공!", text: "충전 완료했습니다!", success: true });
+        setCredit(+inputRef.current?.value);
+      } else handleModal({ title: "실패!", text: "실패했어요..", success: false });
     }
   };
 
@@ -75,17 +88,14 @@ export default function ChargePopup({ modalShow, modalClose }: { modalShow: bool
                 충전 금액
               </Label>
               <div className="flex flex-row items-center gap-2 w-full">
-                <Input type="number" id="credit" placeholder="충전할 금액을 입력해주세요" />
+                <Input type="number" id="credit" placeholder="충전할 금액을 입력해주세요" ref={inputRef} />
                 <span>원</span>
               </div>
             </div>
           </div>
           <div className="flex justify-center pt-4">
             <Button
-              onClick={() => {
-                // TODO: 계좌 추가 API연결
-                handleModal({ title: "성공!", text: "충전 완료했습니다!" });
-              }}
+              onClick={handleCharge}
               className="focus:outline-none px-4 bg-indigo-500 p-3 ml-3 rounded-lg text-white hover:bg-indigo-400 w-[120px]"
             >
               충전하기

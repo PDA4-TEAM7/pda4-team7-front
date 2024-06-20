@@ -1,8 +1,9 @@
-import { SVGProps, useEffect, useRef } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { SVGProps, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { JSX } from "react/jsx-runtime";
+import useAccount from "@/hooks/useAccount";
 
-const accountList = [{ address: "1345123-01" }];
 type Props = {
   modalShow: boolean;
   modalClose: () => void;
@@ -11,7 +12,8 @@ type Props = {
 //TODO: userId 로 계좌 조회 해서 리스트 표시
 export default function AccountPopup({ modalShow, modalClose, openAddAccountModal }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const [accountList, setAccountList] = useState<any[]>([]);
+  const { getAccountList } = useAccount();
   const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
@@ -19,8 +21,17 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
   };
 
   useEffect(() => {
+    async function init() {
+      const res = await getAccountList();
+      if (res) {
+        console.log("있다고 쳐요", res);
+        setAccountList(res);
+      }
+    }
+
     if (modalShow) {
       // 모달이 열리면 body의 overflow를 hidden으로 설정하여 배경 스크롤을 막음
+      init();
       document.body.style.overflow = "hidden";
     } else {
       // 모달이 닫히면 body의 overflow를 auto로 설정하여 배경 스크롤을 허용함
@@ -60,15 +71,14 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
               </svg>
             </div>
           </div>
-          <div className="py-4 space-y-4 overflow-scroll h-full pr-3 flex-1">
-            {accountList &&
-              accountList.length > 0 &&
-              accountList.map((value) => {
+          {accountList && accountList.length > 0 && (
+            <div className="py-4 space-y-4 overflow-scroll h-full pr-3 flex-1">
+              {accountList.map((value) => {
                 return (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between rounded-md border border-gray-200 p-4 dark:border-gray-700">
                       <div>
-                        <p className="font-medium">{value.address}</p>
+                        <p className="font-medium">{value.account_number}</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button variant="ghost" size="icon">
@@ -80,8 +90,13 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
                   </div>
                 );
               })}
-            {accountList.length === 0 && <p>{"계좌가 없습니다. 등록해주세요!"}</p>}
-          </div>
+            </div>
+          )}
+          {accountList?.length === 0 && (
+            <div>
+              <p className="text-center text-slate-600">{"계좌가 없습니다. 등록해주세요!"}</p>
+            </div>
+          )}
           <div className="flex justify-center pt-2">
             <Button
               onClick={() => openAddAccountModal()}
