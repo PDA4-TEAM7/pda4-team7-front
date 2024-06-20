@@ -1,12 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
-import Subscribe from "@/assets/subscribe.png";
+import Expired from "@/assets/icon-expired.png";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
+//TODO: 사용자가 구독하는 포트폴리오정보 + 구독 만료일 + 구독 가능여부에 대한 데이터 필요
+// 1. 가능 여부에 따라, 불가 시 구독 만료일과 함께 구독 만료라고 오버레이 처리 후 표시
+// 2. 특정 포트폴리오 클릭 시, 해당 포트폴리오에 대한 페이지로 가도록 처리
+// 3. 구독한 포트폴리오에 대한 최근 변화 살펴보기 버튼 클릭 시 페이지 이동
 interface IPortfolioData {
   id: number;
   title: string;
@@ -101,6 +106,9 @@ export default function SubscribePortfolio() {
     navigate(`/portfolio/stockList/${id}`);
   };
 
+  const handleRecentChangesClick = () => {
+    navigate("/portfolio/subscribe/recency");
+  };
   const data = {
     labels: ["에코프로", "에코프로비엠", "POSCO홀딩스", "코스모신소재", "LG화학", "삼성전자"],
     datasets: [
@@ -137,21 +145,31 @@ export default function SubscribePortfolio() {
       </header>
       <main className="p-4">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Stock Portfolio</h1>
-          <FormControl fullWidth style={{ maxWidth: 200 }}>
-            <InputLabel id="demo-simple-select-label">정렬 순</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={sort}
-              label="정렬 순"
-              onChange={(e) => handleChange(e)}
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold mr-3">구독한 포트폴리오</h1>
+            <Button
+              className="text-l focus:outline-none px-8 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 w-[150px]"
+              onClick={handleRecentChangesClick}
             >
-              <MenuItem value={10}>수익률 순</MenuItem>
-              <MenuItem value={20}>구독자 순</MenuItem>
-              <MenuItem value={30}>최신 순</MenuItem>
-            </Select>
-          </FormControl>
+              최근 변화 살펴보기
+            </Button>
+          </div>
+          <div className="flex items-center">
+            <FormControl fullWidth style={{ maxWidth: 200 }}>
+              <InputLabel id="demo-simple-select-label">정렬 순</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={sort}
+                label="정렬 순"
+                onChange={(e) => handleChange(e)}
+              >
+                <MenuItem value={10}>수익률 순</MenuItem>
+                <MenuItem value={20}>구독자 순</MenuItem>
+                <MenuItem value={30}>최신 순</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
           {portfolioData.map((item) => (
@@ -192,8 +210,8 @@ export default function SubscribePortfolio() {
                       임찬솔
                     </span>
                     <div className="flex items-center ml-auto">
-                      <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
-                      <span className="text-base text-gray-500">구독자 수</span>
+                      <img src={Expired} alt="구독 아이콘" className="w-6 h-6 mr-1" />
+                      <span className="text-base text-gray-500">구독 만료일: </span>
                     </div>
                   </div>
                 </div>

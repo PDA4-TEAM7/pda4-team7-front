@@ -10,6 +10,7 @@ import SignUp from "./signup/page";
 import CommPage from "./portfolio/comm_page";
 import SignIn from "./signin/page";
 import SubscribePortfolio from "./portfolio/subscribe/page";
+import SubscribePortfolioRecency from "./portfolio/subscribe/recency/page";
 
 const routers = [
   {
@@ -33,6 +34,11 @@ const routers = [
       {
         path: "subscribe",
         element: <SubscribePortfolio />,
+        index: true,
+      },
+      {
+        path: "subscribe/recency",
+        element: <SubscribePortfolioRecency />,
         index: true,
       },
       {
@@ -73,5 +79,4 @@ const routers = [
 ];
 
 const router = createBrowserRouter(routers);
-
 export default router;
