@@ -10,7 +10,7 @@ import { useState } from "react";
 
 export default function DatePicker() {
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
+    from: new Date(2004, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
   });
 
