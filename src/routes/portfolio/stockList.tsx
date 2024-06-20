@@ -9,6 +9,7 @@ import { Pie } from "react-chartjs-2";
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
   value: number;
+  originalValue: number; // 원래 값 추가
   x?: number;
   y?: number;
 }
@@ -56,7 +57,6 @@ const StockList: React.FC = () => {
         // 데이터 가공
         const updatedData = fetchedAccount
           .filter((account: any) => {
-            // console.log("Comparing", account.stock_id, "with", Number(id));
             return account.account_id === Number(id);
           })
           .map((account: any) => {
@@ -78,15 +78,33 @@ const StockList: React.FC = () => {
           });
 
         setAccountdata(updatedData);
-        console.log("Updated account data:", updatedData);
 
-        // 주식 보유 수가 아닌 비율로 구성
-        const stockrate = updatedData.reduce((sum: any, account: any) => sum + account.quantity, 0);
+        // 동일한 표준산업 분류 코드에 대해 주식 수량 합산
+        const industryMap = new Map<string, number>();
+        updatedData.forEach((account: any) => {
+          if (industryMap.has(account.std_idst_clsf_cd_name)) {
+            industryMap.set(
+              account.std_idst_clsf_cd_name,
+              industryMap.get(account.std_idst_clsf_cd_name)! + account.quantity
+            );
+          } else {
+            industryMap.set(account.std_idst_clsf_cd_name, account.quantity);
+          }
+        });
 
-        const updatedStocks = updatedData.map((account: any) => {
+        // 합산된 데이터로 stocks 배열 생성
+        const totalQuantity = Array.from(industryMap.values()).reduce((sum, quantity) => sum + quantity, 0);
+        const fixedValues = [50, 30, 25, 20, 15];
+
+        // 워드클라우드 주식수량이 가장 높은 값들 순으로 정렬 후 데이터 삽입
+        const sortedIndustries = Array.from(industryMap.entries()).sort((a, b) => b[1] - a[1]);
+
+        const updatedStocks = sortedIndustries.map(([key, value], index) => {
+          const fixedValue = fixedValues[index % fixedValues.length];
           return {
-            text: account.std_idst_clsf_cd_name,
-            value: (account.quantity / stockrate) * 100,
+            text: key,
+            value: fixedValue,
+            originalValue: (value / totalQuantity) * 100, // 원래 비율 값 저장
             x: 0,
             y: 0,
           };
@@ -123,7 +141,7 @@ const StockList: React.FC = () => {
 
     // 워드 클라우드 상위 5개의 데이터 선택
     const topData = stocks.sort((a, b) => b.value - a.value).slice(0, 5);
-    const totalValue = d3.sum(stocks.map((item) => item.value));
+    const totalValue = d3.sum(stocks.map((item) => item.originalValue)); // 원래 비율 값 사용
 
     const tooltipStyle = `
       .tooltip {
@@ -155,10 +173,10 @@ const StockList: React.FC = () => {
     // 원형 배치를 위한 시뮬레이션 설정
     d3.forceSimulation(topData)
       .force("charge", d3.forceManyBody().strength(10))
-      .force("center", d3.forceCenter(0, 0))
+      .force("center", d3.forceCenter(0, 0)) // 시뮬레이션의 중심을 0,0 좌표로 설정 후 모든 노드가 화면의 중앙으로 모이도록 함
       .force(
         "collision",
-        d3.forceCollide().radius((d: any) => d.value - 20) // 충돌 반경 조정
+        d3.forceCollide().radius((d: any) => d.value - 3) // 충돌 반경 조정
       )
       .on("tick", ticked);
 
@@ -169,13 +187,12 @@ const StockList: React.FC = () => {
         .enter()
         .append("circle")
         .attr("r", (d) => d.value / 1.25) // 원의 반지름 설정
-        .style("fill", (_, i) => d3.schemeCategory10[i % 10])
+        .style("fill", (_, i) => d3.schemeCategory10[(i % 10) + 0])
         .merge(circles)
         .attr("cx", (d) => d.x!)
         .attr("cy", (d) => d.y!)
         .on("mouseover", (_event, d) => {
-          const percentage = ((d.value / totalValue) * 100).toFixed(1);
-          // 소수점 한 자리까지 -> toFixed
+          const percentage = ((d.originalValue / totalValue) * 100).toFixed(1); // 원래 비율 값 사용
           tooltip.style("opacity", 1).html(`${d.text} : ${percentage}%`);
         })
         .on("mousemove", (event) => {
@@ -192,7 +209,7 @@ const StockList: React.FC = () => {
       texts
         .enter()
         .append("text")
-        .style("font-size", (d) => `${d.value / 4}px`) // 텍스트 크기 4정도가 적당한 듯
+        .style("font-size", (d) => `${d.value / 4}px`) // 텍스트 크기 /4 정도가 적당한 듯
         .attr("text-anchor", "middle")
         .attr("dy", ".35em")
         .style("fill", "#fff")
@@ -225,7 +242,6 @@ const StockList: React.FC = () => {
       </p>
       <div className="flex">
         {/* Left side content */}
-
         <div className="w-1/2 p-4">
           <div>
             <Pie
@@ -240,30 +256,24 @@ const StockList: React.FC = () => {
                 },
               }}
             />
-
-            <div className="w-1/2 p-4">
-              <h2 className="text-xl font-bold">Activity</h2>
-
-              {accountdata.map((stock, i) => (
-                <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
-                  <div className="text-left">
-                    <span className="block">{stock.stock_name}</span>
-                    <span className="block">{stock.quantity}주</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="block">{stock.evlu_amt}원</span>
-                    <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                      {/* 손익 금액과 손익 비율 */}
-                      {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
-                    </span>
-                  </div>
+            {accountdata.map((stock, i) => (
+              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
+                <div className="text-left">
+                  <span className="block">{stock.stock_name}</span>
+                  <span className="block">{stock.quantity}주</span>
                 </div>
-              ))}
-            </div>
+                <div className="text-right">
+                  <span className="block">{stock.evlu_amt}원</span>
+                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                    {/* 손익 금액과 손익 비율 */}
+                    {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
           <div className="mt-4">
             <svg ref={svgRef}></svg>
-
             {topData.map((d, i) => (
               <div key={i} className="mb-2 flex items-center">
                 <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
