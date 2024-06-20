@@ -6,9 +6,11 @@ import { useParams } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 
 // 단어 데이터의 인터페이스를 정의
-interface WordData {
+interface WordData extends d3.SimulationNodeDatum {
   text: string;
   value: number;
+  x?: number;
+  y?: number;
 }
 
 // 긴 텍스트를 줄여서 표시하는 함수
@@ -85,6 +87,8 @@ const StockList: React.FC = () => {
           return {
             text: account.std_idst_clsf_cd_name,
             value: (account.quantity / stockrate) * 100,
+            x: 0,
+            y: 0,
           };
         });
 
@@ -140,7 +144,7 @@ const StockList: React.FC = () => {
 
     const svg = d3
       .select(svgRef.current)
-      .attr("viewBox", "-350 -200 700 400")
+      .attr("viewBox", "-100 -200 200 400")
       .attr("preserveAspectRatio", "xMidYMid slice");
 
     // 그룹 요소 추가
@@ -149,33 +153,32 @@ const StockList: React.FC = () => {
     const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
     // 원형 배치를 위한 시뮬레이션 설정
-    const simulation = d3
-      .forceSimulation(topData)
+    d3.forceSimulation(topData)
       .force("charge", d3.forceManyBody().strength(10))
       .force("center", d3.forceCenter(0, 0))
       .force(
         "collision",
-        d3.forceCollide().radius((d) => d.value - 20) // 충돌 반경 조정
+        d3.forceCollide().radius((d: any) => d.value - 20) // 충돌 반경 조정
       )
       .on("tick", ticked);
 
     function ticked() {
-      const circles = g.selectAll("circle").data(topData);
+      const circles = g.selectAll<SVGCircleElement, WordData>("circle").data(topData);
 
       circles
         .enter()
         .append("circle")
         .attr("r", (d) => d.value / 1.25) // 원의 반지름 설정
-        .style("fill", (d, i) => d3.schemeCategory10[i % 10])
+        .style("fill", (_, i) => d3.schemeCategory10[i % 10])
         .merge(circles)
-        .attr("cx", (d) => d.x)
-        .attr("cy", (d) => d.y)
-        .on("mouseover", (event, d) => {
+        .attr("cx", (d) => d.x!)
+        .attr("cy", (d) => d.y!)
+        .on("mouseover", (_event, d) => {
           const percentage = ((d.value / totalValue) * 100).toFixed(1);
           // 소수점 한 자리까지 -> toFixed
           tooltip.style("opacity", 1).html(`${d.text} : ${percentage}%`);
         })
-        .on("mousemove", (event, d) => {
+        .on("mousemove", (event) => {
           tooltip.style("left", event.pageX + 10 + "px").style("top", event.pageY - 10 + "px");
         })
         .on("mouseout", () => {
@@ -184,7 +187,7 @@ const StockList: React.FC = () => {
 
       circles.exit().remove();
 
-      const texts = g.selectAll("text").data(topData);
+      const texts = g.selectAll<SVGTextElement, WordData>("text").data(topData);
 
       texts
         .enter()
@@ -194,8 +197,8 @@ const StockList: React.FC = () => {
         .attr("dy", ".35em")
         .style("fill", "#fff")
         .merge(texts)
-        .attr("x", (d) => d.x)
-        .attr("y", (d) => d.y)
+        .attr("x", (d) => d.x!)
+        .attr("y", (d) => d.y!)
         .text((d) => truncateText(d.text, 5)); // 5글자가 넘으면 그 나머지 글자를 버리고 ...을 붙여줌
 
       texts.exit().remove();
@@ -215,50 +218,86 @@ const StockList: React.FC = () => {
 
   return (
     <div>
-      <div>
-        <Pie
-          data={stockdata}
-          options={{
-            maintainAspectRatio: true,
-            responsive: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-          }}
-        />
-      </div>
-      <div className="space-y-4">
-        <div>
+      <h1 className="text-2xl font-bold">TITLE</h1>
+      <p>
+        헬스케어 산업의 특징은 성장을 지속하는 것에 있습니다. 성장 모멘텀 스코어를 활용하여 수익률과 리스크를 동시에
+        개선한 전략입니다.
+      </p>
+      <div className="flex">
+        {/* Left side content */}
+
+        <div className="w-1/2 p-4">
+          <div>
+            <Pie
+              data={stockdata}
+              options={{
+                maintainAspectRatio: true,
+                responsive: false,
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+              }}
+            />
+
+            <div className="w-1/2 p-4">
+              <h2 className="text-xl font-bold">Activity</h2>
+
+              {accountdata.map((stock, i) => (
+                <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
+                  <div className="text-left">
+                    <span className="block">{stock.stock_name}</span>
+                    <span className="block">{stock.quantity}주</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="block">{stock.evlu_amt}원</span>
+                    <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                      {/* 손익 금액과 손익 비율 */}
+                      {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4">
+            <svg ref={svgRef}></svg>
+
+            {topData.map((d, i) => (
+              <div key={i} className="mb-2 flex items-center">
+                <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
+                {d.text} ({((d.value / totalValue) * 100).toFixed(1)}%)
+              </div>
+            ))}
+            <div className="mb-2 flex items-center">
+              <span style={{ color: "gray", marginRight: "5px" }}>●</span>그 외 ({otherDataPercentage}%)
+            </div>
+          </div>
+        </div>
+        <div className="w-1/2 p-4">
+          <h2 className="text-xl font-bold">Activity</h2>
+          <hr className="my-2 border-gray-300" />
           {accountdata.map((stock, i) => (
-            <div key={i} className="flex justify-between items-center">
-              <span>{stock.stock_name}</span>
-              <span>{stock.quantity}주</span>
+            <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
+              <div className="text-left">
+                <span className="block">{stock.quantity}주</span>
+                <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                  {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
+                  {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
+                </span>
+              </div>
               <div className="text-right">
                 <span className="block">{stock.evlu_amt}원</span>
                 <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                  {stock.evlu_pfls_amt}원 ({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
+                  {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
+                  {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
                 </span>
               </div>
             </div>
           ))}
         </div>
-      </div>
-
-      <div>
-        <svg ref={svgRef}></svg>{" "}
-        <div>
-          {topData.map((d, i) => (
-            <div key={i} style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
-              <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
-              {d.text} ({((d.value / totalValue) * 100).toFixed(1)}%)
-            </div>
-          ))}
-          <div style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
-            <span style={{ color: "gray", marginRight: "5px" }}>●</span>그 외 ({otherDataPercentage}%)
-          </div>
-        </div>
+        {/* Right side content */}
       </div>
     </div>
   );
