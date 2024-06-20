@@ -12,14 +12,17 @@ interface WordData {
 }
 
 // 긴 텍스트를 줄여서 표시하는 함수
+const truncateText = (text: string, length: number) => {
+  return text.length > length ? text.slice(0, length) + "..." : text;
+};
 
 // StockList 컴포넌트 정의
 const StockList: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null); // SVG 요소에 대한 참조를 생성
-  const [stocks, setStocks] = useState<WordData[]>([]);
-  const [accountdata, setAccountdata] = useState([]);
-  const [stockList, setStockList] = useState([]);
+  const [stocks, setStocks] = useState<WordData[]>([]); // 워드 클라우드 변수
+  const [accountdata, setAccountdata] = useState<any[]>([]); // stock_in_account 컬럼 값 저장
   const [stockdata, setStockdata] = useState<any>({
+    // 파이차트에 대한 변수
     labels: [],
     datasets: [
       {
@@ -38,99 +41,86 @@ const StockList: React.FC = () => {
     ],
   });
 
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>(); // 포트폴리오 ID값 가져오기
 
   useEffect(() => {
-    console.log(`params id: ${id}`);
-  }, [id]);
-
-  // DB stock_in_account에서 보유종목, 가격, 평가손익, 수익률(%) 값 가져오기
-  useEffect(() => {
-    const fetchAccount = async () => {
+    const fetchAccountData = async () => {
       try {
-        const response = await axios.post("http://localhost:3000/api/stockaccount");
-        const fetchedAccount = response.data;
+        console.log("Fetching account data...");
+        const account_res = await axios.post("http://localhost:3000/api/stockjoin");
+        const fetchedAccount = account_res.data;
+        console.log("Fetched account data:", fetchedAccount);
 
         // 데이터 가공
-        const updatedData = fetchedAccount.map((account: any) => ({
-          holdings_id: account.holdings_id,
-          account_id: account.account_id,
-          stock_id: account.stock_id,
-          market_id: account.market_id,
-          quantity: account.quantity,
-          pchs_amt: account.pchs_amt,
-          evlu_amt: account.evlu_amt,
-          evlu_pfls_amt: account.evlu_pfls_amt,
-          evlu_pfls_rt: account.evlu_pfls_rt,
-        }));
+        const updatedData = fetchedAccount
+          .filter((account: any) => {
+            // console.log("Comparing", account.stock_id, "with", Number(id));
+            return account.account_id === Number(id);
+          })
+          .map((account: any) => {
+            const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
+
+            return {
+              holdings_id: account.holdings_id,
+              account_id: account.account_id,
+              stock_id: account.stock_id,
+              market_id: account.market_id,
+              quantity: account.quantity,
+              pchs_amt: account.pchs_amt,
+              evlu_amt: account.evlu_amt,
+              evlu_pfls_amt: account.evlu_pfls_amt,
+              evlu_pfls_rt: evlu_pfls_rt,
+              stock_name: account.stock.name,
+              std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
+            };
+          });
 
         setAccountdata(updatedData);
+        console.log("Updated account data:", updatedData);
+
+        // 주식 보유 수가 아닌 비율로 구성
+        const stockrate = updatedData.reduce((sum: any, account: any) => sum + account.quantity, 0);
+
+        const updatedStocks = updatedData.map((account: any) => {
+          return {
+            text: account.std_idst_clsf_cd_name,
+            value: (account.quantity / stockrate) * 100,
+          };
+        });
+
+        setStocks(updatedStocks);
+        console.log("Updated stocks data:", updatedStocks);
+
+        // 파이차트
+        // 각 주식의 수량을 가져오는 코드
+        const quantities = updatedData.map((account: any) => account.quantity);
+
+        // 주식 이름을 찾는 코드
+        const stockNames = updatedData.map((account: any) => account.stock_name);
+        setStockdata({
+          labels: stockNames,
+          datasets: [
+            {
+              ...stockdata.datasets[0],
+              data: quantities,
+            },
+          ],
+        });
       } catch (error) {
-        console.error("Error fetching stocks:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchAccount();
-
-    console.log(accountdata);
-  }, []);
-
-  // DB stock에서 주식 섹터 값 가져오기
-  useEffect(() => {
-    const fetchStocks = async () => {
-      try {
-        const response = await axios.post("http://localhost:3000/api/stock");
-        const fetchedStocks = response.data;
-
-        console.log(fetchedStocks);
-        // stocks의 값들을 WordData 배열의 text에 넣고 value는 임의의 값으로 설정
-        const updatedData = fetchedStocks.map((stock: any) => ({
-          text: stock.std_idst_clsf_cd_name,
-          value: Math.floor(Math.random() * 60) + 40, // 1에서 100 사이의 임의의 값
-        }));
-
-        setStocks(updatedData);
-        setStockList(fetchedStocks); // 추가: 전체 주식 데이터를 저장
-      } catch (error) {
-        console.error("Error fetching stocks:", error);
-      }
-    };
-
-    fetchStocks();
-  }, []);
-
-  // console.log(`stocklist는 ${stockList}`);
-
-  // 주식 수량과 이름 넣어주기
-  useEffect(() => {
-    if (accountdata.length > 0 && stockList.length > 0) {
-      // accountdata에서 quantity 값 추출
-      const quantities = accountdata.map((item: any) => item.quantity);
-
-      // stock_id에 해당하는 name 값을 찾기
-      const stockNames = accountdata.map((item: any) => {
-        const stock: any = stockList.find((stockItem: any) => stockItem.stock_id === item.stock_id);
-        return stock ? stock.name : "Unknown";
-      });
-      // stockdata 상태 업데이트
-      setStockdata((prevState: any) => ({
-        labels: stockNames,
-        datasets: [
-          {
-            ...prevState.datasets[0],
-            data: quantities,
-          },
-        ],
-      }));
-    }
-  }, [accountdata, stockList]);
+    fetchAccountData();
+  }, [id]);
 
   useEffect(() => {
     if (stocks.length === 0) return;
 
     // 워드 클라우드 상위 5개의 데이터 선택
+    const topData = stocks.sort((a, b) => b.value - a.value).slice(0, 5);
+    const totalValue = d3.sum(stocks.map((item) => item.value));
 
-    // 커스텀 툴팁 스타일 추가
     const tooltipStyle = `
       .tooltip {
         position: absolute;
@@ -148,37 +138,81 @@ const StockList: React.FC = () => {
     styleSheet.innerText = tooltipStyle;
     document.head.appendChild(styleSheet);
 
-    // SVG 요소 선택 및 초기화
     const svg = d3
       .select(svgRef.current)
-      .attr("viewBox", "-350 -200 700 400") // ViewBox를 설정하여 중앙에 배치
-      .attr("preserveAspectRatio", "xMidYMid slice"); // 비율을 유지하며 중앙에 맞춤
+      .attr("viewBox", "-350 -200 700 400")
+      .attr("preserveAspectRatio", "xMidYMid slice");
 
     // 그룹 요소 추가
+    const g = svg.append("g"); // 그룹 요소 추가
 
-    // 커스텀 툴팁 요소 추가
-    const tooltip = d3.select("body").append("div").attr("class", "tooltip"); // 툴팁에 클래스 적용
+    const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
     // 원형 배치를 위한 시뮬레이션 설정
+    const simulation = d3
+      .forceSimulation(topData)
+      .force("charge", d3.forceManyBody().strength(10))
+      .force("center", d3.forceCenter(0, 0))
+      .force(
+        "collision",
+        d3.forceCollide().radius((d) => d.value - 20) // 충돌 반경 조정
+      )
+      .on("tick", ticked);
+
+    function ticked() {
+      const circles = g.selectAll("circle").data(topData);
+
+      circles
+        .enter()
+        .append("circle")
+        .attr("r", (d) => d.value / 1.25) // 원의 반지름 설정
+        .style("fill", (d, i) => d3.schemeCategory10[i % 10])
+        .merge(circles)
+        .attr("cx", (d) => d.x)
+        .attr("cy", (d) => d.y)
+        .on("mouseover", (event, d) => {
+          const percentage = ((d.value / totalValue) * 100).toFixed(1);
+          // 소수점 한 자리까지 -> toFixed
+          tooltip.style("opacity", 1).html(`${d.text} : ${percentage}%`);
+        })
+        .on("mousemove", (event, d) => {
+          tooltip.style("left", event.pageX + 10 + "px").style("top", event.pageY - 10 + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.style("opacity", 0);
+        });
+
+      circles.exit().remove();
+
+      const texts = g.selectAll("text").data(topData);
+
+      texts
+        .enter()
+        .append("text")
+        .style("font-size", (d) => `${d.value / 4}px`) // 텍스트 크기 4정도가 적당한 듯
+        .attr("text-anchor", "middle")
+        .attr("dy", ".35em")
+        .style("fill", "#fff")
+        .merge(texts)
+        .attr("x", (d) => d.x)
+        .attr("y", (d) => d.y)
+        .text((d) => truncateText(d.text, 5)); // 5글자가 넘으면 그 나머지 글자를 버리고 ...을 붙여줌
+
+      texts.exit().remove();
+    }
 
     return () => {
-      // 클린업: 기존 SVG 요소 제거
       svg.selectAll("*").remove();
-      tooltip.remove(); // 툴팁 요소 제거
-      document.head.removeChild(styleSheet); // 스타일 요소 제거
+      tooltip.remove();
+      document.head.removeChild(styleSheet);
     };
   }, [stocks]);
 
-  // 상위 7개 데이터를 컴포넌트 내에서도 참조
   const topData = stocks.sort((a, b) => b.value - a.value).slice(0, 7);
-  // 오른쪽 텍스트 7개까지 출력 나머지는 그 외로 표시
   const totalValue = d3.sum(stocks.map((item) => item.value));
-
-  // 나머지 데이터의 합계 계산
   const otherDataValue = totalValue - d3.sum(topData.map((item) => item.value));
   const otherDataPercentage = ((otherDataValue / totalValue) * 100).toFixed(1);
 
-  console.log(accountdata);
   return (
     <div>
       <div>
@@ -197,20 +231,13 @@ const StockList: React.FC = () => {
       </div>
       <div className="space-y-4">
         <div>
-          {stockList.map((stock: any, i) => (
-            <div key={i} className="flex items-center space-x-2">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stock.color }}></div>
-              <span>{stock.name}</span>
-            </div>
-          ))}
-        </div>
-        <div>
-          {accountdata.map((stock: any, i) => (
+          {accountdata.map((stock, i) => (
             <div key={i} className="flex justify-between items-center">
+              <span>{stock.stock_name}</span>
               <span>{stock.quantity}주</span>
               <div className="text-right">
                 <span className="block">{stock.evlu_amt}원</span>
-                <span className={`block ${stock.evlu_pfls_amt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
                   {stock.evlu_pfls_amt}원 ({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
                 </span>
               </div>
@@ -237,4 +264,4 @@ const StockList: React.FC = () => {
   );
 };
 
-export default StockList; // StockList 컴포넌트를 기본 내보내기
+export default StockList;
