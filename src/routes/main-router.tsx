@@ -10,6 +10,8 @@ import SignUp from "./signup/page";
 import CommPage from "./portfolio/comm_page";
 import SignIn from "./signin/page";
 import SubscribePortfolio from "./portfolio/subscribe/page";
+import { elements } from "chart.js";
+import Myportfolio from "./portfolio/myportfolio";
 
 const routers = [
   {
@@ -43,6 +45,11 @@ const routers = [
       {
         path: "comm",
         element: <CommPage />,
+        index: true,
+      },
+      {
+        path: "myportfolio",
+        element: <Myportfolio />,
         index: true,
       },
     ],
