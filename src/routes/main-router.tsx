@@ -10,6 +10,7 @@ import SignUp from "./signup/page";
 import CommPage from "./portfolio/comm_page";
 import SignIn from "./signin/page";
 import SubscribePortfolio from "./portfolio/subscribe/page";
+import DetailPage from "./portfolio/detail/page";
 
 const routers = [
   {
@@ -28,6 +29,11 @@ const routers = [
       {
         path: "mainPortfolio",
         element: <MainPortfolio />,
+        index: true,
+      },
+      {
+        path: "detail/:accountId",
+        element: <DetailPage />,
         index: true,
       },
       {
