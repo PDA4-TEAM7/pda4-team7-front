@@ -15,10 +15,9 @@ import IconPortfolio from "@/assets/icon-portfolio.svg?react";
 import IconMy from "@/assets/icon-my.svg?react";
 import IconSub from "@/assets/icon-sub.svg?react";
 import IconCalender from "@/assets/icon-calender.svg?react";
+import { useAuth } from "@/hooks/useAuth";
 
 const drawerWidth = 240;
-const name = "soya";
-const userId = "soyalattee";
 const navMenu = [
   {
     text: "포트폴리오",
@@ -87,6 +86,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 
 export default function Layout() {
   const [open, setOpen] = useState(true);
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const handleDrawerOpen = () => {
@@ -134,8 +134,8 @@ export default function Layout() {
           <div className="profile-photo w-16 h-16 mb-4">
             <img src={"/icon-profile.png"} alt="" className="w-full h-full" />
           </div>
-          <p className="text-white font-bold text-lg">{name}</p>
-          <p>{userId}</p>
+          <p className="text-white font-bold text-lg">{user.userName}</p>
+          <p>{user.userId}</p>
         </div>
         <List>
           {navMenu.map(({ text, page, icon }, index) => (
