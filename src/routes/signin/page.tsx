@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import useModal from "@/hooks/useModal";
 import React, { useState, FormEvent } from "react";
-import authAPI from "@/apis/authAPI";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface SignInFormState {
   user_id: string;
@@ -16,10 +17,11 @@ const SignInInitValue = {
 export default function SignIn() {
   const [formData, setFormData] = useState<SignInFormState>(SignInInitValue);
   const { open, close } = useModal();
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
   const handleModal = ({ title, message }: { title: string; message: string }) => {
     open(title, message, close);
   };
-  const authService = new authAPI();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,15 +44,14 @@ export default function SignIn() {
     }
 
     // TODO: 로그인 요청
-    const { message, status } = await authService.signIn(formData);
-    handleModal({ title: "알림", message: message });
+    const res = await signIn(formData);
 
-    if (status === 200) {
-      // 로그인 성공, 서버가 쿠키를 설정했으므로 추가적인 처리가 필요 없음
-      // 사용자를 홈으로 리다이렉트
-      window.location.href = "/";
+    if (res) {
+      open("알림", `${res.username}님 환영합니다!`, () => {
+        navigate("/portfolio/mainPortfolio");
+      });
     } else {
-      handleModal({ title: "알림", message: message });
+      handleModal({ title: "알림", message: "로그인에 실패했습니다." });
     }
   };
 

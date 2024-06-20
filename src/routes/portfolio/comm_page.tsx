@@ -40,7 +40,6 @@ const CommPage = () => {
     updateDate: "",
     uid: 0,
     profileImage: "",
-
   });
 
   useEffect(() => {

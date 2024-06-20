@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import useModal from "@/hooks/useModal";
-import React, { useState, FormEvent } from "react";
-import authAPI from "@/apis/authAPI";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpFormState {
   user_id: string;
@@ -19,14 +20,25 @@ const SignUpInitValue = {
 
 export default function SignUp() {
   const [formData, setFormData] = useState<SignUpFormState>(SignUpInitValue);
+  const [checkId, setCheckId] = useState<boolean>(false);
+  const [checkName, setCheckName] = useState<boolean>(false);
+  const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
+  const { signUp, validateUserId, validateUsername } = useAuth();
+  const navigate = useNavigate();
   const { open, close } = useModal();
   const handleModal = ({ title, message }: { title: string; message: string }) => {
     open(title, message, close);
   };
-  const authService = new authAPI();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    if (name === "user_id") {
+      setCheckId(false);
+    }
+    if (name === "username") {
+      setCheckName(false);
+    }
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -47,10 +59,12 @@ export default function SignUp() {
     try {
       const valiable = checkPassword(formData.password, formData.confirm_password);
       if (!valiable) return;
-      const { message, status } = await authService.signUp({ ...formData });
-      handleModal({ title: "알림", message: message });
+      const { status } = await signUp({ ...formData });
       if (status === 200) {
         setFormData(SignUpInitValue);
+        open("알림", `환영합니다!`, () => {
+          navigate("/portfolio/mainPortfolio");
+        });
       } else {
         setFormData({ ...SignUpInitValue, password: "", confirm_password: "" });
       }
@@ -65,11 +79,13 @@ export default function SignUp() {
     const id_or_username = formData[field];
     if (!isBlankValue(id_or_username)) {
       if (field === "user_id") {
-        const available = await authService.validateUserId(formData["user_id"]);
+        const available = await validateUserId(formData["user_id"]);
+        setCheckId(available);
         const message = available ? "사용 가능한 아이디" : "이미 사용중인 아이디";
         handleModal({ title: "알림", message: message });
       } else if (field === "username") {
-        const available = await authService.validateUsername(formData["username"]);
+        const available = await validateUsername(formData["username"]);
+        setCheckName(available);
         const message = available ? "사용 가능한 닉네임" : "이미 사용중인 닉네임";
         handleModal({ title: "알림", message: message });
       }
@@ -89,6 +105,14 @@ export default function SignUp() {
     }
     return true;
   };
+
+  useEffect(() => {
+    if (checkId && checkName) {
+      setDisableSubmit(false);
+    } else {
+      setDisableSubmit(true);
+    }
+  }, [checkId, checkName]);
   return (
     <>
       <div className="relative min-h-screen w-full bg-blue-100 overflow-hidden">
@@ -180,7 +204,11 @@ export default function SignUp() {
 
             {/* 가입하기 버튼 */}
             <div className="mt-1"></div>
-            <Button type="submit" className="w-full px-4 py-2  bg-blue-500 text-white rounded-md">
+            <Button
+              type="submit"
+              disabled={disableSubmit}
+              className="w-full px-4 py-2  bg-blue-500 text-white rounded-md disabled:opacity-75"
+            >
               가입하기
             </Button>
           </form>
