@@ -3,7 +3,6 @@ import { BaseApi } from "./baseAPI";
 interface Reply {
   description: string;
   comment_id: number;
-  userId: number;
 }
 
 interface UpdateReply {

@@ -1,24 +1,23 @@
-import * as React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import Subscribe from "../../assets/subscribe.png";
-import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
-export default function mainPortfolio() {
-  const [sort, setSort] = React.useState("");
+export default function MainPortfolio() {
+  const [sort, setSort] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value as string);
   };
 
-  const handlePortfolioClick = (id) => {
+  const handlePortfolioClick = (id: string) => {
     navigate(`/portfolio/stockList/${id}`);
   };
 
@@ -36,9 +35,8 @@ export default function mainPortfolio() {
     },
     {
       id: 2,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
+      title: "2번",
+      description: "2번",
       username: "얼굴을",
       time: "20 min",
       totalAsset: "$111,483.87",
@@ -145,7 +143,7 @@ export default function mainPortfolio() {
           </FormControl>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {portfolioData.map((item) => (
+          {portfolioData.map((item: any) => (
             <div key={item.id} className="border p-4 rounded-md" onClick={() => handlePortfolioClick(item.id)}>
               <div className="flex">
                 <div className="w-1/2">
