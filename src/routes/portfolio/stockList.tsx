@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import * as d3 from "d3";
 import { useParams } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
+import StockApi from "@/apis/stockAPI";
 
 // 단어 데이터의 인터페이스를 정의
 interface WordData extends d3.SimulationNodeDatum {
@@ -47,10 +47,15 @@ const StockList: React.FC = () => {
 
   useEffect(() => {
     const fetchAccountData = async () => {
+      if (!id) {
+        console.log("아이디없음", id);
+        return;
+      }
       try {
+        const service = new StockApi();
         console.log("Fetching account data...");
-        const account_res = await axios.post("http://localhost:3000/api/stockjoin");
-        const fetchedAccount = account_res.data;
+        const account_res = await service.stockJoin(id);
+        const fetchedAccount = account_res;
         console.log("Fetched account data:", fetchedAccount);
 
         // 데이터 가공
