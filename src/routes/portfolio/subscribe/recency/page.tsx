@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
-import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Prev from "@/assets/icon-back-white.png";
 import TransactionCard from "./components/transactionCard";
+import { ChartComponent } from "./components/ChartComponent";
+import { DetailPanel } from "./components/detailPanel";
 // Chart.js 라이브러리에 필요한 구성 요소 등록
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -217,31 +218,14 @@ export default function SubscribePortfolioRecency() {
         </div>
         <div className="grid grid-cols-2 gap-4 ">
           <div className="col-span-1 border rounded-lg border-gray-300">
-            <Bar
-              ref={chartRef}
+            <ChartComponent
               data={createChartData(chartData, selectedChart === "data1")}
               options={options}
-              onClick={handleElementClick}
+              onElementClick={handleElementClick}
+              chartRef={chartRef}
             />
           </div>
-          <div className="col-span-1 bg-white p-4 rounded-lg border border-gray-300 overflow-auto">
-            {selectedItem ? (
-              <div>
-                <h2 className="text-xl font-bold mb-2">{selectedItem.group}</h2>
-                <ul>
-                  {selectedItem.details.map((detail, index) => (
-                    <li key={index} className="mb-1">
-                      {selectedChart === "data1"
-                        ? `${detail.stock}: ${detail.value}`
-                        : `${detail.investor}: ${detail.shares}주, 손익금액: ${detail.profit}, 손익률: ${detail.rate}%`}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <p>막대를 클릭하여 상세 정보를 확인하세요</p>
-            )}
-          </div>
+          <DetailPanel selectedItem={selectedItem} selectedChart={selectedChart} />
         </div>
         <div className="mt-10 mb-3">
           <TransactionCard />
