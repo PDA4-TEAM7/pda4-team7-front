@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import * as d3 from "d3";
 import { useParams } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
+import StockApi from "@/apis/stockAPI";
 
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
@@ -43,9 +43,16 @@ const StockList: React.FC = () => {
 
   useEffect(() => {
     const fetchAccountData = async () => {
+      if (!id) {
+        console.log("아이디없음", id);
+        return;
+      }
       try {
-        const account_res = await axios.post("http://localhost:3000/api/stockjoin", { account_id: id });
-        const fetchedAccount = account_res.data;
+        const service = new StockApi();
+        console.log("Fetching account data...");
+        const account_res = await service.stockJoin(id);
+        const fetchedAccount = account_res;
+        console.log("Fetched account data:", fetchedAccount);
 
         const updatedData = fetchedAccount
           .filter((account: any) => {
