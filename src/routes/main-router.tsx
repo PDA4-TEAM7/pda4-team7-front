@@ -10,6 +10,8 @@ import SignUp from "./signup/page";
 import CommPage from "./portfolio/comm_page";
 import SignIn from "./signin/page";
 import SubscribePortfolio from "./portfolio/subscribe/page";
+import Myportfolio from "./portfolio/myportfolio";
+import SubscribePortfolioRecency from "./portfolio/subscribe/recency/page";
 
 const routers = [
   {
@@ -36,6 +38,11 @@ const routers = [
         index: true,
       },
       {
+        path: "subscribe/recency",
+        element: <SubscribePortfolioRecency />,
+        index: true,
+      },
+      {
         path: "stockList/:id",
         element: <StockList />,
         index: true,
@@ -43,6 +50,11 @@ const routers = [
       {
         path: "comm",
         element: <CommPage />,
+        index: true,
+      },
+      {
+        path: "myportfolio",
+        element: <Myportfolio />,
         index: true,
       },
     ],
@@ -73,5 +85,4 @@ const routers = [
 ];
 
 const router = createBrowserRouter(routers);
-
 export default router;
