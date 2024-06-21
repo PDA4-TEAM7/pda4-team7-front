@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3";
-import { useParams } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import StockApi from "@/apis/stockAPI";
 
@@ -15,8 +15,11 @@ interface WordData extends d3.SimulationNodeDatum {
 const truncateText = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
 };
+type Props = {
+  id: string;
+};
 
-const StockList: React.FC = () => {
+export default function StockList({ id }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [stocks, setStocks] = useState<WordData[]>([]);
   const [accountdata, setAccountdata] = useState<any[]>([]);
@@ -38,8 +41,6 @@ const StockList: React.FC = () => {
       },
     ],
   });
-
-  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchAccountData = async () => {
@@ -302,6 +303,4 @@ const StockList: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default StockList;
+}

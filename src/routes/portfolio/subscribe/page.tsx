@@ -103,7 +103,7 @@ export default function SubscribePortfolio() {
   };
 
   const handlePortfolioClick = (id: number) => {
-    navigate(`/portfolio/stockList/${id}`);
+    navigate(`/portfolio/detail/${id}`);
   };
 
   const handleRecentChangesClick = () => {
