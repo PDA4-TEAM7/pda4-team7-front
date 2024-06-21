@@ -10,6 +10,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Button from "@mui/material/Button";
 
 import IconPortfolio from "@/assets/icon-portfolio.svg?react";
 import IconMy from "@/assets/icon-my.svg?react";
@@ -86,9 +87,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 
 export default function Layout() {
   const [open, setOpen] = useState(true);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -99,8 +101,22 @@ export default function Layout() {
 
   const handleNavigate = (page: string) => {
     navigate(page);
-    console.log("lcoa:", location.pathname);
+    console.log("loca:", location.pathname);
   };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/signin");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+    }
+  };
+
+  const handleLogin = () => {
+    navigate("/signin");
+  };
+
   return (
     <div className="flex">
       <Drawer variant="permanent" open={open} className="[&_div]:bg-[#23272c]">
@@ -126,17 +142,19 @@ export default function Layout() {
             <ChevronLeftIcon />
           </IconButton>
         </DrawerHeader>
-        <div
-          className={`${
-            !open && "hidden"
-          } profile flex flex-col text-[#E0E4EA] items-center justify-center w-full gap-1 pb-10`}
-        >
-          <div className="profile-photo w-16 h-16 mb-4">
-            <img src={"/icon-profile.png"} alt="" className="w-full h-full" />
+        {user && (
+          <div
+            className={`${
+              !open && "hidden"
+            } profile flex flex-col text-[#E0E4EA] items-center justify-center w-full gap-1 pb-10`}
+          >
+            <div className="profile-photo w-16 h-16 mb-4">
+              <img src={"/icon-profile.png"} alt="" className="w-full h-full" />
+            </div>
+            <p className="text-white font-bold text-lg">{user.userName}</p>
+            <p>{user.userId}</p>
           </div>
-          <p className="text-white font-bold text-lg">{user.userName}</p>
-          <p>{user.userId}</p>
-        </div>
+        )}
         <List>
           {navMenu.map(({ text, page, icon }, index) => (
             <ListItem onClick={() => handleNavigate(page)} key={text + index} disablePadding sx={{ display: "block" }}>
@@ -167,6 +185,37 @@ export default function Layout() {
             </ListItem>
           ))}
         </List>
+        <div className="mt-auto mb-4 px-2">
+          {user.userId ? (
+            <Button
+              variant="text"
+              onClick={handleLogout}
+              fullWidth
+              sx={{
+                color: "#E0E4EA",
+                "&:hover": {
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              로그아웃
+            </Button>
+          ) : (
+            <Button
+              variant="text"
+              onClick={handleLogin}
+              fullWidth
+              sx={{
+                color: "#E0E4EA",
+                "&:hover": {
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              로그인
+            </Button>
+          )}
+        </div>
       </Drawer>
       <div className="grow-[1]">
         <Outlet />

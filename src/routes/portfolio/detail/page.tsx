@@ -76,9 +76,7 @@ export default function DetailPage() {
               std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
             };
           });
-
         setAccountdata(updatedData);
-        console.log("Updated account data:", updatedData);
         // 파이차트
         // 각 주식의 수량을 가져오는 코드
         const quantities = updatedData.map((account: any) => account.quantity);
