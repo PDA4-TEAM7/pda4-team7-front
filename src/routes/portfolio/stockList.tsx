@@ -3,6 +3,8 @@ import axios from "axios";
 import * as d3 from "d3";
 import { useParams } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
+import sellButton from "../../../public/img/sell_button.png";
+import buyButton from "../../../public/img/buy_button.png";
 
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
@@ -17,10 +19,12 @@ const truncateText = (text: string, length: number) => {
 };
 
 const StockList: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [stocks, setStocks] = useState<WordData[]>([]);
-  const [accountdata, setAccountdata] = useState<any[]>([]);
+  const svgRef = useRef<SVGSVGElement | null>(null); // 워드 클라우드 출력 이미지
+  const [stocks, setStocks] = useState<WordData[]>([]); // 워드클라우드 데이터 값 저장
+  const [accountdata, setAccountdata] = useState<any[]>([]); // 내 계좌에 주식 데이터 값 저장
+  const [tradinghistory, setTradinghistory] = useState([]);
   const [stockdata, setStockdata] = useState<any>({
+    // PIE 차트에 데이터 값 저장
     labels: [],
     datasets: [
       {
@@ -119,6 +123,50 @@ const StockList: React.FC = () => {
     };
 
     fetchAccountData();
+  }, [id]);
+
+  // tradingHistory 가져오기
+  useEffect(() => {
+    const fetchTradingData = async () => {
+      try {
+        const trading_res = await axios.post("http://localhost:3000/api/tradinghistory", { account_id: id });
+        const fetchedTrading = trading_res.data;
+
+        const updatedData = fetchedTrading
+          .filter((trading: any) => {
+            return trading.account_id === Number(id);
+          })
+          .map((trading: any) => {
+            const evlu_pfls_amt = trading.tot_ccld_amt - trading.stockaccount.pchs_amt;
+            // 손익
+
+            console.log(evlu_pfls_amt);
+
+            const evlu_pfls_rt = (evlu_pfls_amt / trading.stockaccount.tot_ccld_amt) * 100;
+            // 손익률
+
+            return {
+              pchs_amt: trading.pchs_amt,
+              evlu_pfls_amt: evlu_pfls_amt, // 총체결금액 - 매입금액
+
+              trading_id: trading.trading_id,
+              account_id: trading.account_id,
+              stock_id: trading.stock_id,
+              sll_buy_dvsn_cd: trading.sll_buy_dvsn_cd,
+              trade_dt: trading.trade_dt,
+              tot_ccld_qty: trading.tot_ccld_qty,
+              tot_ccld_amt: trading.tot_ccld_amt,
+              evlu_pfls_rt: evlu_pfls_rt, // 손익율 계산
+            };
+          });
+
+        setTradinghistory(updatedData);
+      } catch {
+        console.log("Trading History가 제대로 불러와지지 않았습니다.");
+      }
+    };
+
+    fetchTradingData();
   }, [id]);
 
   useEffect(() => {
@@ -271,26 +319,40 @@ const StockList: React.FC = () => {
           </div>
         </div>
         <div className="w-1/2 p-4">
-          <h2 className="text-xl font-bold">Activity</h2>
+          <h2 className="text-xl font-bold">거래내역</h2>
           <hr className="my-2 border-gray-300" />
-          {accountdata.map((stock, i) => (
-            <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
-              <div className="text-left">
-                <span className="block">{stock.quantity}주</span>
-                <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                  {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
-                  {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
-                </span>
+          {tradinghistory.map((stock, i) => {
+            const matchedStock = accountdata.find((item) => item.stock_id === stock.stock_id);
+
+            console.log(matchedStock);
+            return (
+              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
+                <div>
+                  {Number(stock.sll_buy_dvsn_cd) === 1 ? (
+                    <img src={sellButton} alt="Sell" className="w-8 h-8 ml-4" />
+                  ) : (
+                    <img src={buyButton} alt="Buy" className="w-8 h-8 ml-4" />
+                  )}
+                </div>
+                <div className="text-left">
+                  <span className="block">{matchedStock ? matchedStock.stock_name : "Unknown"}</span>
+                  <span className="block">
+                    {stock.tot_ccld_qty}주 {Number(stock.sll_buy_dvsn_cd) === 1 ? <span>판매</span> : <span>구매</span>}
+                  </span>
+                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                    {stock.tot_ccld_amt}원
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="block">{stock.evlu_amt}원</span>
+                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                    {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
+                    {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
+                  </span>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="block">{stock.evlu_amt}원</span>
-                <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                  {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
-                  {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
