@@ -10,7 +10,7 @@ import StockApi from "@/apis/stockAPI";
 export default function DetailPage() {
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
-  const { id } = useParams();
+  const { accountId } = useParams();
   const [accountdata, setAccountdata] = useState<any[]>([]); // stock_in_account 컬럼 값 저장
   const [stockdata, setStockdata] = useState<any>({
     // 파이차트에 대한 변수
@@ -42,22 +42,22 @@ export default function DetailPage() {
 
   useEffect(() => {
     const fetchAccountData = async () => {
-      if (!id) {
-        console.log("아이디없음", id);
+      if (!accountId) {
+        console.log("아이디없음", accountId);
         return;
       }
       try {
         const service = new StockApi();
         console.log("Fetching account data...");
-        const account_res = await service.stockJoin(id);
-        const fetchedAccount = account_res.data;
+        const account_res = await service.stockJoin(accountId);
+        const fetchedAccount = account_res;
         console.log("Fetched account data:", fetchedAccount);
 
         // 데이터 가공
         const updatedData = fetchedAccount
           .filter((account: any) => {
             // console.log("Comparing", account.stock_id, "with", Number(id));
-            return account.account_id === Number(id);
+            return account.account_id === Number(accountId);
           })
           .map((account: any) => {
             const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
@@ -100,7 +100,7 @@ export default function DetailPage() {
     };
 
     fetchAccountData();
-  }, [id]);
+  }, [accountId]);
   return (
     <div className="portfolio-detail-container">
       <nav className="flex flex-row items-center justify-between">
@@ -166,6 +166,20 @@ export default function DetailPage() {
                 },
               }}
             />
+            {accountdata.map((stock, i) => (
+              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
+                <div className="text-left">
+                  <span className="block">{stock.stock_name}</span>
+                  <span className="block">{stock.quantity}주</span>
+                </div>
+                <div className="text-right">
+                  <span className="block">{stock.evlu_amt}원</span>
+                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                    {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <div className="section flex-1">{/* chart */}</div>
