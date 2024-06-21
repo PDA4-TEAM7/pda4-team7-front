@@ -11,7 +11,6 @@ export default function DetailPage() {
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const { id } = useParams();
-  const [accountdata, setAccountdata] = useState<any[]>([]); // stock_in_account 컬럼 값 저장
   const [stockdata, setStockdata] = useState<any>({
     // 파이차트에 대한 변수
     labels: [],
@@ -77,8 +76,6 @@ export default function DetailPage() {
             };
           });
 
-        setAccountdata(updatedData);
-        console.log("Updated account data:", updatedData);
         // 파이차트
         // 각 주식의 수량을 가져오는 코드
         const quantities = updatedData.map((account: any) => account.quantity);

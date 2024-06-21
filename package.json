@@ -32,7 +32,7 @@
     "clsx": "2.1.1",
     "d3": "^7.9.0",
     "date-fns": "3.6.0",
-    "dayjs": "1.11.11",
+    "dayjs": "^1.11.11",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
