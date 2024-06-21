@@ -29,8 +29,10 @@ type OwnerInfo = {
   profileImage: string;
   uid: number;
 };
-
-const CommPage = () => {
+type Props = {
+  id: string;
+};
+const CommPage = ({ id }: Props) => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);

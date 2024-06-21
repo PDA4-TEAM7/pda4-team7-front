@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import * as d3 from "d3";
-import { useParams } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import sellButton from "../../../public/img/sell_button.png";
 import buyButton from "../../../public/img/buy_button.png";
+import StockApi from "@/apis/stockAPI";
 
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
@@ -17,11 +17,15 @@ interface WordData extends d3.SimulationNodeDatum {
 const truncateText = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
 };
+type Props = {
+  id: string;
+};
 
-const StockList: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement | null>(null); // 워드 클라우드 출력 이미지
-  const [stocks, setStocks] = useState<WordData[]>([]); // 워드클라우드 데이터 값 저장
-  const [accountdata, setAccountdata] = useState<any[]>([]); // 내 계좌에 주식 데이터 값 저장
+
+export default function StockList({ id }: Props) {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [stocks, setStocks] = useState<WordData[]>([]);
+  const [accountdata, setAccountdata] = useState<any[]>([]);
   const [tradinghistory, setTradinghistory] = useState([]);
   const [stockdata, setStockdata] = useState<any>({
     // PIE 차트에 데이터 값 저장
@@ -43,13 +47,18 @@ const StockList: React.FC = () => {
     ],
   });
 
-  const { id } = useParams<{ id: string }>();
-
   useEffect(() => {
     const fetchAccountData = async () => {
+      if (!id) {
+        console.log("아이디없음", id);
+        return;
+      }
       try {
-        const account_res = await axios.post("http://localhost:3000/api/stockjoin", { account_id: id });
-        const fetchedAccount = account_res.data;
+        const service = new StockApi();
+        console.log("Fetching account data...");
+        const account_res = await service.stockJoin(id);
+        const fetchedAccount = account_res;
+        console.log("Fetched account data:", fetchedAccount);
 
         const updatedData = fetchedAccount
           .filter((account: any) => {
@@ -357,6 +366,4 @@ const StockList: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default StockList;
+}

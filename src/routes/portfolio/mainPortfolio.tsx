@@ -18,7 +18,7 @@ export default function MainPortfolio() {
   };
 
   const handlePortfolioClick = (id: string) => {
-    navigate(`/portfolio/stockList/${id}`);
+    navigate(`/portfolio/detail/${id}`);
   };
 
   const portfolioData = [

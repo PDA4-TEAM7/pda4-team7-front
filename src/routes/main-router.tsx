@@ -5,11 +5,10 @@ import Portfolio from "./portfolio/page";
 import Dev from "./dev/page";
 import MainPortfolio from "./portfolio/mainPortfolio";
 import MyPage from "./mypage/page";
-import StockList from "./portfolio/stockList";
 import SignUp from "./signup/page";
-import CommPage from "./portfolio/comm_page";
 import SignIn from "./signin/page";
 import SubscribePortfolio from "./portfolio/subscribe/page";
+import DetailPage from "./portfolio/detail/page";
 import Myportfolio from "./portfolio/myportfolio";
 import SubscribePortfolioRecency from "./portfolio/subscribe/recency/page";
 
@@ -33,6 +32,11 @@ const routers = [
         index: true,
       },
       {
+        path: "detail/:id",
+        element: <DetailPage />,
+        index: true,
+      },
+      {
         path: "subscribe",
         element: <SubscribePortfolio />,
         index: true,
@@ -40,16 +44,6 @@ const routers = [
       {
         path: "subscribe/recency",
         element: <SubscribePortfolioRecency />,
-        index: true,
-      },
-      {
-        path: "stockList/:id",
-        element: <StockList />,
-        index: true,
-      },
-      {
-        path: "comm",
-        element: <CommPage />,
         index: true,
       },
       {
