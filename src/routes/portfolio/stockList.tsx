@@ -5,6 +5,7 @@ import { Pie } from "react-chartjs-2";
 import sellButton from "../../../public/img/sell_button.png";
 import buyButton from "../../../public/img/buy_button.png";
 import StockApi from "@/apis/stockAPI";
+import axios from "axios";
 
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
@@ -20,7 +21,6 @@ const truncateText = (text: string, length: number) => {
 type Props = {
   id: string;
 };
-
 
 export default function StockList({ id }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -72,7 +72,7 @@ export default function StockList({ id }: Props) {
               account_id: account.account_id,
               stock_id: account.stock_id,
               market_id: account.market_id,
-              quantity: account.quantity,
+              hldg_qty: account.hldg_qty,
               pchs_amt: account.pchs_amt,
               evlu_amt: account.evlu_amt,
               evlu_pfls_amt: account.evlu_pfls_amt,
@@ -89,10 +89,10 @@ export default function StockList({ id }: Props) {
           if (industryMap.has(account.std_idst_clsf_cd_name)) {
             industryMap.set(
               account.std_idst_clsf_cd_name,
-              industryMap.get(account.std_idst_clsf_cd_name)! + account.quantity
+              industryMap.get(account.std_idst_clsf_cd_name)! + account.hldg_qty
             );
           } else {
-            industryMap.set(account.std_idst_clsf_cd_name, account.quantity);
+            industryMap.set(account.std_idst_clsf_cd_name, account.hldg_qty);
           }
         });
 
@@ -113,8 +113,8 @@ export default function StockList({ id }: Props) {
         });
 
         setStocks(updatedStocks);
-
-        const quantities = updatedData.map((account: any) => account.quantity);
+        console.log("updateData : ", updatedData);
+        const quantities = updatedData.map((account: any) => account.hldg_qty);
 
         const stockNames = updatedData.map((account: any) => account.stock_name);
         setStockdata({
@@ -293,12 +293,14 @@ export default function StockList({ id }: Props) {
                   },
                 },
               }}
+              width={200}
+              height={200}
             />
             {accountdata.map((stock, i) => (
               <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
                 <div className="text-left">
                   <span className="block">{stock.stock_name}</span>
-                  <span className="block">{stock.quantity}주</span>
+                  <span className="block">{stock.hldg_qty}주</span>
                 </div>
                 <div className="text-right">
                   <span className="block">{stock.evlu_amt}원</span>
