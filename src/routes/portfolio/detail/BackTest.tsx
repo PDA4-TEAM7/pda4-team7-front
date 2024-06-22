@@ -50,33 +50,27 @@ export default function BackTest({ id }: Props) {
       try {
         const service = new StockApi();
         console.log("Fetching account data...");
-        const account_res = await service.stockJoin(id);
-        const fetchedAccount = account_res;
+        const fetchedAccount = await service.stockJoin(id);
         console.log("Fetched account data:", fetchedAccount);
 
         // 데이터 가공
-        const updatedData = fetchedAccount
-          .filter((account: any) => {
-            // console.log("Comparing", account.stock_id, "with", Number(id));
-            return account.account_id === Number(id);
-          })
-          .map((account: any) => {
-            const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
+        const updatedData = fetchedAccount.map((account: any) => {
+          const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
 
-            return {
-              holdings_id: account.holdings_id,
-              account_id: account.account_id,
-              stock_id: account.stock_id,
-              market_id: account.market_id,
-              hldg_qty: account.hldg_qty,
-              pchs_amt: account.pchs_amt,
-              evlu_amt: account.evlu_amt,
-              evlu_pfls_amt: account.evlu_pfls_amt,
-              evlu_pfls_rt: evlu_pfls_rt,
-              stock_name: account.stock.name,
-              std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
-            };
-          });
+          return {
+            holdings_id: account.holdings_id,
+            account_id: account.account_id,
+            stock_id: account.stock_id,
+            market_id: account.market_id,
+            hldg_qty: account.hldg_qty,
+            pchs_amt: account.pchs_amt,
+            evlu_amt: account.evlu_amt,
+            evlu_pfls_amt: account.evlu_pfls_amt,
+            evlu_pfls_rt: evlu_pfls_rt,
+            stock_name: account.stock.name,
+            std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
+          };
+        });
         setAccountdata(updatedData);
         // 파이차트
         // 각 주식의 수량을 가져오는 코드
@@ -102,8 +96,30 @@ export default function BackTest({ id }: Props) {
   }, [id]);
   return (
     <div className="portfolio-detail-container">
-      <div className="wrap-section flex flex-row">
-        <div className="section flex flex-col flex-1">
+      <div className="wrap-section flex flex-row gap-2">
+        <div className="section inline-block w-1/2 box-border">
+          <div className="section ">
+            <p className="text-xl">포트폴리오 구성</p>
+            <div className="chart-wrap w-full h-screen/2 min-h-[320px] relative overflow-hidden">
+              <Pie
+                data={stockdata}
+                options={{
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                }}
+                width={"100%"}
+                height={"auto"}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="section inline-block w-1/2 box-border">
+          {/* chart */}
           <div className="date-wrap flex">
             <DatePicker
               label={"시작"}
@@ -142,36 +158,7 @@ export default function BackTest({ id }: Props) {
               max={110}
             />
           </div>
-          <div className="chart-wrap">
-            <Pie
-              data={stockdata}
-              options={{
-                maintainAspectRatio: true,
-                responsive: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-              }}
-            />
-            {accountdata.map((stock, i) => (
-              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
-                <div className="text-left">
-                  <span className="block">{stock.stock_name}</span>
-                  <span className="block">{stock.hldg_qty}주</span>
-                </div>
-                <div className="text-right">
-                  <span className="block">{stock.evlu_amt}원</span>
-                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                    {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
-        <div className="section flex-1">{/* chart */}</div>
       </div>
     </div>
   );

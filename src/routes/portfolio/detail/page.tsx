@@ -7,7 +7,7 @@ import CommPage from "../comm_page";
 // portfolio/detail/1
 export default function DetailPage() {
   const [title, setTitle] = useState<string>();
-  const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
+  const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("BackTest");
   //TODO: portfolio id를 받아와서 portfolio조회하고, accountID 값을 받고 다시 조회하기
   const { id } = useParams();
 
@@ -54,7 +54,7 @@ export default function DetailPage() {
           </div>
         </div>
       </nav>
-      <div className="tab-container">
+      <div className="tab-container mx-6">
         {tab === "StockList" && <StockList id={id} />}
         {tab === "BackTest" && <BackTest id={id} />}
         {tab === "Community" && <CommPage id={id} />}
