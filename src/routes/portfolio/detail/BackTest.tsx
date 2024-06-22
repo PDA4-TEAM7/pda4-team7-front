@@ -68,7 +68,7 @@ export default function BackTest({ id }: Props) {
               account_id: account.account_id,
               stock_id: account.stock_id,
               market_id: account.market_id,
-              quantity: account.quantity,
+              hldg_qty: account.hldg_qty,
               pchs_amt: account.pchs_amt,
               evlu_amt: account.evlu_amt,
               evlu_pfls_amt: account.evlu_pfls_amt,
@@ -80,7 +80,7 @@ export default function BackTest({ id }: Props) {
         setAccountdata(updatedData);
         // 파이차트
         // 각 주식의 수량을 가져오는 코드
-        const quantities = updatedData.map((account: any) => account.quantity);
+        const quantities = updatedData.map((account: any) => account.hldg_qty);
 
         // 주식 이름을 찾는 코드
         const stockNames = updatedData.map((account: any) => account.stock_name);
@@ -159,7 +159,7 @@ export default function BackTest({ id }: Props) {
               <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
                 <div className="text-left">
                   <span className="block">{stock.stock_name}</span>
-                  <span className="block">{stock.quantity}주</span>
+                  <span className="block">{stock.hldg_qty}주</span>
                 </div>
                 <div className="text-right">
                   <span className="block">{stock.evlu_amt}원</span>
