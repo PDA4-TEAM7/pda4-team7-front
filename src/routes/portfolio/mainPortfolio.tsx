@@ -69,7 +69,7 @@ export default function MainPortfolio() {
         </div>
         <div className="grid grid-cols-3 gap-4">
           {portfolioData.map((item) => (
-            <div key={item.id} className="border p-4 rounded-md" onClick={() => handlePortfolioClick(item.id)}>
+            <div key={item.id} className="border p-4 rounded-md" onClick={() => handlePortfolioClick(item.account_id)}>
               <div className="flex">
                 <div className="w-1/2">
                   <Pie
