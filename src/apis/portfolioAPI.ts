@@ -28,6 +28,12 @@ class PortfolioApi extends BaseApi {
     const resp = await this.fetcher.get(`/portfolio/account/${account_id}`);
     return resp.data;
   }
+
+  // GET: 모든 포트폴리오 가져오기
+  async getAllPortfolios() {
+    const resp = await this.fetcher.get("/portfolios");
+    return resp.data;
+  }
 }
 
 export const portfolioApi = new PortfolioApi();
