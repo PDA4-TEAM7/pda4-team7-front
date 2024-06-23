@@ -78,8 +78,7 @@ export default function BackTest({ id }: Props) {
         <div className="section inline-block w-1/2 box-border">
           <div className="section ">
             <p className="text-xl">포트폴리오 구성</p>
-            <div className="chart-wrap w-full h-screen/2 min-h-[420px] relative overflow-hidden">
-              {/* <Pie data={stockdata} options={options} width={"100%"} height={"auto"} /> */}
+            <div className="chart-wrap w-full h-screen/2 min-h-[580px] relative overflow-hidden">
               <StockChart stockData={stocks} stockNames={stockNames} />
             </div>
             <div className="portfolio-detail"></div>
