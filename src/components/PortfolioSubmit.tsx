@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,29 +12,30 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import axios from "axios";
-import { portfolioApi, IPortfolio } from "@/apis/portfolioAPI";
+import { portfolioApi, Portfolio } from "@/apis/portfolioAPI";
 
 interface PortfolioSubmitProps {
   selectedAccount: string;
   showSheet: boolean;
   setShowSheet: (show: boolean) => void;
+  setIsPublished: (published: boolean) => void; // 상태 업데이트를 위한 함수 추가
 }
 
-export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet }: PortfolioSubmitProps) {
+export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setIsPublished }: PortfolioSubmitProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [detailDescription, setDetailDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    const data: IPortfolio = {
+    const data: Portfolio = {
       account_id: selectedAccount,
       title,
       description,
       price,
       detailDescription,
+      published: true, // 등록 시 published를 true로 설정
     };
 
     try {
@@ -43,7 +43,7 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet }: Po
       console.log("Portfolio saved successfully:", response);
       alert("포트폴리오가 등록되었습니다.");
       setShowSheet(false); // Sheet 닫기
-      navigate("/portfolio/myportfolio");
+      setIsPublished(true); // 상태 변경
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         alert("이미 이 계정에 대한 포트폴리오가 존재합니다.");
