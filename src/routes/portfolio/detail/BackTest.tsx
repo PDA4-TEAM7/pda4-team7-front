@@ -3,8 +3,12 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { Slider } from "@mui/material";
-import { Pie } from "react-chartjs-2";
+import { Chart } from "chart.js/auto";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import StockApi from "@/apis/stockAPI";
+import StockChart from "./StockChart";
+
+Chart.register(ChartDataLabels);
 
 type Props = {
   id: string;
@@ -14,26 +18,8 @@ export default function BackTest({ id }: Props) {
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [accountdata, setAccountdata] = useState<any[]>([]); // stock_in_account 컬럼 값 저장
-  const [stockdata, setStockdata] = useState<any>({
-    // 파이차트에 대한 변수
-    labels: [],
-    datasets: [
-      {
-        label: "수량",
-        data: [],
-        backgroundColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  });
-
+  const [stocks, setStocks] = useState<number[]>([]);
+  const [stockNames, setStockNames] = useState<string[]>([]);
   const today = dayjs();
   const startYear2004 = dayjs("2004-01-01");
 
@@ -73,20 +59,12 @@ export default function BackTest({ id }: Props) {
         });
         setAccountdata(updatedData);
         // 파이차트
-        // 각 주식의 수량을 가져오는 코드
-        const quantities = updatedData.map((account: any) => account.hldg_qty);
-
+        // 각 주식의 수량을 가져오는 코드 파이차트안의 내용.
+        const quantities = updatedData.map((account: any) => +account.hldg_qty);
+        setStocks(quantities);
         // 주식 이름을 찾는 코드
         const stockNames = updatedData.map((account: any) => account.stock_name);
-        setStockdata({
-          labels: stockNames,
-          datasets: [
-            {
-              ...stockdata.datasets[0],
-              data: quantities,
-            },
-          ],
-        });
+        setStockNames(stockNames);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -100,22 +78,11 @@ export default function BackTest({ id }: Props) {
         <div className="section inline-block w-1/2 box-border">
           <div className="section ">
             <p className="text-xl">포트폴리오 구성</p>
-            <div className="chart-wrap w-full h-screen/2 min-h-[320px] relative overflow-hidden">
-              <Pie
-                data={stockdata}
-                options={{
-                  maintainAspectRatio: false,
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                }}
-                width={"100%"}
-                height={"auto"}
-              />
+            <div className="chart-wrap w-full h-screen/2 min-h-[420px] relative overflow-hidden">
+              {/* <Pie data={stockdata} options={options} width={"100%"} height={"auto"} /> */}
+              <StockChart stockData={stocks} stockNames={stockNames} />
             </div>
+            <div className="portfolio-detail"></div>
           </div>
         </div>
         <div className="section inline-block w-1/2 box-border">
