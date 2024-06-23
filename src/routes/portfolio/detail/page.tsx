@@ -16,8 +16,8 @@ export default function DetailPage() {
   }, []);
   if (!id) return <div>param not found</div>;
   return (
-    <div className="portfolio-detail-container">
-      <nav className="flex flex-row items-center justify-between m-6 text-3xl ">
+    <div className="portfolio-detail-container h-screen flex flex-col">
+      <nav className="flex flex-row items-center justify-between p-6 text-3xl">
         <div>
           <p className="text-3xl font-bold">{title}</p>
         </div>
@@ -54,7 +54,7 @@ export default function DetailPage() {
           </div>
         </div>
       </nav>
-      <div className="tab-container mx-6">
+      <div className="tab-container px-6 overflow-y-auto flex-1">
         {tab === "StockList" && <StockList id={id} />}
         {tab === "BackTest" && <BackTest id={id} />}
         {tab === "Community" && <CommPage id={id} />}

@@ -5,6 +5,7 @@ export interface IAccountInfo {
   appsecretkey: string;
   accountNo: string;
 }
+
 export default class accountAPI extends BaseApi {
   //POST : 계좌 추가. 로그인 한 유저의 계좌 추가
   async addAccount(accountInfo: IAccountInfo) {
