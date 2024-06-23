@@ -1,37 +1,52 @@
 import { LineChart } from "@mui/x-charts";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 
-const xAxisData = [
-  new Date("2023-12-04"),
-  new Date("2023-12-05"),
-  new Date("2023-12-06"),
-  new Date("2023-12-07"),
-  new Date("2023-12-08"),
-  new Date("2023-12-09"),
-  new Date("2023-12-10"),
-];
-const seriesData = [
-  [-0.000113, 0.037, 0.056, 0.088, 0.091, 0.1233, 0.1133],
-  [0.000113, 0.017, 0.026, 0.088, 0.191, 0.1293, 0.2133],
-];
+interface IBackTestData {
+  [key: string]: {
+    //date
+    [date: string]: number; //0.999..
+  };
+}
+type Props = {
+  backTestData: IBackTestData;
+};
+export default function StockLineChart({ backTestData }: Props) {
+  const [btDate, setBtDate] = useState<Date[]>([]);
+  const [rate, setRate] = useState<number[]>([]);
+  useEffect(() => {
+    console.log("back:", backTestData);
+    if (!backTestData) return;
+    // 배열 선언
+    const keys: Date[] = [];
+    const values: number[] = [];
 
-export default function StockLineChart() {
+    // 객체 순회
+    for (const [key, value] of Object.entries(backTestData)) {
+      keys.push(new Date(key));
+      values.push(Number(value) - 1);
+    }
+
+    setBtDate(keys);
+    setRate(values);
+  }, [backTestData]);
+
   return (
     <div className="">
       <LineChart
         xAxis={[
           {
             label: "Date",
-            data: xAxisData,
-            tickInterval: xAxisData,
+            data: btDate,
+            tickInterval: btDate,
             scaleType: "time",
             valueFormatter: (date) => dayjs(date).format("MMM D"),
           },
         ]}
         yAxis={[]}
         series={[
-          { label: "내 투자", data: seriesData[0] },
-          { label: "U.S 500", data: seriesData[1] },
+          { label: "내 투자", data: rate },
+          { label: "U.S 500", data: rate },
         ]}
         height={400}
       />

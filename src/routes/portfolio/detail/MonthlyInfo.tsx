@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from "react";
 import { Dayjs } from "dayjs";
 import { Slider } from "@mui/material";
@@ -5,6 +6,7 @@ import { Slider } from "@mui/material";
 type Props = {
   startDate: Dayjs;
   endDate: Dayjs;
+  backTestData: StockData[];
 };
 interface StockData {
   [key: string]: {
@@ -19,9 +21,10 @@ const dummyData: StockData[] = [
   { 바이오: { "2014-11": 0.9499, "2014-12": 0.92111, "2015-01": 1.0944 } },
 ];
 
-export default function MonthlyInfo({ startDate, endDate }: Props) {
+export default function MonthlyInfo({ startDate, endDate, backTestData }: Props) {
   const [months, setMonths] = useState<Dayjs[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(startDate);
+  const [showBTData, setShowBTData] = useState<StockData[]>([]);
   const handleChange = (event: Event, newValue: number | number[]) => {
     setSelectedMonth(months[newValue as number]);
   };
@@ -72,6 +75,32 @@ export default function MonthlyInfo({ startDate, endDate }: Props) {
     monthList.push(currentMonth);
     setMonths(monthList);
   }, [startDate, endDate]);
+
+  useEffect(() => {
+    console.log("bac:", backTestData);
+    function transformData(data: StockData[]) {
+      const transformedData: StockData[] = [];
+
+      data.forEach((item) => {
+        const companyName = Object.keys(item)[0];
+        const transformedItem: StockData = {};
+        transformedItem[companyName] = {};
+
+        Object.keys(item[companyName]).forEach((dateKey) => {
+          const yyyyMM = dateKey.slice(0, 7); // YYYY-MM 형식으로 자르기
+          transformedItem[companyName][yyyyMM] = item[companyName][dateKey];
+        });
+
+        transformedData.push(transformedItem);
+      });
+
+      return transformedData;
+    }
+    if (backTestData) {
+      const result = transformData(backTestData);
+      setShowBTData(result);
+    }
+  }, [backTestData]);
   return (
     <div className="monthly-data mt-12">
       <p className="text-xl pb-6">날짜 별 종목 성과</p>
@@ -89,11 +118,13 @@ export default function MonthlyInfo({ startDate, endDate }: Props) {
           valueLabelFormat={labelFormatter}
         />
       </div>
+      <div>{}</div>
       <div className="monthly-stock-data">
         <div className="stock-data-item">
-          {dummyData.map((item, i) => {
+          {showBTData.map((item, i) => {
             const key = Object.keys(item)[0];
             const value = item[key][selectedMonth.format("YYYY-MM")] - 1;
+            console.log("value:", value);
             return (
               <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
                 <div></div>
