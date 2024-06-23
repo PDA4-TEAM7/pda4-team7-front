@@ -1,17 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import Subscribe from "../../assets/subscribe.png";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { portfolioApi } from "@/apis/portfolioAPI";
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
+  const [portfolioData, setPortfolioData] = useState<any[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPortfolioData = async () => {
+      try {
+        const response = await portfolioApi.getAllPortfolios();
+        console.log("API Response:", response);
+        setPortfolioData(response);
+      } catch (error) {
+        console.error("Error fetching portfolio data:", error);
+      }
+    };
+    fetchPortfolioData();
+  }, []);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value as string);
@@ -19,94 +32,6 @@ export default function MainPortfolio() {
 
   const handlePortfolioClick = (id: string) => {
     navigate(`/portfolio/detail/${id}`);
-  };
-
-  const portfolioData = [
-    {
-      id: 1,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
-      username: "얼굴을",
-      time: "20 min",
-      totalAsset: "$111,483.87",
-      profitLoss: "+9.24%",
-      loss: "($10,981)",
-    },
-    {
-      id: 2,
-      title: "2번",
-      description: "2번",
-      username: "얼굴을",
-      time: "20 min",
-      totalAsset: "$111,483.87",
-      profitLoss: "+9.24%",
-      loss: "($10,981)",
-    },
-    {
-      id: 3,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
-      username: "얼굴을",
-      time: "20 min",
-      totalAsset: "$111,483.87",
-      profitLoss: "+9.24%",
-      loss: "($10,981)",
-    },
-    {
-      id: 4,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
-      username: "얼굴을",
-      time: "20 min",
-      totalAsset: "$111,483.87",
-      profitLoss: "+9.24%",
-      loss: "($10,981)",
-    },
-    {
-      id: 5,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
-      username: "얼굴을",
-      time: "20 min",
-      totalAsset: "$111,483.87",
-      profitLoss: "+9.24%",
-      loss: "($10,981)",
-    },
-    {
-      id: 6,
-      title: "헬스케어 성장 집중 전략",
-      description:
-        "헬스케어 산업의 성장을 집중 공략하는 전략입니다. 성장 모멘텀을 고려한 종목 선정과 리스크를 최소화 하는 전략을 설명합니다.",
-      username: "얼굴을",
-      time: "20 min",
-      totalAsset: "$111,483.87",
-      profitLoss: "+9.24%",
-      loss: "($10,981)",
-    },
-
-    // 추가 데이터는 삽입
-  ];
-  const data = {
-    labels: ["에코프로", "에코프로비엠", "POSCO홀딩스", "코스모신소재", "LG화학", "삼성전자"],
-    datasets: [
-      {
-        label: "비율",
-        data: [44.4, 33.6, 8, 7.1, 4.6, 2],
-        backgroundColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
   };
 
   return (
@@ -143,12 +68,27 @@ export default function MainPortfolio() {
           </FormControl>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {portfolioData.map((item: any) => (
+          {portfolioData.map((item) => (
             <div key={item.id} className="border p-4 rounded-md" onClick={() => handlePortfolioClick(item.id)}>
               <div className="flex">
                 <div className="w-1/2">
                   <Pie
-                    data={data}
+                    data={{
+                      labels: item.stockData.map((stock: any) => stock.name),
+                      datasets: [
+                        {
+                          label: "비율",
+                          data: item.stockData.map((stock: any) => stock.ratio),
+                          backgroundColor: item.stockData.map(
+                            () =>
+                              `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
+                                Math.random() * 256
+                              )}, ${Math.floor(Math.random() * 256)}, 1)`
+                          ),
+                          borderWidth: 1,
+                        },
+                      ],
+                    }}
                     options={{
                       maintainAspectRatio: false,
                       plugins: {
@@ -164,8 +104,8 @@ export default function MainPortfolio() {
                 <div className="w-1/2 pl-4 flex flex-col justify-center">
                   <div>
                     <p className="font-bold">총 자산: {item.totalAsset}</p>
-                    <p className="font-bold">수익률: {item.profitLoss}</p>
-                    <p className="text-red-500">{item.loss}</p>
+                    <p className="font-bold">수익률: {item.profitLoss.toFixed(2)}%</p>
+                    <p className="text-red-500">({item.loss})</p>
                   </div>
                 </div>
               </div>
@@ -173,13 +113,10 @@ export default function MainPortfolio() {
                 <h3 className="font-bold">{item.title}</h3>
                 <p>{item.description}</p>
                 <div className="mt-4">
-                  <span className="text-base text-gray-500">업데이트 {item.time} 전</span>
+                  <span className="text-base text-gray-500">생성일자 {new Date(item.createDate).toLocaleString()}</span>
                   <div className="flex items-center mt-2">
                     <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
-                    <span className="text-base text-gray-500">
-                      {/* {item.username} */}
-                      임찬솔
-                    </span>
+                    <span className="text-base text-gray-500">{item.username}</span>
                     <div className="flex items-center ml-auto">
                       <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
                       <span className="text-base text-gray-500">구독자 수</span>
