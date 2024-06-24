@@ -3,17 +3,18 @@ import { SVGProps, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { JSX } from "react/jsx-runtime";
 import useAccount from "@/hooks/useAccount";
-
 type Props = {
   modalShow: boolean;
   modalClose: () => void;
   openAddAccountModal: () => void;
 };
+
 //TODO: userId 로 계좌 조회 해서 리스트 표시
 export default function AccountPopup({ modalShow, modalClose, openAddAccountModal }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [accountList, setAccountList] = useState<any[]>([]);
-  const { getAccountList } = useAccount();
+  const [lastDeletedAccountId, setLastDeletedAccountId] = useState<string | null>(null);
+  const { getAccountList, deleteMyAccount } = useAccount();
   const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
@@ -24,7 +25,6 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     async function init() {
       const res = await getAccountList();
       if (res) {
-        console.log("있다고 쳐요", res);
         setAccountList(res);
       }
     }
@@ -42,9 +42,27 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [modalShow]);
+  }, [modalShow, lastDeletedAccountId]);
 
   if (!modalShow) return null;
+
+  const handleDelete = async (account_id: string) => {
+    try {
+      const data = await deleteMyAccount(account_id);
+      setLastDeletedAccountId(account_id);
+      alert(data.message);
+    } catch (error) {
+      let errorMessage = "An unexpected error occurred";
+      if (typeof error === "object" && error !== null) {
+        const response = (error as { response?: { data?: { message?: string } } }).response;
+        if (response && response.data && typeof response.data.message === "string") {
+          errorMessage = response.data.message;
+        }
+      }
+      alert(errorMessage);
+    }
+  };
+
   return (
     <div
       className="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
@@ -81,7 +99,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
                         <p className="font-medium">{value.account_number}</p>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(value.account_id)}>
                           <Trash2Icon className="h-5 w-5" />
                           <span className="sr-only">Delete Address</span>
                         </Button>
