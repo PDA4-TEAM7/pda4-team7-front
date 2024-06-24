@@ -9,6 +9,7 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { subscribeApi } from "@/apis/subscribeAPI";
 import { useAuth } from "@/hooks/useAuth";
+import { formatNumber } from "@/lib/nums";
 
 export default function SubscribePortfolio() {
   const [sort, setSort] = useState<string>("10");
@@ -95,14 +96,15 @@ export default function SubscribePortfolio() {
             subscribedPortfolios.map((item) => {
               const portfolio = item || {}; // 기본값 설정
               const stockData = portfolio.stockData || []; // 기본값 설정
-
+              const stockAmtData = stockData.map((stock: any) => stock.ratio);
+              const stockNameData = stockData.map((stock: any) => stock.name);
               return (
                 <div
                   key={item.portfolio_id}
                   className="border p-4 rounded-md cursor-pointer"
                   onClick={() => handlePortfolioClick(item.account_id)}
                 >
-                  <div className="flex justify-between">
+                  <div className="flex justify-between mb-4">
                     <div className="text-base font-bold">{portfolio.title || "N/A"}</div>
                     <button
                       className="text-base text-red-500"
@@ -118,17 +120,25 @@ export default function SubscribePortfolio() {
                     <div className="w-1/2">
                       <Pie
                         data={{
-                          labels: stockData.map((stock: any) => stock.name),
+                          labels: stockNameData,
                           datasets: [
                             {
                               label: "비율",
-                              data: stockData.map((stock: any) => stock.ratio),
-                              backgroundColor: stockData.map(
-                                () =>
-                                  `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
-                                    Math.random() * 256
-                                  )}, ${Math.floor(Math.random() * 256)}, 1)`
-                              ),
+                              data: stockAmtData,
+                              backgroundColor: [
+                                "rgba(255, 99, 132, 1)",
+                                "rgba(54, 162, 235, 1)",
+                                "rgba(255, 206, 86, 1)",
+                                "rgba(75, 192, 192, 1)",
+                                "rgba(153, 102, 255, 1)",
+                                "rgba(255, 159, 64, 1)",
+                                "rgba(255, 99, 132, 0.8)",
+                                "rgba(54, 162, 235, 0.8)",
+                                "rgba(255, 206, 86, 0.8)",
+                                "rgba(75, 192, 192, 0.8)",
+                                "rgba(153, 102, 255, 0.8)",
+                                "rgba(255, 159, 64, 0.8)",
+                              ],
                               borderWidth: 1,
                             },
                           ],
@@ -136,8 +146,20 @@ export default function SubscribePortfolio() {
                         options={{
                           maintainAspectRatio: false,
                           plugins: {
+                            datalabels: {
+                              display: false, // 데이터 값 숨기기
+                            },
                             legend: {
                               display: false,
+                            },
+                            tooltip: {
+                              callbacks: {
+                                label: (context) => {
+                                  // 데이터 값에 100을 곱하고 소수점 제거하여 퍼센테이지로 변형
+                                  const value: number = Number(context.raw);
+                                  return `${context.label}: ${Math.round(value * 100)}%`;
+                                },
+                              },
                             },
                           },
                         }}
@@ -147,11 +169,19 @@ export default function SubscribePortfolio() {
                     </div>
                     <div className="w-1/2 pl-4 flex flex-col justify-center">
                       <div>
-                        <p className="font-bold">총 자산: {portfolio.totalAsset || "N/A"}</p>
-                        <p className="font-bold">
-                          수익률: {portfolio.profitLoss ? portfolio.profitLoss.toFixed(2) : "N/A"}%
+                        <p className="font-bold">총 자산: {formatNumber(+portfolio.totalAsset) || "N/A"}</p>
+                        <p
+                          className={`font-bold ${
+                            +item.profitLoss > 0
+                              ? "text-red-500"
+                              : +item.profitLoss == 0
+                              ? "text-black-900"
+                              : "text-blue-500"
+                          }`}
+                        >
+                          {+item.profitLoss > 0 && <span>+</span>}
+                          {formatNumber(item.loss)} <span>({Math.abs(item.profitLoss.toFixed(2))}%)</span>
                         </p>
-                        <p className="text-red-500">({portfolio.loss || "N/A"})</p>
                       </div>
                     </div>
                   </div>
