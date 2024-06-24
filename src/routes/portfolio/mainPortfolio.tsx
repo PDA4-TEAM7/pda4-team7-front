@@ -12,6 +12,7 @@ import { subscribeApi } from "@/apis/subscribeAPI";
 import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser"; // import useUser
 import { useAuth } from "@/hooks/useAuth";
+import { formatNumber } from "@/lib/nums";
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
@@ -170,7 +171,7 @@ export default function MainPortfolio() {
                 className={`border p-4 rounded-md ${isSubscribed ? "cursor-pointer" : "cursor-not-allowed"}`}
                 onClick={() => handlePortfolioClick(item)}
               >
-                <div className="flex justify-between">
+                <div className="flex justify-between mb-4">
                   <div className="text-base font-bold">{item.title}</div>
                   <button
                     className={`text-base ${isSubscribed ? "text-red-500" : "text-green-500"}`}
@@ -235,9 +236,19 @@ export default function MainPortfolio() {
                   </div>
                   <div className="w-1/2 pl-4 flex flex-col justify-center">
                     <div>
-                      <p className="font-bold">총 자산: {item.totalAsset}</p>
-                      <p className="font-bold">수익률: {item.profitLoss.toFixed(2)}%</p>
-                      <p className="text-red-500">({item.loss})</p>
+                      <p className="font-bold">총 자산: {formatNumber(item.totalAsset)}원</p>
+                      <p
+                        className={`font-bold ${
+                          +item.profitLoss > 0
+                            ? "text-red-500"
+                            : +item.profitLoss == 0
+                            ? "text-black-900"
+                            : "text-blue-500"
+                        }`}
+                      >
+                        {+item.profitLoss > 0 && <span>+</span>}
+                        {formatNumber(item.loss)} <span>({Math.abs(item.profitLoss.toFixed(2))}%)</span>
+                      </p>
                     </div>
                   </div>
                 </div>
