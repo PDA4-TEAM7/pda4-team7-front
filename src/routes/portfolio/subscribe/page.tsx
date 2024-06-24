@@ -6,7 +6,6 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { Button } from "@/components/ui/button";
 import { subscribeApi } from "@/apis/subscribeAPI";
 
 export default function SubscribePortfolio() {
@@ -36,8 +35,14 @@ export default function SubscribePortfolio() {
     navigate(`/portfolio/detail/${id}`);
   };
 
-  const handleRecentChangesClick = () => {
-    navigate("/portfolio/subscribe/recency");
+  const handleUnsubscribe = async (portfolio_id: number) => {
+    try {
+      await subscribeApi.unsubscribe(portfolio_id);
+      const response = await subscribeApi.getUserSubscriptions();
+      setSubscribedPortfolios(response);
+    } catch (error) {
+      console.error("Error unsubscribing from portfolio:", error);
+    }
   };
 
   return (
@@ -59,12 +64,6 @@ export default function SubscribePortfolio() {
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
             <h1 className="text-2xl font-bold mr-3">구독한 포트폴리오</h1>
-            <Button
-              className="text-l focus:outline-none px-8 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 w-[150px]"
-              onClick={handleRecentChangesClick}
-            >
-              최근 변화 살펴보기
-            </Button>
           </div>
           <div className="flex items-center">
             <FormControl fullWidth style={{ maxWidth: 200 }}>
@@ -86,15 +85,27 @@ export default function SubscribePortfolio() {
         <div className="grid grid-cols-3 gap-4">
           {subscribedPortfolios.length > 0 ? (
             subscribedPortfolios.map((item) => {
-              const portfolio = item.portfolio || {}; // 기본값 설정
+              const portfolio = item || {}; // 기본값 설정
               const stockData = portfolio.stockData || []; // 기본값 설정
 
               return (
                 <div
                   key={item.portfolio_id}
-                  className="border p-4 rounded-md"
-                  onClick={() => handlePortfolioClick(item.portfolio_id)}
+                  className="border p-4 rounded-md cursor-pointer"
+                  onClick={() => handlePortfolioClick(item.account_id)}
                 >
+                  <div className="flex justify-between">
+                    <div className="text-base font-bold">{portfolio.title || "N/A"}</div>
+                    <button
+                      className="text-base text-red-500"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent triggering onClick on the parent div
+                        handleUnsubscribe(item.portfolio_id);
+                      }}
+                    >
+                      구독 취소
+                    </button>
+                  </div>
                   <div className="flex">
                     <div className="w-1/2">
                       <Pie

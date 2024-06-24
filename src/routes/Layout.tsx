@@ -15,7 +15,6 @@ import Button from "@mui/material/Button";
 import IconPortfolio from "@/assets/icon-portfolio.svg?react";
 import IconMy from "@/assets/icon-my.svg?react";
 import IconSub from "@/assets/icon-sub.svg?react";
-import IconCalender from "@/assets/icon-calender.svg?react";
 import { useAuth } from "@/hooks/useAuth";
 
 const drawerWidth = 240;
@@ -36,9 +35,9 @@ const navMenu = [
     icon: <IconMy width={24} height={24} />,
   },
   {
-    text: "추천 포트폴리오",
-    page: "#",
-    icon: <IconCalender width={24} height={24} />,
+    text: "나의 포트폴리오",
+    page: "/portfolio/myportfolio",
+    icon: <IconPortfolio width={24} height={24} />,
   },
 ];
 const openedMixin = (theme: Theme): CSSObject => ({

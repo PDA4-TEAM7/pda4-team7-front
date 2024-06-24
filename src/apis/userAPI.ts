@@ -10,6 +10,7 @@ export interface IUserInfo {
 export interface ISetUserData {
   userName: string;
   introduce: string;
+  credit: number;
 }
 export default class userAPI extends BaseApi {
   async getUserInfo() {
