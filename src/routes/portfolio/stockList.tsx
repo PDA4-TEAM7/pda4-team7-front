@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useRef } from "react";
 import * as d3 from "d3";
-import { Pie } from "react-chartjs-2";
 import StockApi from "@/apis/stockAPI";
 import StockChart from "./detail/StockChart";
 import { Button } from "@/components/ui/button";
-
+import TradingHistoryPopup from "./detail/TradingHistoryPopup";
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
   value: number;
@@ -27,25 +26,10 @@ export default function StockList({ id }: Props) {
   const [accountdata, setAccountdata] = useState<any[]>([]);
   const [stockList, setStockList] = useState<number[]>([]);
   const [stockNameList, setStockNameList] = useState<string[]>([]);
-  const [stockdata, setStockdata] = useState<any>({
-    labels: [],
-    datasets: [
-      {
-        label: "수량",
-        data: [],
-        backgroundColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  });
-
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
   useEffect(() => {
     const fetchAccountData = async () => {
       if (!id) {
@@ -115,15 +99,6 @@ export default function StockList({ id }: Props) {
 
         const stockNames = updatedData.map((account: any) => account.stock_name);
         setStockNameList(stockNames);
-        setStockdata({
-          labels: stockNames,
-          datasets: [
-            {
-              ...stockdata.datasets[0],
-              data: quantities,
-            },
-          ],
-        });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -227,99 +202,91 @@ export default function StockList({ id }: Props) {
   const otherDataPercentage = ((otherDataOriginalValue / totalOriginalValue) * 100).toFixed(1);
 
   return (
-    <div className="portfolio-detail-container h-full">
-      <div className="wrap-section flex flex-row gap-6">
-        <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 3.5rem)" }}>
-          <div className="section flex flex-col h-full">
-            <p className="text-lg font-medium pt-2">자산 구성</p>
-            <div className="chart-wrap w-full min-h-[320px] relative">
-              <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
-            </div>
-            <div
-              className="holding-stock-wrap flex flex-col flex-grow overflow-hidden pb-2"
-              style={{ flex: "1 1 auto" }}
-            >
-              <div className="flex flex-row justify-between">
-                <p className="text-lg pb-3 font-medium">보유 종목 정보</p>
-                <Button className="py-1 px-2 text-sm h-7 bg-blue-100 text-blue-900 hover:bg-blue-200">
-                  거래 내역 조회
-                </Button>
+    <>
+      <div className="portfolio-detail-container h-full">
+        <div className="wrap-section flex flex-row gap-6">
+          <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 3.5rem)" }}>
+            <div className="section flex flex-col h-full">
+              <p className="text-lg font-medium pt-2">자산 구성</p>
+              <div className="chart-wrap w-full min-h-[320px] relative">
+                <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
               </div>
-              <div className="overflow-y-auto flex-grow">
-                <div className="data-wrap">
-                  {accountdata.map((stock, i) => (
-                    <div key={i} className="flex justify-between items-center mb-1 p-2 px-3 border-b ">
-                      <div className="text-left ">
-                        <span className="block">{stock.stock_name}</span>
-                        <span className="block text-sm text-zinc-600">{stock.hldg_qty}주</span>
+              <div
+                className="holding-stock-wrap flex flex-col flex-grow overflow-hidden pb-2"
+                style={{ flex: "1 1 auto" }}
+              >
+                <div className="flex flex-row justify-between">
+                  <p className="text-lg pb-3 font-medium">보유 종목 정보</p>
+                  <Button
+                    className="py-1 px-2 text-sm h-7 bg-blue-100 text-blue-900 hover:bg-blue-200"
+                    onClick={() => handleShowModal()}
+                  >
+                    거래 내역 조회
+                  </Button>
+                </div>
+                <div className="overflow-y-auto flex-grow">
+                  <div className="data-wrap">
+                    {accountdata.map((stock, i) => (
+                      <div key={i} className="flex justify-between items-center mb-1 p-2 px-3 border-b ">
+                        <div className="text-left ">
+                          <span className="block">{stock.stock_name}</span>
+                          <span className="block text-sm text-zinc-600">{stock.hldg_qty}주</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="block">{stock.evlu_amt}원</span>
+                          <span
+                            className={`block text-sm ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}
+                          >
+                            {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="block">{stock.evlu_amt}원</span>
-                        <span className={`block text-sm ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                          {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
-                        </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
+            style={{ height: "calc(100vh - 3.5rem)" }}
+          >
+            <div className="">
+              <p className="text-lg text-lg font-medium pt-2">업종별 보유정보</p>
+              <div className="h-screen/2 min-h-[320px]">
+                <svg ref={svgRef}></svg>
+              </div>
+              <div>
+                {topData &&
+                  topData.map((d, i) => (
+                    <span key={i} className="mb-2 pr-4 text-nowrap text-sm">
+                      <div
+                        className="inline-block text-xs"
+                        style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}
+                      >
+                        ●
                       </div>
-                    </div>
+                      {d.text}({((d.originalValue / totalOriginalValue) * 100).toFixed(1)}%)
+                    </span>
                   ))}
-                </div>
+                <span className="mb-2 pr-4 text-nowrap text-sm">
+                  <div style={{ color: "gray", marginRight: "5px" }} className="inline-block text-xs">
+                    ●
+                  </div>
+                  그 외 ({otherDataPercentage}%)
+                </span>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
-          style={{ height: "calc(100vh - 3.5rem)" }}
-        >
-          <div className="">
-            <p className="text-lg text-lg font-medium pt-2">업종별 보유정보</p>
-            <div className="h-screen/2 min-h-[320px]">
-              <svg ref={svgRef}></svg>
-            </div>
-            <div>
-              {topData &&
-                topData.map((d, i) => (
-                  <span key={i} className="mb-2 pr-4 text-nowrap text-sm">
-                    <div
-                      className="inline-block text-xs"
-                      style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}
-                    >
-                      ●
-                    </div>
-                    {d.text}({((d.originalValue / totalOriginalValue) * 100).toFixed(1)}%)
-                  </span>
-                ))}
-              <span className="mb-2 pr-4 text-nowrap text-sm">
-                <div style={{ color: "gray", marginRight: "5px" }} className="inline-block text-xs">
-                  ●
-                </div>
-                그 외 ({otherDataPercentage}%)
-              </span>
-            </div>
-          </div>
-          {/* <h2 className="text-xl font-bold">Activity</h2>
-          <hr className="my-2 border-gray-300" />
-          <div className="trading-history h-screen overflow-y-auto">
-            {accountdata.map((stock, i) => (
-              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
-                <div className="text-left">
-                  <span className="block">{stock.hldg_qty}주</span>
-                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                    {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
-                    {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="block">{stock.evlu_amt}원</span>
-                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                    {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
-                    {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div> */}
         </div>
       </div>
-    </div>
+      <TradingHistoryPopup
+        modalShow={showModal}
+        data={accountdata}
+        modalClose={() => {
+          setShowModal(false);
+        }}
+      />
+    </>
   );
 }
