@@ -24,5 +24,10 @@ export default function useAccount() {
     return res;
   }
 
-  return { getAccount, addAccount, getAccountList };
+  async function deleteMyAccount(accountId: string) {
+    const res = await service.deleteMyAccount(accountId);
+    return res;
+  }
+
+  return { getAccount, addAccount, getAccountList, deleteMyAccount };
 }
