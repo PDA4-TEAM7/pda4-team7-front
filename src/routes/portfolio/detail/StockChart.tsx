@@ -126,6 +126,7 @@ export default function StockChart({ stockData, stockNames, showLabel = true }: 
       ],
     });
   }, [stockNames, stockData]);
+  if (!piedata || !piedata.datasets || piedata.datasets.length === 0) return null;
 
   return (
     <>
@@ -135,15 +136,20 @@ export default function StockChart({ stockData, stockNames, showLabel = true }: 
       <div className="legend-container mt-4">
         {showLabel &&
           piedata.datasets &&
-          piedata.labels?.map((label: any, index) => (
-            <span key={index} className="legend-item items-center pr-4 text-nowrap text-sm">
-              <div
-                className="legend-color-box w-2 h-2 inline-block mr-2"
-                style={{ backgroundColor: piedata.datasets[0].backgroundColor[index] }}
-              ></div>
-              {label}: {((stockData[index] / stockData.reduce((acc, val) => acc + val, 0)) * 100).toFixed(2)}%
-            </span>
-          ))}
+          piedata.labels?.map((label: any, index) => {
+            const backgroundColor = piedata.datasets[0].backgroundColor;
+            // backgroundColor가 배열인지 확인
+            const color = Array.isArray(backgroundColor) ? backgroundColor[index] : undefined;
+            return (
+              <span key={index} className="legend-item items-center pr-4 text-nowrap text-sm">
+                <div
+                  className="legend-color-box w-2 h-2 inline-block mr-2"
+                  style={{ backgroundColor: color as string }}
+                ></div>
+                {label}: {((stockData[index] / stockData.reduce((acc, val) => acc + val, 0)) * 100).toFixed(2)}%
+              </span>
+            );
+          })}
       </div>
     </>
   );
