@@ -13,19 +13,12 @@ interface StockData {
     [date: string]: number;
   };
 }
-const dummyData: StockData[] = [
-  { 네이버: { "2014-11": 1.00999999, "2014-12": 1.041231, "2015-01": 1.0199 } },
-  { 신한지주: { "2014-11": 1.1999, "2014-12": 1.09414, "2015-01": 1.13999 } },
-  { 에코프로: { "2014-11": 1.14999, "2014-12": 1.04142, "2015-01": 1.04 } },
-  { 코스메틱: { "2014-11": 1.11999, "2014-12": 1.19, "2015-01": 1.1744 } },
-  { 바이오: { "2014-11": 0.9499, "2014-12": 0.92111, "2015-01": 1.0944 } },
-];
 
 export default function MonthlyInfo({ startDate, endDate, backTestData }: Props) {
   const [months, setMonths] = useState<Dayjs[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(startDate);
   const [showBTData, setShowBTData] = useState<StockData[]>([]);
-  const handleChange = (event: Event, newValue: number | number[]) => {
+  const handleChange = (_event: Event, newValue: number | number[]) => {
     setSelectedMonth(months[newValue as number]);
   };
 

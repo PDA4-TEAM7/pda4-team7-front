@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
@@ -66,6 +67,7 @@ export default function MainPortfolio() {
         await submitUserInfo({
           userName: userInfo.userName,
           introduce: userInfo.introduce,
+          credit: userInfo.credit,
         });
 
         setSubscribedPortfolios(updatedSubscriptions);
@@ -131,7 +133,8 @@ export default function MainPortfolio() {
         <div className="grid grid-cols-3 gap-4">
           {portfolioData.map((item) => {
             const isSubscribed = isPortfolioSubscribed(item.id);
-
+            const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
+            const stockNameData = item.stockData.map((stock: any) => stock.name);
             return (
               <div
                 key={item.id}
@@ -154,17 +157,25 @@ export default function MainPortfolio() {
                   <div className="w-1/2">
                     <Pie
                       data={{
-                        labels: item.stockData.map((stock: any) => stock.name),
+                        labels: stockNameData,
                         datasets: [
                           {
                             label: "비율",
-                            data: item.stockData.map((stock: any) => stock.ratio),
-                            backgroundColor: item.stockData.map(
-                              () =>
-                                `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
-                                  Math.random() * 256
-                                )}, ${Math.floor(Math.random() * 256)}, 1)`
-                            ),
+                            data: stockAmtData,
+                            backgroundColor: [
+                              "rgba(255, 99, 132, 1)",
+                              "rgba(54, 162, 235, 1)",
+                              "rgba(255, 206, 86, 1)",
+                              "rgba(75, 192, 192, 1)",
+                              "rgba(153, 102, 255, 1)",
+                              "rgba(255, 159, 64, 1)",
+                              "rgba(255, 99, 132, 0.8)",
+                              "rgba(54, 162, 235, 0.8)",
+                              "rgba(255, 206, 86, 0.8)",
+                              "rgba(75, 192, 192, 0.8)",
+                              "rgba(153, 102, 255, 0.8)",
+                              "rgba(255, 159, 64, 0.8)",
+                            ],
                             borderWidth: 1,
                           },
                         ],
@@ -172,8 +183,20 @@ export default function MainPortfolio() {
                       options={{
                         maintainAspectRatio: false,
                         plugins: {
+                          datalabels: {
+                            display: false, // 데이터 값 숨기기
+                          },
                           legend: {
                             display: false,
+                          },
+                          tooltip: {
+                            callbacks: {
+                              label: (context) => {
+                                // 데이터 값에 100을 곱하고 소수점 제거하여 퍼센테이지로 변형
+                                const value: number = Number(context.raw);
+                                return `${context.label}: ${Math.round(value * 100)}%`;
+                              },
+                            },
                           },
                         },
                       }}

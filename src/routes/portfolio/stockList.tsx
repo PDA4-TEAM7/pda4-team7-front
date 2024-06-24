@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as d3 from "d3";
-import { Pie } from "react-chartjs-2";
-import sellButton from "../../../public/img/sell_button.png";
-import buyButton from "../../../public/img/buy_button.png";
 import StockApi from "@/apis/stockAPI";
-import axios from "axios";
-
+import StockChart from "./detail/StockChart";
+import { Button } from "@/components/ui/button";
+import TradingHistoryPopup from "./detail/TradingHistoryPopup";
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
   value: number;
@@ -14,39 +12,24 @@ interface WordData extends d3.SimulationNodeDatum {
   x?: number;
   y?: number;
 }
+type Props = {
+  id: string;
+};
 
 const truncateText = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
-};
-type Props = {
-  id: string;
 };
 
 export default function StockList({ id }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [stocks, setStocks] = useState<WordData[]>([]);
   const [accountdata, setAccountdata] = useState<any[]>([]);
-  const [tradinghistory, setTradinghistory] = useState([]);
-  const [stockdata, setStockdata] = useState<any>({
-    // PIE 차트에 데이터 값 저장
-    labels: [],
-    datasets: [
-      {
-        label: "수량",
-        data: [],
-        backgroundColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  });
-
+  const [stockList, setStockList] = useState<number[]>([]);
+  const [stockNameList, setStockNameList] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
   useEffect(() => {
     const fetchAccountData = async () => {
       if (!id) {
@@ -60,27 +43,24 @@ export default function StockList({ id }: Props) {
         const fetchedAccount = account_res;
         console.log("Fetched account data:", fetchedAccount);
 
-        const updatedData = fetchedAccount
-          .filter((account: any) => {
-            return account.account_id === Number(id);
-          })
-          .map((account: any) => {
-            const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
+        const updatedData = fetchedAccount.map((account: any) => {
+          const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
 
-            return {
-              holdings_id: account.holdings_id,
-              account_id: account.account_id,
-              stock_id: account.stock_id,
-              market_id: account.market_id,
-              hldg_qty: account.hldg_qty,
-              pchs_amt: account.pchs_amt,
-              evlu_amt: account.evlu_amt,
-              evlu_pfls_amt: account.evlu_pfls_amt,
-              evlu_pfls_rt: evlu_pfls_rt,
-              stock_name: account.stock.name,
-              std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
-            };
-          });
+          return {
+            holdings_id: account.holdings_id,
+            account_id: account.account_id,
+            stock_id: account.stock_id,
+            market_id: account.market_id,
+            hldg_qty: account.hldg_qty,
+            pchs_amt: account.pchs_amt,
+            code: account.stock.code,
+            evlu_amt: account.evlu_amt,
+            evlu_pfls_amt: account.evlu_pfls_amt,
+            evlu_pfls_rt: evlu_pfls_rt,
+            stock_name: account.stock.name,
+            std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
+          };
+        });
 
         setAccountdata(updatedData);
 
@@ -113,69 +93,18 @@ export default function StockList({ id }: Props) {
         });
 
         setStocks(updatedStocks);
-        console.log("updateData : ", updatedData);
-        const quantities = updatedData.map((account: any) => account.hldg_qty);
+        // 각 주식의 수량을 가져오는 코드 파이차트안의 내용.
+        const quantities: number[] = updatedData.map((account: any) => +account.hldg_qty);
+        setStockList(quantities);
 
         const stockNames = updatedData.map((account: any) => account.stock_name);
-        setStockdata({
-          labels: stockNames,
-          datasets: [
-            {
-              ...stockdata.datasets[0],
-              data: quantities,
-            },
-          ],
-        });
+        setStockNameList(stockNames);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchAccountData();
-  }, [id]);
-
-  // tradingHistory 가져오기
-  useEffect(() => {
-    const fetchTradingData = async () => {
-      try {
-        const trading_res = await axios.post("http://localhost:3000/api/tradinghistory", { account_id: id });
-        const fetchedTrading = trading_res.data;
-
-        const updatedData = fetchedTrading
-          .filter((trading: any) => {
-            return trading.account_id === Number(id);
-          })
-          .map((trading: any) => {
-            const evlu_pfls_amt = trading.tot_ccld_amt - trading.stockaccount.pchs_amt;
-            // 손익
-
-            console.log(evlu_pfls_amt);
-
-            const evlu_pfls_rt = (evlu_pfls_amt / trading.stockaccount.tot_ccld_amt) * 100;
-            // 손익률
-
-            return {
-              pchs_amt: trading.pchs_amt,
-              evlu_pfls_amt: evlu_pfls_amt, // 총체결금액 - 매입금액
-
-              trading_id: trading.trading_id,
-              account_id: trading.account_id,
-              stock_id: trading.stock_id,
-              sll_buy_dvsn_cd: trading.sll_buy_dvsn_cd,
-              trade_dt: trading.trade_dt,
-              tot_ccld_qty: trading.tot_ccld_qty,
-              tot_ccld_amt: trading.tot_ccld_amt,
-              evlu_pfls_rt: evlu_pfls_rt, // 손익율 계산
-            };
-          });
-
-        setTradinghistory(updatedData);
-      } catch {
-        console.log("Trading History가 제대로 불러와지지 않았습니다.");
-      }
-    };
-
-    fetchTradingData();
   }, [id]);
 
   useEffect(() => {
@@ -273,99 +202,91 @@ export default function StockList({ id }: Props) {
   const otherDataPercentage = ((otherDataOriginalValue / totalOriginalValue) * 100).toFixed(1);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">TITLE</h1>
-      <p>
-        헬스케어 산업의 특징은 성장을 지속하는 것에 있습니다. 성장 모멘텀 스코어를 활용하여 수익률과 리스크를 동시에
-        개선한 전략입니다.
-      </p>
-      <div className="flex">
-        <div className="w-1/2 p-4">
-          <div>
-            <Pie
-              data={stockdata}
-              options={{
-                maintainAspectRatio: true,
-                responsive: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-              }}
-              width={200}
-              height={200}
-            />
-            {accountdata.map((stock, i) => (
-              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
-                <div className="text-left">
-                  <span className="block">{stock.stock_name}</span>
-                  <span className="block">{stock.hldg_qty}주</span>
+    <>
+      <div className="portfolio-detail-container h-full">
+        <div className="wrap-section flex flex-row gap-6">
+          <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 3.5rem)" }}>
+            <div className="section flex flex-col h-full">
+              <p className="text-lg font-medium pt-2">자산 구성</p>
+              <div className="chart-wrap w-full min-h-[320px] relative">
+                <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
+              </div>
+              <div
+                className="holding-stock-wrap flex flex-col flex-grow overflow-hidden pb-2"
+                style={{ flex: "1 1 auto" }}
+              >
+                <div className="flex flex-row justify-between">
+                  <p className="text-lg pb-3 font-medium">보유 종목 정보</p>
+                  <Button
+                    className="py-1 px-2 text-sm h-7 bg-blue-100 text-blue-900 hover:bg-blue-200"
+                    onClick={() => handleShowModal()}
+                  >
+                    거래 내역 조회
+                  </Button>
                 </div>
-                <div className="text-right">
-                  <span className="block">{stock.evlu_amt}원</span>
-                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                    {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
-                  </span>
+                <div className="overflow-y-auto flex-grow">
+                  <div className="data-wrap">
+                    {accountdata.map((stock, i) => (
+                      <div key={i} className="flex justify-between items-center mb-1 p-2 px-3 border-b ">
+                        <div className="text-left ">
+                          <span className="block">{stock.stock_name}</span>
+                          <span className="block text-sm text-zinc-600">{stock.hldg_qty}주</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="block">{stock.evlu_amt}원</span>
+                          <span
+                            className={`block text-sm ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}
+                          >
+                            {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-          <div className="mt-4 flex flex-col items-center">
-            <svg ref={svgRef}></svg>
-            <div className="mt-2">
-              {topData.map((d, i) => (
-                <div key={i} className="mb-2 flex items-center justify-start">
-                  <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
-                  <span className="inline-block w-24">{d.text}</span>
-                  <span>({((d.originalValue / totalOriginalValue) * 100).toFixed(1)}%)</span>
-                </div>
-              ))}
-              <div className="mb-2 flex items-center justify-start">
-                <span style={{ color: "gray", marginRight: "5px" }}>●</span>
-                <span className="inline-block w-24">그 외</span>
-                <span>({otherDataPercentage}%)</span>
+          <div
+            className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
+            style={{ height: "calc(100vh - 3.5rem)" }}
+          >
+            <div className="">
+              <p className="text-lg text-lg font-medium pt-2">업종별 보유정보</p>
+              <div className="h-screen/2 min-h-[320px]">
+                <svg ref={svgRef}></svg>
+              </div>
+              <div>
+                {topData &&
+                  topData.map((d, i) => (
+                    <span key={i} className="mb-2 pr-4 text-nowrap text-sm">
+                      <div
+                        className="inline-block text-xs"
+                        style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}
+                      >
+                        ●
+                      </div>
+                      {d.text}({((d.originalValue / totalOriginalValue) * 100).toFixed(1)}%)
+                    </span>
+                  ))}
+                <span className="mb-2 pr-4 text-nowrap text-sm">
+                  <div style={{ color: "gray", marginRight: "5px" }} className="inline-block text-xs">
+                    ●
+                  </div>
+                  그 외 ({otherDataPercentage}%)
+                </span>
               </div>
             </div>
           </div>
         </div>
-        <div className="w-1/2 p-4">
-          <h2 className="text-xl font-bold">거래내역</h2>
-          <hr className="my-2 border-gray-300" />
-          {tradinghistory.map((stock, i) => {
-            const matchedStock = accountdata.find((item) => item.stock_id === stock.stock_id);
-
-            console.log(matchedStock);
-            return (
-              <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
-                <div>
-                  {Number(stock.sll_buy_dvsn_cd) === 1 ? (
-                    <img src={sellButton} alt="Sell" className="w-8 h-8 ml-4" />
-                  ) : (
-                    <img src={buyButton} alt="Buy" className="w-8 h-8 ml-4" />
-                  )}
-                </div>
-                <div className="text-left">
-                  <span className="block">{matchedStock ? matchedStock.stock_name : "Unknown"}</span>
-                  <span className="block">
-                    {stock.tot_ccld_qty}주 {Number(stock.sll_buy_dvsn_cd) === 1 ? <span>판매</span> : <span>구매</span>}
-                  </span>
-                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                    {stock.tot_ccld_amt}원
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="block">{stock.evlu_amt}원</span>
-                  <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                    {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
-                    {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
-    </div>
+      <TradingHistoryPopup
+        modalShow={showModal}
+        data={accountdata}
+        modalClose={() => {
+          setShowModal(false);
+        }}
+      />
+    </>
   );
 }

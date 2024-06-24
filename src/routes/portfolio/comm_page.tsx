@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { commentApi } from "@/apis/commentAPI";
+import { IComment, commentApi } from "@/apis/commentAPI";
 import { replyApi } from "@/apis/replyAPI";
 import axios from "axios";
 
@@ -36,7 +37,7 @@ const CommPage = ({ id }: Props) => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
-  const [portfolioId] = useState(1); // 실제 포트폴리오 ID로 대체하세요.
+  const [portfolioId] = useState(id); // 실제 포트폴리오 ID로 대체하세요.
   const [ownerInfo, setOwnerInfo] = useState<OwnerInfo>({
     name: "",
     updateDate: "",
@@ -63,7 +64,7 @@ const CommPage = ({ id }: Props) => {
     // 초기 로드 시 포트폴리오의 댓글을 가져옵니다.
     const fetchComments = async () => {
       try {
-        const response = await commentApi.readComments(portfolioId);
+        const response = await commentApi.readComments(+portfolioId);
         console.log("Comments API response:", response.data); // Debugging line
 
         const commentsData = await Promise.all(
@@ -106,11 +107,11 @@ const CommPage = ({ id }: Props) => {
   const handleCommentSubmit = async () => {
     if (comment.trim()) {
       try {
-        const newCommentData = {
+        const newCommentData: IComment = {
           // DUMMY: 더미로 넣어놨어용
           userId: 1,
           description: comment,
-          portfolioId: portfolioId,
+          portfolioId: +portfolioId,
         };
         const response = await commentApi.writeComment(newCommentData);
         const newCommentResponse = response.data.newComment;

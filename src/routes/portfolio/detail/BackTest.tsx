@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
@@ -19,7 +20,6 @@ export default function BackTest({ id }: Props) {
   const today = dayjs();
   const [startDate, setStartDate] = useState<Dayjs | null>(startYear2004);
   const [endDate, setEndDate] = useState<Dayjs | null>(today);
-  const [accountdata, setAccountdata] = useState<any[]>([]); // stock_in_account 컬럼 값 저장
   const [stocks, setStocks] = useState<number[]>([]);
   const [stockNames, setStockNames] = useState<string[]>([]);
   const [backTestData, setBackTestData] = useState<any>();
@@ -55,7 +55,6 @@ export default function BackTest({ id }: Props) {
             std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
           };
         });
-        setAccountdata(updatedData);
         // 파이차트
         // 각 주식의 수량을 가져오는 코드 파이차트안의 내용.
         const quantities: number[] = updatedData.map((account: any) => +account.hldg_qty);
@@ -96,14 +95,16 @@ export default function BackTest({ id }: Props) {
   return (
     <div className="portfolio-detail-container h-full">
       <div className="wrap-section flex flex-row gap-10">
-        <div className="section inline-block w-1/2 box-border px-4">
+        <div
+          className="section inline-block w-1/2 box-border px-4 overflow-y-auto pb-4"
+          style={{ height: "calc(100vh - 3.5rem)" }}
+        >
           <div className="section ">
-            <p className="text-xl">포트폴리오 구성</p>
-            <div className="chart-wrap w-full h-screen/2 min-h-[580px] relative overflow-hidden">
-              <StockChart stockData={stocks} stockNames={stockNames} />
+            <div className="chart-wrap w-full h-screen/2 min-h-[380px] relative overflow-hidden">
+              <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
-            <div className="date-wrap flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
-              <p className="text-xl pb-6">투자 성과 조회 기준 설정</p>
+            <div className="date-wrap flex flex-col mt-12 p-6 bg-slate-100 rounded-lg mx-4">
+              <p className="text-lg pb-6">투자 성과 조회 기준 설정</p>
               <div className="date-wrap flex flex-row gap-4 justify-between ">
                 <DatePicker
                   label={"시작"}
@@ -128,11 +129,14 @@ export default function BackTest({ id }: Props) {
                   className="flex-1"
                 />
               </div>
-              <p className="mt-4 text-gray-600">시작일 지정은 2004-01부터 지원됩니다.</p>
+              <p className="mt-4 text-sm text-gray-600">시작일 지정은 2004-01부터 지원됩니다.</p>
             </div>
           </div>
         </div>
-        <div className="section inline-block w-1/2 box-border px-4 h-screen overflow-y-auto">
+        <div
+          className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
+          style={{ height: "calc(100vh - 3.5rem)" }}
+        >
           {/* chart */}
           {backTestData && backTestData.portfolio && <StockLineChart backTestData={backTestData.portfolio.backtest} />}
           <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">

@@ -37,16 +37,15 @@ export function AccountSelector({ selectedAccount, setSelectedAccount }: Account
   };
 
   return (
-    <div className="p-8 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4">계좌 선택</h1>
-      <select value={selectedAccount} onChange={handleAccountChange} className="p-2 border rounded-md mb-4 w-64">
+    <div className="pr-8 flex flex-row items-center gap-4">
+      <h1 className="text-xl font-bold">계좌 선택</h1>
+      <select value={selectedAccount} onChange={handleAccountChange} className="p-2 border rounded-md w-64">
         {accounts.map((account) => (
           <option key={account.account_id} value={account.account_id}>
             {account.account_number}
           </option>
         ))}
       </select>
-      <p className="text-gray-600">{`선택된 계좌 ID: ${selectedAccount}`}</p>
     </div>
   );
 }

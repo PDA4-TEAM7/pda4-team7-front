@@ -8,9 +8,10 @@ Chart.register(ChartDataLabels);
 type Props = {
   stockData: number[];
   stockNames: string[];
+  showLabel: boolean;
 };
 
-export default function StockChart({ stockData, stockNames }: Props) {
+export default function StockChart({ stockData, stockNames, showLabel = true }: Props) {
   const [piedata, setPiedata] = useState<ChartData<"pie">>({
     // 파이차트에 대한 변수
     labels: [],
@@ -62,6 +63,7 @@ export default function StockChart({ stockData, stockNames }: Props) {
   const options = {
     maintainAspectRatio: false,
     responsive: true,
+
     plugins: {
       datalabels: {
         formatter: (value: number, context: Context) => {
@@ -77,10 +79,11 @@ export default function StockChart({ stockData, stockNames }: Props) {
         },
       },
       legend: {
+        display: false,
         position: position,
         labels: {
           font: {
-            size: 18,
+            size: 12,
           },
           padding: 12,
           generateLabels: (chart: any) => {
@@ -123,6 +126,31 @@ export default function StockChart({ stockData, stockNames }: Props) {
       ],
     });
   }, [stockNames, stockData]);
+  if (!piedata || !piedata.datasets || piedata.datasets.length === 0) return null;
 
-  return <Pie data={piedata} options={options} width={"100%"} height={"auto"} />;
+  return (
+    <>
+      <div className="h-screen/2 min-h-[320px] px-10 pt-6">
+        <Pie data={piedata} options={options} width={"100%"} height={"auto"} />
+      </div>
+      <div className="legend-container mt-4">
+        {showLabel &&
+          piedata.datasets &&
+          piedata.labels?.map((label: any, index) => {
+            const backgroundColor = piedata.datasets[0].backgroundColor;
+            // backgroundColor가 배열인지 확인
+            const color = Array.isArray(backgroundColor) ? backgroundColor[index] : undefined;
+            return (
+              <span key={index} className="legend-item items-center pr-4 text-nowrap text-sm">
+                <div
+                  className="legend-color-box w-2 h-2 inline-block mr-2"
+                  style={{ backgroundColor: color as string }}
+                ></div>
+                {label}: {((stockData[index] / stockData.reduce((acc, val) => acc + val, 0)) * 100).toFixed(2)}%
+              </span>
+            );
+          })}
+      </div>
+    </>
+  );
 }

@@ -38,7 +38,7 @@ export default function MyPage() {
   };
   const handleSubmit = async () => {
     if (disableSubmit) return;
-    await submitUserInfo({ userName: userInfo.userName, introduce: userInfo.introduce });
+    await submitUserInfo({ userName: userInfo.userName, introduce: userInfo.introduce, credit: userInfo.credit });
     open("알림", "회원정보가 변경되었습니다.", close);
     //수정완료되면 모달
   };

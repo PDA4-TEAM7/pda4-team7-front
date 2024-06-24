@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import AccountSelector from "@/components/AccountSelector";
 import PortfolioSubmit from "@/components/PortfolioSubmit";
 import { portfolioApi } from "@/apis/portfolioAPI";
+import StockList from "./stockList";
+import BackTest from "./detail/BackTest";
 
 export function Myportfolio() {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [showSheet, setShowSheet] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-
+  const [tab, setTab] = useState<"StockList" | "BackTest">("StockList");
   // 계좌 선택 시 포트폴리오 상태 체크
   useEffect(() => {
     const checkPortfolioStatus = async () => {
@@ -45,23 +47,53 @@ export function Myportfolio() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex justify-end p-4">
-        {isPublished ? (
-          <Button
-            variant="outline"
-            className="bg-red-600 text-white hover:bg-red-700"
-            onClick={handleCancelRegistration}
+    <div className="my-portfolio-container flex flex-col h-screen min-h-screen">
+      <nav className="flex flex-row justify-between p-2 h-14 items-center box-border">
+        <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
+        <div className="flex flex-row justify-between gap-2">
+          <div
+            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+              tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
+            } `}
+            onClick={() => {
+              if (tab !== "StockList") setTab("StockList");
+            }}
           >
-            등록 취소
-          </Button>
-        ) : (
-          <Button variant="outline" className="bg-blue-600 text-white hover:bg-blue-700" onClick={handleRegister}>
-            등록
-          </Button>
-        )}
-      </div>
-      <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
+            종목 리스트
+          </div>
+          <div
+            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+              tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
+            }`}
+            onClick={() => {
+              if (tab !== "BackTest") setTab("BackTest");
+            }}
+          >
+            과거 투자 성과
+          </div>
+          <div className="flex justify-end">
+            {isPublished ? (
+              <Button
+                variant="outline"
+                className="bg-red-600 text-white hover:bg-red-700"
+                onClick={handleCancelRegistration}
+              >
+                등록 취소
+              </Button>
+            ) : (
+              <Button variant="outline" className="bg-blue-600 text-white hover:bg-blue-700" onClick={handleRegister}>
+                등록
+              </Button>
+            )}
+          </div>
+        </div>
+      </nav>
+      {selectedAccount && (
+        <div className="tab-container px-6 overflow-y-auto flex-1">
+          {tab === "StockList" && <StockList id={selectedAccount} />}
+          {tab === "BackTest" && <BackTest id={selectedAccount} />}
+        </div>
+      )}
       <PortfolioSubmit
         selectedAccount={selectedAccount}
         showSheet={showSheet}
