@@ -25,4 +25,11 @@ export default class accountAPI extends BaseApi {
     console.log(resp.data);
     return resp.data;
   }
+
+  // DELETE : 내 계좌 삭제
+  async deleteMyAccount(accountId: string) {
+    const resp = await this.fetcher.delete(`/account/${accountId}`);
+    console.log(resp.data);
+    return resp.data;
+  }
 }
