@@ -11,23 +11,28 @@ import { portfolioApi } from "@/apis/portfolioAPI";
 import { subscribeApi } from "@/apis/subscribeAPI";
 import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser"; // import useUser
+import { useAuth } from "@/hooks/useAuth";
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
+  // 로그인한 유저만 사용하는 상태
   const [subscribedPortfolios, setSubscribedPortfolios] = useState<any[]>([]);
   const navigate = useNavigate();
   const { open, close } = useModal();
   const { getUserInfo, submitUserInfo } = useUser(); // useUser hook
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const portfolioResponse = await portfolioApi.getAllPortfolios();
-        const subscriptionResponse = await subscribeApi.getUserSubscriptions();
-
+        //구독중인 정보는 로그인한 유저만 호출
+        if (user.userId) {
+          const subscriptionResponse = await subscribeApi.getUserSubscriptions();
+          setSubscribedPortfolios(subscriptionResponse);
+        }
         setPortfolioData(portfolioResponse);
-        setSubscribedPortfolios(subscriptionResponse);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -41,6 +46,13 @@ export default function MainPortfolio() {
   };
 
   const handlePortfolioClick = (item: any) => {
+    //TODO: 로그인창 이동 모달!
+    if (!user.userId) {
+      open("알림", `회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.`, () => {
+        navigate("/signup");
+      });
+      return;
+    }
     const isSubscribed = subscribedPortfolios.some((sub) => sub.portfolio_id === item.id);
 
     if (isSubscribed) {
@@ -51,6 +63,13 @@ export default function MainPortfolio() {
   };
 
   const handleSubscribe = async (item: any) => {
+    if (!user.userId) {
+      open("알림", `회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.`, () => {
+        navigate("/signup");
+      });
+      return;
+    }
+
     open("구독 확인", `이 포트폴리오를 ${item.price}원에 구독하시겠습니까?`, async () => {
       try {
         const userInfo = await getUserInfo();
@@ -80,6 +99,13 @@ export default function MainPortfolio() {
   };
 
   const handleUnsubscribe = async (portfolio_id: number) => {
+    //여긴 올일 없을텐데 그래도 추가
+    if (!user.userId) {
+      open("알림", `회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.`, () => {
+        navigate("/signup");
+      });
+      return;
+    }
     open("구독 취소 확인", "정말로 구독을 취소하시겠습니까?", async () => {
       try {
         await subscribeApi.unsubscribe(portfolio_id);
@@ -93,7 +119,10 @@ export default function MainPortfolio() {
     });
   };
 
-  const isPortfolioSubscribed = (portfolioId: number) => {
+  const isPortfolioSubscribed = (portfolioId: number): boolean => {
+    // 비로그인일시 다 구독하기로 노출.
+    //TODO: 비로그인 유저가 구독하기 버튼 클릭시 로그인하세요 모달띄우고 로그인페이지로 이동
+    if (!user) return false;
     return subscribedPortfolios.some((sub) => sub.portfolio_id === portfolioId);
   };
 
