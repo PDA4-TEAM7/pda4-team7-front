@@ -25,7 +25,9 @@ export default function SignUp() {
   const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
   const { signUp, validateUserId, validateUsername } = useAuth();
   const navigate = useNavigate();
-  const { open, close } = useModal();
+  const { open, close, openExtended } = useModal();
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState<boolean>(false);
+  const [privacyPolicy, setPrivacyPolicy] = useState<string>("");
   const handleModal = ({ title, message }: { title: string; message: string }) => {
     open(title, message, close);
   };
@@ -106,13 +108,41 @@ export default function SignUp() {
     return true;
   };
 
+  const handleClickPrivacyCheckbox = () => {
+    if (!agreedToPrivacy) {
+      handleOpenPrivacyModal(); // 동의가 필요할 때 모달을 연다
+    } else {
+      setAgreedToPrivacy((prev) => !prev); // 이미 동의했다면 토글
+    }
+  };
+
+  const handleOpenPrivacyModal = () => {
+    openExtended(
+      "개인정보 처리방침",
+      <div dangerouslySetInnerHTML={{ __html: privacyPolicy }} />,
+      () => setAgreedToPrivacy(true),
+      close
+    );
+  };
+
+  // useEffect(() => {
+  //   fetch("/privacy-policy.md")
+  //     .then((resp) => resp.text())
+  //     .then((text) => setPrivacyPolicy(text));
+  // }, []);
   useEffect(() => {
-    if (checkId && checkName) {
+    fetch("/privacy-policy.html")
+      .then((resp) => resp.text())
+      .then((text) => setPrivacyPolicy(text));
+  }, []);
+
+  useEffect(() => {
+    if (checkId && checkName && agreedToPrivacy) {
       setDisableSubmit(false);
     } else {
       setDisableSubmit(true);
     }
-  }, [checkId, checkName]);
+  }, [checkId, checkName, agreedToPrivacy]);
   return (
     <>
       <div className="relative min-h-screen w-full bg-blue-100 overflow-hidden">
@@ -201,16 +231,28 @@ export default function SignUp() {
                 onChange={(e) => handleChange(e)}
               />
             </div>
-
+            {/* 개인정보 처리방침 동의 */}
+            <div className="flex flex-col space-y-2">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={agreedToPrivacy}
+                  onClick={handleClickPrivacyCheckbox} // 체크박스 클릭 시 모달 열기
+                  readOnly // 체크박스는 readOnly로 설정하여 직접 수정할 수 없게 함
+                />
+                <span className="ml-1">개인정보 처리방침에 동의합니다.(필수)</span>
+              </label>
+            </div>
             {/* 가입하기 버튼 */}
-            <div className="mt-1"></div>
-            <Button
-              type="submit"
-              disabled={disableSubmit}
-              className="w-full px-4 py-2  bg-blue-500 text-white rounded-md disabled:opacity-75"
-            >
-              가입하기
-            </Button>
+            <div className="flex flex-col space-y-5">
+              <Button
+                type="submit"
+                disabled={disableSubmit}
+                className="w-full px-4 py-2  bg-blue-500 text-white rounded-md disabled:opacity-75"
+              >
+                가입하기
+              </Button>
+            </div>
           </form>
           <div className="mt-10">
             <p className="text-gray-600">이미 계정이 있습니다.</p>

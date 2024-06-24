@@ -1,5 +1,6 @@
-import { showModal, closeModal } from "@/store/modal";
+import { showModal, closeModal, showExtendedModal, closeExtendedModal } from "@/store/modal";
 import { useDispatch } from "react-redux";
+
 export default function useModal() {
   const dispatch = useDispatch();
 
@@ -7,7 +8,7 @@ export default function useModal() {
     dispatch(closeModal());
   };
 
-  function open(title: string, message: string, onClick: () => void) {
+  const open = (title: string, message: string, onClick: () => void) => {
     dispatch(
       showModal({
         title: title,
@@ -16,6 +17,28 @@ export default function useModal() {
         show: true,
       })
     );
-  }
-  return { open, close };
+  };
+
+  const closeExtended = () => {
+    dispatch(closeExtendedModal());
+  };
+
+  const openExtended = (
+    title: string,
+    message: string | React.ReactNode,
+    onConfirm: () => void,
+    onCancel: () => void
+  ) => {
+    dispatch(
+      showExtendedModal({
+        title: title,
+        message: message,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
+        show: true,
+      })
+    );
+  };
+
+  return { open, close, openExtended, closeExtended };
 }
