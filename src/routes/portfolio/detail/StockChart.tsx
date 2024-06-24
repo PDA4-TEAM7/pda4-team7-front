@@ -129,7 +129,7 @@ export default function StockChart({ stockData, stockNames, showLabel = true }: 
 
   return (
     <>
-      <div className="h-screen/2 min-h-[320px] px-10">
+      <div className="h-screen/2 min-h-[320px] px-10 pt-6">
         <Pie data={piedata} options={options} width={"100%"} height={"auto"} />
       </div>
       <div className="legend-container mt-4">

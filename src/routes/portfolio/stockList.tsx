@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { Pie } from "react-chartjs-2";
 import StockApi from "@/apis/stockAPI";
 import StockChart from "./detail/StockChart";
+import { Button } from "@/components/ui/button";
 
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
@@ -226,57 +227,76 @@ export default function StockList({ id }: Props) {
   const otherDataPercentage = ((otherDataOriginalValue / totalOriginalValue) * 100).toFixed(1);
 
   return (
-    <div>
-      <p>
-        헬스케어 산업의 특징은 성장을 지속하는 것에 있습니다. 성장 모멘텀 스코어를 활용하여 수익률과 리스크를 동시에
-        개선한 전략입니다.
-      </p>
-      <div className="flex">
-        <div className="w-1/2 p-4">
-          <div>
-            <div className="chart-wrap w-full h-screen/2 min-h-[210px] relative overflow-hidden">
+    <div className="portfolio-detail-container h-full">
+      <div className="wrap-section flex flex-row gap-6">
+        <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 3.5rem)" }}>
+          <div className="section flex flex-col h-full">
+            <p className="text-lg font-medium pt-2">자산 구성</p>
+            <div className="chart-wrap w-full min-h-[320px] relative">
               <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
             </div>
-            <div className="holding-stock-wrap">
-              <p className="text-xl pb-6">보유 종목 정보</p>
-              <div className="data-wrap h-[400px] overflow-y-auto">
-                {accountdata.map((stock, i) => (
-                  <div key={i} className="flex justify-between items-center mb-4 p-4 border-b">
-                    <div className="text-left">
-                      <span className="block">{stock.stock_name}</span>
-                      <span className="block">{stock.hldg_qty}주</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="block">{stock.evlu_amt}원</span>
-                      <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
-                        {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
-                      </span>
-                    </div>
-                  </div>
-                ))}
+            <div
+              className="holding-stock-wrap flex flex-col flex-grow overflow-hidden pb-2"
+              style={{ flex: "1 1 auto" }}
+            >
+              <div className="flex flex-row justify-between">
+                <p className="text-lg pb-3 font-medium">보유 종목 정보</p>
+                <Button className="py-1 px-2 text-sm h-7 bg-blue-100 text-blue-900 hover:bg-blue-200">
+                  거래 내역 조회
+                </Button>
               </div>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-col items-center">
-            <svg ref={svgRef}></svg>
-            <div className="mt-2">
-              {topData.map((d, i) => (
-                <div key={i} className="mb-2 flex items-center justify-start">
-                  <span style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}>●</span>
-                  <span className="inline-block w-24">{d.text}</span>
-                  <span>({((d.originalValue / totalOriginalValue) * 100).toFixed(1)}%)</span>
+              <div className="overflow-y-auto flex-grow">
+                <div className="data-wrap">
+                  {accountdata.map((stock, i) => (
+                    <div key={i} className="flex justify-between items-center mb-1 p-2 px-3 border-b ">
+                      <div className="text-left ">
+                        <span className="block">{stock.stock_name}</span>
+                        <span className="block text-sm text-zinc-600">{stock.hldg_qty}주</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="block">{stock.evlu_amt}원</span>
+                        <span className={`block text-sm ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                          {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              <div className="mb-2 flex items-center justify-start">
-                <span style={{ color: "gray", marginRight: "5px" }}>●</span>
-                <span className="inline-block w-24">그 외</span>
-                <span>({otherDataPercentage}%)</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="w-1/2 p-4">
-          <h2 className="text-xl font-bold">Activity</h2>
+        <div
+          className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
+          style={{ height: "calc(100vh - 3.5rem)" }}
+        >
+          <div className="">
+            <p className="text-lg text-lg font-medium pt-2">업종별 보유정보</p>
+            <div className="h-screen/2 min-h-[320px]">
+              <svg ref={svgRef}></svg>
+            </div>
+            <div>
+              {topData &&
+                topData.map((d, i) => (
+                  <span key={i} className="mb-2 pr-4 text-nowrap text-sm">
+                    <div
+                      className="inline-block text-xs"
+                      style={{ color: d3.schemeCategory10[i % 10], marginRight: "5px" }}
+                    >
+                      ●
+                    </div>
+                    {d.text}({((d.originalValue / totalOriginalValue) * 100).toFixed(1)}%)
+                  </span>
+                ))}
+              <span className="mb-2 pr-4 text-nowrap text-sm">
+                <div style={{ color: "gray", marginRight: "5px" }} className="inline-block text-xs">
+                  ●
+                </div>
+                그 외 ({otherDataPercentage}%)
+              </span>
+            </div>
+          </div>
+          {/* <h2 className="text-xl font-bold">Activity</h2>
           <hr className="my-2 border-gray-300" />
           <div className="trading-history h-screen overflow-y-auto">
             {accountdata.map((stock, i) => (
@@ -297,7 +317,7 @@ export default function StockList({ id }: Props) {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
