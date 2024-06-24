@@ -41,14 +41,14 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [modalShow, accountList]);
+  }, [modalShow, accountList, getAccountList]);
 
   if (!modalShow) return null;
 
   const handleDelete = async (account_id: string) => {
     try {
       const res = await deleteMyAccount(account_id);
-      alert("계좌가 삭제되었습니다.");
+      alert(res.data.message);
     } catch (error) {
       let errorMessage = "An unexpected error occurred";
       if (typeof error === "object" && error !== null) {
