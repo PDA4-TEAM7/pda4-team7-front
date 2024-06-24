@@ -188,6 +188,15 @@ export default function MainPortfolio() {
                           legend: {
                             display: false,
                           },
+                          tooltip: {
+                            callbacks: {
+                              label: (context) => {
+                                // 데이터 값에 100을 곱하고 소수점 제거하여 퍼센테이지로 변형
+                                const value: number = Number(context.raw);
+                                return `${context.label}: ${Math.round(value * 100)}%`;
+                              },
+                            },
+                          },
                         },
                       }}
                       width={200}
