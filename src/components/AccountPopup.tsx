@@ -13,6 +13,7 @@ type Props = {
 export default function AccountPopup({ modalShow, modalClose, openAddAccountModal }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [accountList, setAccountList] = useState<any[]>([]);
+  const [lastDeletedAccountId, setLastDeletedAccountId] = useState<string | null>(null);
   const { getAccountList, deleteMyAccount } = useAccount();
   const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -41,14 +42,15 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [modalShow, accountList]);
+  }, [modalShow, lastDeletedAccountId]);
 
   if (!modalShow) return null;
 
   const handleDelete = async (account_id: string) => {
     try {
-      const res = await deleteMyAccount(account_id);
-      alert("계좌가 삭제되었습니다.");
+      const data = await deleteMyAccount(account_id);
+      setLastDeletedAccountId(account_id);
+      alert(data.message);
     } catch (error) {
       let errorMessage = "An unexpected error occurred";
       if (typeof error === "object" && error !== null) {
