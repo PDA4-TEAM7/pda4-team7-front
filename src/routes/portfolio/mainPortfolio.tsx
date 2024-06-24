@@ -14,33 +14,25 @@ import useUser from "@/hooks/useUser"; // import useUser
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
-  const [subscribes, setSubscribes] = useState<any[]>([]);
+  const [subscribedPortfolios, setSubscribedPortfolios] = useState<any[]>([]);
   const navigate = useNavigate();
   const { open, close } = useModal();
   const { getUserInfo, submitUserInfo } = useUser(); // useUser hook
 
   useEffect(() => {
-    const fetchPortfolioData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await portfolioApi.getAllPortfolios();
-        console.log("API Response:", response);
-        setPortfolioData(response);
+        const portfolioResponse = await portfolioApi.getAllPortfolios();
+        const subscriptionResponse = await subscribeApi.getUserSubscriptions();
+
+        setPortfolioData(portfolioResponse);
+        setSubscribedPortfolios(subscriptionResponse);
       } catch (error) {
-        console.error("Error fetching portfolio data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    const fetchSubscriptions = async () => {
-      try {
-        const response = await subscribeApi.getUserSubscriptions();
-        setSubscribes(response);
-      } catch (error) {
-        console.error("Error fetching subscriptions:", error);
-      }
-    };
-
-    fetchPortfolioData();
-    fetchSubscriptions();
+    fetchData();
   }, []);
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -48,7 +40,7 @@ export default function MainPortfolio() {
   };
 
   const handlePortfolioClick = (item: any) => {
-    const isSubscribed = subscribes.some((sub) => sub.portfolio_id === item.id && sub.can_sub);
+    const isSubscribed = subscribedPortfolios.some((sub) => sub.portfolio_id === item.id);
 
     if (isSubscribed) {
       navigate(`/portfolio/detail/${item.account_id}`);
@@ -68,16 +60,15 @@ export default function MainPortfolio() {
         }
 
         await subscribeApi.subscribe(item.id);
-        const response = await subscribeApi.getUserSubscriptions();
-        setSubscribes(response);
+        const updatedSubscriptions = await subscribeApi.getUserSubscriptions();
 
         // Update user's credit
         await submitUserInfo({
           userName: userInfo.userName,
           introduce: userInfo.introduce,
-          credit: userInfo.credit - item.price, // Assuming the API allows updating credit this way
         });
 
+        setSubscribedPortfolios(updatedSubscriptions);
         close();
       } catch (error) {
         console.error("Error subscribing to portfolio:", error);
@@ -90,14 +81,18 @@ export default function MainPortfolio() {
     open("구독 취소 확인", "정말로 구독을 취소하시겠습니까?", async () => {
       try {
         await subscribeApi.unsubscribe(portfolio_id);
-        const response = await subscribeApi.getUserSubscriptions();
-        setSubscribes(response);
+        const updatedSubscriptions = await subscribeApi.getUserSubscriptions();
+        setSubscribedPortfolios(updatedSubscriptions);
         close();
       } catch (error) {
         console.error("Error unsubscribing from portfolio:", error);
         close();
       }
     });
+  };
+
+  const isPortfolioSubscribed = (portfolioId: number) => {
+    return subscribedPortfolios.some((sub) => sub.portfolio_id === portfolioId);
   };
 
   return (
@@ -135,7 +130,7 @@ export default function MainPortfolio() {
         </div>
         <div className="grid grid-cols-3 gap-4">
           {portfolioData.map((item) => {
-            const isSubscribed = subscribes.some((sub) => sub.portfolio_id === item.id && sub.can_sub);
+            const isSubscribed = isPortfolioSubscribed(item.id);
 
             return (
               <div
