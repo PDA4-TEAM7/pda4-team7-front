@@ -83,7 +83,7 @@ export default function StockChart({ stockData, stockNames, showLabel = true }: 
         position: position,
         labels: {
           font: {
-            size: 18,
+            size: 14,
           },
           padding: 12,
           generateLabels: (chart: any) => {

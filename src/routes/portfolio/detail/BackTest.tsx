@@ -99,7 +99,7 @@ export default function BackTest({ id }: Props) {
         <div className="section inline-block w-1/2 box-border px-4">
           <div className="section ">
             <p className="text-xl">포트폴리오 구성</p>
-            <div className="chart-wrap w-full h-screen/2 min-h-[580px] relative overflow-hidden">
+            <div className="chart-wrap w-full h-screen/2 min-h-[320px] relative overflow-hidden">
               <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
             <div className="date-wrap flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
@@ -132,7 +132,10 @@ export default function BackTest({ id }: Props) {
             </div>
           </div>
         </div>
-        <div className="section inline-block w-1/2 box-border px-4 h-screen overflow-y-auto">
+        <div
+          className="section inline-block w-1/2 box-border px-4 overflow-y-auto"
+          style={{ height: "calc(100vh - 3.5rem)" }}
+        >
           {/* chart */}
           {backTestData && backTestData.portfolio && <StockLineChart backTestData={backTestData.portfolio.backtest} />}
           <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">

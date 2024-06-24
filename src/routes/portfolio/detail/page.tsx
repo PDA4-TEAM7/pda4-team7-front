@@ -7,7 +7,7 @@ import CommPage from "../comm_page";
 // portfolio/detail/1
 export default function DetailPage() {
   const [title, setTitle] = useState<string>();
-  const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("BackTest");
+  const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
   //TODO: portfolio id를 받아와서 portfolio조회하고, accountID 값을 받고 다시 조회하기
   const { id } = useParams();
 
@@ -17,9 +17,9 @@ export default function DetailPage() {
   if (!id) return <div>param not found</div>;
   return (
     <div className="portfolio-detail-container h-screen flex flex-col">
-      <nav className="flex flex-row items-center justify-between p-6 text-3xl">
+      <nav className="flex flex-row items-center justify-between p-2 text-2xl h-14 box-border">
         <div>
-          <p className="text-3xl font-bold">{title}</p>
+          <p className="text-2xl font-bold pb-2 pl-4">{title}</p>
         </div>
         <div className="space-x-4 flex flex-row gap-4 pr-12">
           <div
