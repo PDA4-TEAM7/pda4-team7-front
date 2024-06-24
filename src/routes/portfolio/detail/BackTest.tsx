@@ -75,9 +75,9 @@ export default function BackTest({ id }: Props) {
           start_date: startDate.startOf("month").format("YYYYMMDD"), // "20221231"
           end_date: endDate.endOf("month").format("YYYYMMDD"),
         };
-        // const backTestingDataRes = await service.getBackTest(portfolio);
+        const backTestingDataRes = await service.getBackTest(portfolio);
         if (data && data.portfolio) {
-          setBackTestData(data);
+          setBackTestData(backTestingDataRes);
         } else {
           console.log("error : ", data);
         }
