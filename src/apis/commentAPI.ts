@@ -1,8 +1,8 @@
 import { BaseApi } from "./baseAPI";
 
-interface Comment {
-  description: string;
+export interface IComment {
   userId: number;
+  description: string;
   portfolioId: number;
 }
 
@@ -15,7 +15,7 @@ class CommentApi extends BaseApi {
     super();
   }
 
-  writeComment(data: Comment) {
+  writeComment(data: IComment) {
     return this.fetcher.post("/comment/write", data);
   }
 

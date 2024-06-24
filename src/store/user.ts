@@ -1,17 +1,13 @@
 // src/store/reducer.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface UserState {
-  _id: string | null;
-  email: string | null;
-  phone: number | null;
-  username: string | null;
+  userName: string | null;
+  userId: string | null;
 }
 
 const initialState: UserState = {
-  _id: null,
-  email: null,
-  phone: null,
-  username: null,
+  userId: null,
+  userName: null,
 };
 
 const userSlice = createSlice({
@@ -19,13 +15,10 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<UserState>) => {
-      (state._id = action.payload._id),
-        (state.phone = action.payload.phone),
-        (state.email = action.payload.email),
-        (state.username = action.payload.username);
+      (state.userId = action.payload.userId), (state.userName = action.payload.userName);
     },
     clearUser: (state) => {
-      (state.email = null), (state.username = null);
+      (state.userId = null), (state.userName = null);
     },
   },
 });

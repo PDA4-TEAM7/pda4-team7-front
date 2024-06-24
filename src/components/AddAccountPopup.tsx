@@ -1,32 +1,62 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import useModal from "@/hooks/useModal";
+import { IAccountInfo } from "@/apis/accountAPI";
+import useAccount from "@/hooks/useAccount";
 
 //TODO: userId 로 계좌 조회 해서 리스트 표시
 export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: boolean; modalClose: () => void }) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [accountInfo, setAccountInfo] = useState<IAccountInfo>({
+    appkey: "",
+    appsecretkey: "",
+    accountNo: "",
+  });
+  const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
   const { open, close } = useModal();
+  const { addAccount } = useAccount();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
 
+    setDisableSubmit(false);
+    setAccountInfo((prev) => ({ ...prev, [name]: value }));
+  };
   const closeAddModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
     }
   };
-  const handleModal = ({ title, text }: { title: string; text: string }) => {
-    // DUMMY: 성공여부추가하기
-    const success = true;
+  const handleModal = ({ title, text, success }: { title: string; text: string; success: boolean }) => {
     //TODO: 성공하면 닫기
-    open(title, text, () => {
-      modalClose();
-    });
+    if (success) {
+      open(title, text, () => {
+        modalClose();
+      });
+    }
     //TODO: 실패하면 공용모달만닫기.
     if (!success) {
       open(title, text, close);
     }
   };
 
+  const handleAddAccount = async () => {
+    const res = await addAccount(accountInfo);
+    if (res) {
+      handleModal({ title: "알림", text: "등록 완료했습니다.", success: true });
+    } else {
+      handleModal({ title: "알림", text: "등록에 실패했습니다.", success: false });
+    }
+  };
+
+  useEffect(() => {
+    if (accountInfo.accountNo && accountInfo.appkey && accountInfo.appsecretkey) {
+      setDisableSubmit(false);
+    } else {
+      setDisableSubmit(true);
+    }
+  }, [accountInfo]);
   useEffect(() => {
     if (modalShow) {
       // 모달이 열리면 body의 overflow를 hidden으로 설정하여 배경 스크롤을 막음
@@ -71,31 +101,35 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
           </div>
           <div className="py-4 space-y-4 overflow-scroll h-full pr-3 flex-1">
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="name" className="text-lg">
+              <Label htmlFor="appkey" className="text-lg">
                 App Key
               </Label>
-              <Input type="string" id="name" placeholder="app key" />
+              <Input type="string" id="appkey" name="appkey" placeholder="app key" onChange={handleChange} />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="name" className="text-lg">
+              <Label htmlFor="appsecretkey" className="text-lg">
                 App Secret Key
               </Label>
-              <Input type="string" id="name" placeholder="app secret key" />
+              <Input
+                type="string"
+                id="appsecretkey"
+                name="appsecretkey"
+                placeholder="app secret key"
+                onChange={handleChange}
+              />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="name" className="text-lg">
+              <Label htmlFor="accountNo" className="text-lg">
                 Account
               </Label>
-              <Input type="string" id="name" placeholder="account" />
+              <Input type="string" id="accountNo" name="accountNo" placeholder="account" onChange={handleChange} />
             </div>
           </div>
           <div className="flex justify-center pt-4">
             <Button
-              onClick={() => {
-                // TODO: 계좌 추가 API연결
-                handleModal({ title: "성공!", text: "성공했습니다!" });
-              }}
-              className="focus:outline-none px-4 bg-indigo-500 p-3 ml-3 rounded-lg text-white hover:bg-indigo-400 w-[120px]"
+              disabled={disableSubmit}
+              onClick={handleAddAccount}
+              className="focus:outline-none px-4 bg-indigo-500 p-3 ml-3 rounded-lg text-white hover:bg-indigo-400 w-[120px] disabled:opacity-75"
             >
               계좌 추가하기
             </Button>
