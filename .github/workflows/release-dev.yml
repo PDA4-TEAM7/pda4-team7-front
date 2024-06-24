@@ -1,4 +1,5 @@
-name: release-deev Branch Deployment
+name: release-dev Branch Deployment
+
 
 on:
   push:
@@ -42,3 +43,4 @@ jobs:
             sudo npm install
             # tsc로 컴파일
             sudo npm run build
+
