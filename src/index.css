@@ -78,3 +78,11 @@
 body {
   background-color: white;
 }
+.chart-legend {
+  max-height: 150px; /* 필요에 따라 높이 조정 */
+  overflow-y: auto;
+}
+
+.MuiMarkElement-root {
+  display: none;
+}

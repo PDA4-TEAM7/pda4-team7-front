@@ -96,14 +96,16 @@ export default function BackTest({ id }: Props) {
   return (
     <div className="portfolio-detail-container h-full">
       <div className="wrap-section flex flex-row gap-10">
-        <div className="section inline-block w-1/2 box-border px-4">
+        <div
+          className="section inline-block w-1/2 box-border px-4 overflow-y-auto pb-4"
+          style={{ height: "calc(100vh - 3.5rem)" }}
+        >
           <div className="section ">
-            <p className="text-xl">포트폴리오 구성</p>
-            <div className="chart-wrap w-full h-screen/2 min-h-[320px] relative overflow-hidden">
+            <div className="chart-wrap w-full h-screen/2 min-h-[380px] relative overflow-hidden">
               <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
-            <div className="date-wrap flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
-              <p className="text-xl pb-6">투자 성과 조회 기준 설정</p>
+            <div className="date-wrap flex flex-col mt-12 p-6 bg-slate-100 rounded-lg mx-4">
+              <p className="text-lg pb-6">투자 성과 조회 기준 설정</p>
               <div className="date-wrap flex flex-row gap-4 justify-between ">
                 <DatePicker
                   label={"시작"}
@@ -128,12 +130,12 @@ export default function BackTest({ id }: Props) {
                   className="flex-1"
                 />
               </div>
-              <p className="mt-4 text-gray-600">시작일 지정은 2004-01부터 지원됩니다.</p>
+              <p className="mt-4 text-sm text-gray-600">시작일 지정은 2004-01부터 지원됩니다.</p>
             </div>
           </div>
         </div>
         <div
-          className="section inline-block w-1/2 box-border px-4 overflow-y-auto"
+          className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
           style={{ height: "calc(100vh - 3.5rem)" }}
         >
           {/* chart */}

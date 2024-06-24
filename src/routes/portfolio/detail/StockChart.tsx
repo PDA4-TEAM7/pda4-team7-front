@@ -79,11 +79,11 @@ export default function StockChart({ stockData, stockNames, showLabel = true }: 
         },
       },
       legend: {
-        display: showLabel,
+        display: false,
         position: position,
         labels: {
           font: {
-            size: 14,
+            size: 12,
           },
           padding: 12,
           generateLabels: (chart: any) => {
@@ -127,5 +127,24 @@ export default function StockChart({ stockData, stockNames, showLabel = true }: 
     });
   }, [stockNames, stockData]);
 
-  return <Pie data={piedata} options={options} width={"100%"} height={"auto"} />;
+  return (
+    <>
+      <div className="h-screen/2 min-h-[320px] px-10">
+        <Pie data={piedata} options={options} width={"100%"} height={"auto"} />
+      </div>
+      <div className="legend-container mt-4">
+        {showLabel &&
+          piedata.datasets &&
+          piedata.labels?.map((label: any, index) => (
+            <span key={index} className="legend-item items-center pr-4 text-nowrap text-sm">
+              <div
+                className="legend-color-box w-2 h-2 inline-block mr-2"
+                style={{ backgroundColor: piedata.datasets[0].backgroundColor[index] }}
+              ></div>
+              {label}: {((stockData[index] / stockData.reduce((acc, val) => acc + val, 0)) * 100).toFixed(2)}%
+            </span>
+          ))}
+      </div>
+    </>
+  );
 }

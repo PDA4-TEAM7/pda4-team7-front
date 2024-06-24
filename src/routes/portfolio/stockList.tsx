@@ -234,7 +234,7 @@ export default function StockList({ id }: Props) {
       <div className="flex">
         <div className="w-1/2 p-4">
           <div>
-            <div className="chart-wrap w-full h-screen/2 min-h-[210px] relative overflow-hidden px-10">
+            <div className="chart-wrap w-full h-screen/2 min-h-[210px] relative overflow-hidden">
               <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
             </div>
             <div className="holding-stock-wrap">
