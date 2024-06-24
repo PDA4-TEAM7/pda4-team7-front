@@ -100,7 +100,7 @@ export default function BackTest({ id }: Props) {
           <div className="section ">
             <p className="text-xl">포트폴리오 구성</p>
             <div className="chart-wrap w-full h-screen/2 min-h-[580px] relative overflow-hidden">
-              <StockChart stockData={stocks} stockNames={stockNames} />
+              <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
             <div className="date-wrap flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
               <p className="text-xl pb-6">투자 성과 조회 기준 설정</p>

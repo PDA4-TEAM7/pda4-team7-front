@@ -8,9 +8,10 @@ Chart.register(ChartDataLabels);
 type Props = {
   stockData: number[];
   stockNames: string[];
+  showLabel: boolean;
 };
 
-export default function StockChart({ stockData, stockNames }: Props) {
+export default function StockChart({ stockData, stockNames, showLabel = true }: Props) {
   const [piedata, setPiedata] = useState<ChartData<"pie">>({
     // 파이차트에 대한 변수
     labels: [],
@@ -62,6 +63,7 @@ export default function StockChart({ stockData, stockNames }: Props) {
   const options = {
     maintainAspectRatio: false,
     responsive: true,
+
     plugins: {
       datalabels: {
         formatter: (value: number, context: Context) => {
@@ -77,6 +79,7 @@ export default function StockChart({ stockData, stockNames }: Props) {
         },
       },
       legend: {
+        display: showLabel,
         position: position,
         labels: {
           font: {
