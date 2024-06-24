@@ -18,7 +18,7 @@ export default function MonthlyInfo({ startDate, endDate, backTestData }: Props)
   const [months, setMonths] = useState<Dayjs[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(startDate);
   const [showBTData, setShowBTData] = useState<StockData[]>([]);
-  const handleChange = (event: Event, newValue: number | number[]) => {
+  const handleChange = (_event: Event, newValue: number | number[]) => {
     setSelectedMonth(months[newValue as number]);
   };
 

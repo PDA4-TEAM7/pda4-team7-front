@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
@@ -19,7 +20,6 @@ export default function BackTest({ id }: Props) {
   const today = dayjs();
   const [startDate, setStartDate] = useState<Dayjs | null>(startYear2004);
   const [endDate, setEndDate] = useState<Dayjs | null>(today);
-  const [accountdata, setAccountdata] = useState<any[]>([]); // stock_in_account 컬럼 값 저장
   const [stocks, setStocks] = useState<number[]>([]);
   const [stockNames, setStockNames] = useState<string[]>([]);
   const [backTestData, setBackTestData] = useState<any>();
@@ -55,7 +55,6 @@ export default function BackTest({ id }: Props) {
             std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
           };
         });
-        setAccountdata(updatedData);
         // 파이차트
         // 각 주식의 수량을 가져오는 코드 파이차트안의 내용.
         const quantities: number[] = updatedData.map((account: any) => +account.hldg_qty);
