@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
@@ -10,6 +11,7 @@ import { portfolioApi } from "@/apis/portfolioAPI";
 import { subscribeApi } from "@/apis/subscribeAPI";
 import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser"; // import useUser
+import StockChart from "./detail/StockChart";
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
@@ -134,86 +136,102 @@ export default function MainPortfolio() {
           </FormControl>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {portfolioData.map((item) => {
-            const isSubscribed = subscribes.some((sub) => sub.portfolio_id === item.id && sub.can_sub);
-
-            return (
-              <div
-                key={item.id}
-                className={`border p-4 rounded-md ${isSubscribed ? "cursor-pointer" : "cursor-not-allowed"}`}
-                onClick={() => handlePortfolioClick(item)}
-              >
-                <div className="flex justify-between">
-                  <div className="text-base font-bold">{item.title}</div>
-                  <button
-                    className={`text-base ${isSubscribed ? "text-red-500" : "text-green-500"}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
-                    }}
-                  >
-                    {isSubscribed ? "구독 취소" : "구독"}
-                  </button>
-                </div>
-                <div className="flex">
-                  <div className="w-1/2">
-                    <Pie
-                      data={{
-                        labels: item.stockData.map((stock: any) => stock.name),
-                        datasets: [
-                          {
-                            label: "비율",
-                            data: item.stockData.map((stock: any) => stock.ratio),
-                            backgroundColor: item.stockData.map(
-                              () =>
-                                `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
-                                  Math.random() * 256
-                                )}, ${Math.floor(Math.random() * 256)}, 1)`
-                            ),
-                            borderWidth: 1,
-                          },
-                        ],
+          {portfolioData &&
+            subscribes &&
+            portfolioData.map((item) => {
+              // const isSubscribed = true;
+              const isSubscribed =
+                subscribes.length > 0 && subscribes.some((sub) => sub.portfolio_id === item.id && sub.can_sub);
+              const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
+              const stockNameData = item.stockData.map((stock: any) => stock.name);
+              return (
+                <div
+                  key={item.id}
+                  className={`border p-4 rounded-md ${isSubscribed ? "cursor-pointer" : "cursor-not-allowed"}`}
+                  onClick={() => handlePortfolioClick(item)}
+                >
+                  <div className="flex justify-between">
+                    <div className="text-base font-bold">{item.title}</div>
+                    <button
+                      className={`text-base ${isSubscribed ? "text-red-500" : "text-green-500"}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
                       }}
-                      options={{
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            display: false,
-                          },
-                        },
-                      }}
-                      width={200}
-                      height={200}
-                    />
+                    >
+                      {isSubscribed ? "구독 취소" : "구독"}
+                    </button>
                   </div>
-                  <div className="w-1/2 pl-4 flex flex-col justify-center">
-                    <div>
-                      <p className="font-bold">총 자산: {item.totalAsset}</p>
-                      <p className="font-bold">수익률: {item.profitLoss.toFixed(2)}%</p>
-                      <p className="text-red-500">({item.loss})</p>
+                  <div className="flex">
+                    <div className="w-1/2">
+                      <Pie
+                        data={{
+                          labels: stockNameData,
+                          datasets: [
+                            {
+                              label: "비율",
+                              data: stockAmtData,
+                              backgroundColor: [
+                                "rgba(255, 99, 132, 1)",
+                                "rgba(54, 162, 235, 1)",
+                                "rgba(255, 206, 86, 1)",
+                                "rgba(75, 192, 192, 1)",
+                                "rgba(153, 102, 255, 1)",
+                                "rgba(255, 159, 64, 1)",
+                                "rgba(255, 99, 132, 0.8)",
+                                "rgba(54, 162, 235, 0.8)",
+                                "rgba(255, 206, 86, 0.8)",
+                                "rgba(75, 192, 192, 0.8)",
+                                "rgba(153, 102, 255, 0.8)",
+                                "rgba(255, 159, 64, 0.8)",
+                              ],
+                              borderWidth: 1,
+                            },
+                          ],
+                        }}
+                        options={{
+                          maintainAspectRatio: false,
+                          plugins: {
+                            datalabels: {
+                              display: false, // 데이터 값 숨기기
+                            },
+                            legend: {
+                              display: false,
+                            },
+                          },
+                        }}
+                        width={200}
+                        height={200}
+                      />
+                    </div>
+                    <div className="w-1/2 pl-4 flex flex-col justify-center">
+                      <div>
+                        <p className="font-bold">총 자산: {item.totalAsset}</p>
+                        <p className="font-bold">수익률: {item.profitLoss.toFixed(2)}%</p>
+                        <p className="text-red-500">({item.loss})</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="mt-4">
-                  <h3 className="font-bold">{item.title}</h3>
-                  <p>{item.description}</p>
                   <div className="mt-4">
-                    <span className="text-base text-gray-500">
-                      생성일자 {new Date(item.createDate).toLocaleString()}
-                    </span>
-                    <div className="flex items-center mt-2">
-                      <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
-                      <span className="text-base text-gray-500">{item.username}</span>
-                      <div className="flex items-center ml-auto">
-                        <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
-                        <span className="text-base text-gray-500">구독자 수</span>
+                    <h3 className="font-bold">{item.title}</h3>
+                    <p>{item.description}</p>
+                    <div className="mt-4">
+                      <span className="text-base text-gray-500">
+                        생성일자 {new Date(item.createDate).toLocaleString()}
+                      </span>
+                      <div className="flex items-center mt-2">
+                        <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
+                        <span className="text-base text-gray-500">{item.username}</span>
+                        <div className="flex items-center ml-auto">
+                          <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
+                          <span className="text-base text-gray-500">구독자 수</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </main>
     </div>
