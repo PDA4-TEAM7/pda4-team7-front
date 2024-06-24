@@ -49,6 +49,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
       handleModal({ title: "알림", text: "등록에 실패했습니다.", success: false });
     }
   };
+
   useEffect(() => {
     if (accountInfo.accountNo && accountInfo.appkey && accountInfo.appsecretkey) {
       setDisableSubmit(false);
@@ -100,13 +101,13 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
           </div>
           <div className="py-4 space-y-4 overflow-scroll h-full pr-3 flex-1">
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="name" className="text-lg">
+              <Label htmlFor="appkey" className="text-lg">
                 App Key
               </Label>
               <Input type="string" id="appkey" name="appkey" placeholder="app key" onChange={handleChange} />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="name" className="text-lg">
+              <Label htmlFor="appsecretkey" className="text-lg">
                 App Secret Key
               </Label>
               <Input
@@ -118,7 +119,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
               />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="name" className="text-lg">
+              <Label htmlFor="accountNo" className="text-lg">
                 Account
               </Label>
               <Input type="string" id="accountNo" name="accountNo" placeholder="account" onChange={handleChange} />
