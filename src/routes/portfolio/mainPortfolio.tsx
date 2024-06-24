@@ -7,13 +7,17 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { portfolioApi } from "@/apis/portfolioAPI";
-import { subscribeApi } from "@/apis/subscribeAPI"; // corrected the import
+import { subscribeApi } from "@/apis/subscribeAPI";
+import useModal from "@/hooks/useModal";
+import useUser from "@/hooks/useUser"; // import useUser
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
-  const [subscribes, setSubscribes] = useState<any[]>([]); // corrected the state name
+  const [subscribes, setSubscribes] = useState<any[]>([]);
   const navigate = useNavigate();
+  const { open, close } = useModal();
+  const { getUserInfo, submitUserInfo } = useUser(); // useUser hook
 
   useEffect(() => {
     const fetchPortfolioData = async () => {
@@ -53,24 +57,47 @@ export default function MainPortfolio() {
     }
   };
 
-  const handleSubscribe = async (portfolio_id: number) => {
-    try {
-      await subscribeApi.subscribe(portfolio_id);
-      const response = await subscribeApi.getUserSubscriptions();
-      setSubscribes(response);
-    } catch (error) {
-      console.error("Error subscribing to portfolio:", error);
-    }
+  const handleSubscribe = async (item: any) => {
+    open("구독 확인", `이 포트폴리오를 ${item.price}원에 구독하시겠습니까?`, async () => {
+      try {
+        const userInfo = await getUserInfo();
+        if (userInfo.credit < item.price) {
+          alert("소지 금액이 부족합니다.");
+          close();
+          return;
+        }
+
+        await subscribeApi.subscribe(item.id);
+        const response = await subscribeApi.getUserSubscriptions();
+        setSubscribes(response);
+
+        // Update user's credit
+        await submitUserInfo({
+          userName: userInfo.userName,
+          introduce: userInfo.introduce,
+          credit: userInfo.credit - item.price, // Assuming the API allows updating credit this way
+        });
+
+        close();
+      } catch (error) {
+        console.error("Error subscribing to portfolio:", error);
+        close();
+      }
+    });
   };
 
   const handleUnsubscribe = async (portfolio_id: number) => {
-    try {
-      await subscribeApi.unsubscribe(portfolio_id);
-      const response = await subscribeApi.getUserSubscriptions();
-      setSubscribes(response);
-    } catch (error) {
-      console.error("Error unsubscribing from portfolio:", error);
-    }
+    open("구독 취소 확인", "정말로 구독을 취소하시겠습니까?", async () => {
+      try {
+        await subscribeApi.unsubscribe(portfolio_id);
+        const response = await subscribeApi.getUserSubscriptions();
+        setSubscribes(response);
+        close();
+      } catch (error) {
+        console.error("Error unsubscribing from portfolio:", error);
+        close();
+      }
+    });
   };
 
   return (
@@ -122,7 +149,7 @@ export default function MainPortfolio() {
                     className={`text-base ${isSubscribed ? "text-red-500" : "text-green-500"}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item.id);
+                      isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
                     }}
                   >
                     {isSubscribed ? "구독 취소" : "구독"}
