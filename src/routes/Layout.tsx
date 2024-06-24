@@ -15,6 +15,7 @@ import IconPortfolio from "@/assets/icon-portfolio.svg?react";
 import IconMy from "@/assets/icon-my.svg?react";
 import IconSub from "@/assets/icon-sub.svg?react";
 import { useAuth } from "@/hooks/useAuth";
+import useModal from "@/hooks/useModal";
 
 const drawerWidth = 240;
 const navMenu = [
@@ -92,7 +93,7 @@ export default function Layout() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
+  const { open: openModal } = useModal();
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -102,6 +103,14 @@ export default function Layout() {
   };
 
   const handleNavigate = (page: string) => {
+    if (page !== "/portfolio/mainPortfolio" && !user.userId) {
+      // 비로그인 유저시 접근하면 회원가입하라는 모달띄우고이동시키기
+      openModal("알림", "회원만 접근 가능한 페이지에요! 회원가입해주세요 :)", () => {
+        navigate("/signup");
+      });
+
+      return;
+    }
     navigate(page);
   };
 

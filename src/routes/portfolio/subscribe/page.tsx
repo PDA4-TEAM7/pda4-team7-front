@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
@@ -7,13 +8,20 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { subscribeApi } from "@/apis/subscribeAPI";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SubscribePortfolio() {
   const [sort, setSort] = useState<string>("10");
   const [subscribedPortfolios, setSubscribedPortfolios] = useState<any[]>([]);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 비로그인 유저시 접근하면 회원가입하라는 모달띄우고이동시키기
+    if (!user.userId) {
+      navigate("/portfolio/mainportfolio");
+      return;
+    }
     const fetchSubscriptions = async () => {
       try {
         const response = await subscribeApi.getUserSubscriptions();
@@ -24,7 +32,7 @@ export default function SubscribePortfolio() {
     };
 
     fetchSubscriptions();
-  }, []);
+  }, [user]);
 
   const handleChange = (event: SelectChangeEvent) => {
     console.log("event", event.target.value);
