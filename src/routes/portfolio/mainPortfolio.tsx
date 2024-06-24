@@ -67,6 +67,7 @@ export default function MainPortfolio() {
         await submitUserInfo({
           userName: userInfo.userName,
           introduce: userInfo.introduce,
+          credit: userInfo.credit,
         });
 
         setSubscribedPortfolios(updatedSubscriptions);
