@@ -3,15 +3,32 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface IModal {
   show: boolean;
   title: string;
-  message: string;
+  message: string | React.ReactNode;
   onClick: () => void;
 }
 
-const initState: IModal = {
-  show: false,
-  title: "",
-  message: "",
-  onClick: () => {},
+export interface IExtendedModal {
+  show: boolean;
+  title: string;
+  message: string | React.ReactNode;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const initState: { basic: IModal; extended: IExtendedModal } = {
+  basic: {
+    show: false,
+    title: "",
+    message: "",
+    onClick: () => {},
+  },
+  extended: {
+    show: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+    onCancel: () => {},
+  },
 };
 
 const modalSlice = createSlice({
@@ -19,16 +36,33 @@ const modalSlice = createSlice({
   initialState: initState,
   reducers: {
     showModal: (state, action: PayloadAction<IModal>) => {
-      (state.show = true),
-        (state.title = action.payload.title),
-        (state.message = action.payload.message),
-        (state.onClick = action.payload.onClick);
+      state.basic.show = true;
+      state.basic.title = action.payload.title;
+      state.basic.message = action.payload.message;
+      state.basic.onClick = action.payload.onClick;
     },
     closeModal: (state) => {
-      (state.show = false), (state.title = ""), (state.message = ""), (state.onClick = () => {});
+      state.basic.show = false;
+      state.basic.title = "";
+      state.basic.message = "";
+      state.basic.onClick = () => {};
+    },
+    showExtendedModal: (state, action: PayloadAction<IExtendedModal>) => {
+      state.extended.show = true;
+      state.extended.title = action.payload.title;
+      state.extended.message = action.payload.message;
+      state.extended.onConfirm = action.payload.onConfirm;
+      state.extended.onCancel = action.payload.onCancel;
+    },
+    closeExtendedModal: (state) => {
+      state.extended.show = false;
+      state.extended.title = "";
+      state.extended.message = "";
+      state.extended.onConfirm = () => {};
+      state.extended.onCancel = () => {};
     },
   },
 });
 
-export const { showModal, closeModal } = modalSlice.actions;
+export const { showModal, closeModal, showExtendedModal, closeExtendedModal } = modalSlice.actions;
 export default modalSlice.reducer;

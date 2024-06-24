@@ -7,7 +7,6 @@ import StockApi, { IBackTestReq } from "@/apis/stockAPI";
 import StockChart from "./StockChart";
 import StockLineChart from "./StockLineChart";
 import MonthlyInfo from "./MonthlyInfo";
-import data from "../../../../data/dummyBack.json";
 
 type Props = {
   id: string;
@@ -76,10 +75,10 @@ export default function BackTest({ id }: Props) {
           end_date: endDate.endOf("month").format("YYYYMMDD"),
         };
         const backTestingDataRes = await service.getBackTest(portfolio);
-        if (data && data.portfolio) {
+        if (backTestingDataRes) {
           setBackTestData(backTestingDataRes);
         } else {
-          console.log("error : ", data);
+          console.log("error : ", backTestingDataRes);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
