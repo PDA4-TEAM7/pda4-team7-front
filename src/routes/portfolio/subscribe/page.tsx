@@ -34,7 +34,7 @@ export default function SubscribePortfolio() {
     };
 
     fetchSubscriptions();
-  }, [user]);
+  }, [navigate, user]);
 
   const handleChange = (event: SelectChangeEvent) => {
     console.log("event", event.target.value);
