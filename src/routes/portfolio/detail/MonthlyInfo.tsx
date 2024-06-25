@@ -128,7 +128,16 @@ export default function MonthlyInfo({ startDate, endDate, backTestData }: Props)
                 </div>
                 <div className="text-right">
                   {/* 내림해서 보여줍니다. */}
-                  <span className={`block ${formatValue(value) >= 0 ? "text-red-600" : "text-blue-600"}`}>
+                  <span
+                    className={`block ${
+                      formatValue(value) > 0
+                        ? "text-red-600"
+                        : formatValue(value) === 0
+                        ? "text-slate-900"
+                        : "text-blue-600"
+                    }`}
+                  >
+                    {formatValue(value) > 0 && <span>+</span>}
                     {formatValue(value).toFixed(2)}%
                   </span>
                 </div>

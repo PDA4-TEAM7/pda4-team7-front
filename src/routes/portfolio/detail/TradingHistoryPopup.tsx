@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
+import { formatNumber } from "@/lib/nums";
 import { useEffect, useRef } from "react";
 type Props = { modalShow: boolean; modalClose: () => void; data: any[] };
 
@@ -54,13 +55,15 @@ export default function TradingHistoryPopup({ modalShow, modalClose, data }: Pro
                 <div key={i} className="flex justify-between items-center mb-2 p-3 bg-gray-100 rounded-lg shadow">
                   <div className="text-left">
                     <span className="block ">{stock.stock_name}</span>
-                    <span className="block text-sm text-zinc-600">{stock.hldg_qty}주</span>
+                    <span className="block text-sm text-zinc-600">{formatNumber(stock.hldg_qty)}주</span>
                   </div>
                   <div className="text-right">
-                    <span className="block text-sm ">{stock.evlu_amt}원</span>
+                    <span className="block text-sm ">{formatNumber(stock.evlu_amt)}원</span>
                     <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"} text-sm`}>
-                      {stock.evlu_pfls_rt >= 0 ? `+${stock.evlu_amt}원` : `-${stock.evlu_amt}원`} (
-                      {parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)
+                      {stock.evlu_pfls_rt >= 0
+                        ? `+${formatNumber(stock.evlu_amt)}원`
+                        : `-${formatNumber(stock.evlu_amt)}원`}{" "}
+                      ({formatNumber(stock.evlu_pfls_rt, 2)}%)
                     </span>
                   </div>
                 </div>
