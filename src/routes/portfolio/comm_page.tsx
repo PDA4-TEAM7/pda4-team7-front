@@ -154,44 +154,35 @@ const CommPage = ({ id }: Props) => {
   const handleReplySubmit = async (commentId: number) => {
     const comment = comments.find((comment) => comment.comment_id === commentId);
     if (comment && comment.replyText?.trim()) {
-      try {
-        const newReplyData = {
-          description: comment.replyText,
-          userId: 0,
-          comment_id: commentId,
-        };
+      const newReplyData = {
+        description: comment.replyText,
+        userId: 0,
+        comment_id: commentId,
+      };
 
-        // 백엔드 API 호출
-        const response = await replyApi.writeReply(newReplyData);
-        if (response.status === 403) {
-          return alert("권한 다메");
-        }
-        console.log("넘어감");
-        const newReply = {
-          author: response.data.newReply.username,
-          user_id: response.data.newReply.user_id,
-          role: ownerInfo && response.data.newReply.user_id === ownerInfo.owner.uid ? "작성자" : "",
-          date: new Date(response.data.newReply.create_dt).toISOString().split("T")[0],
-          text: response.data.newReply.description,
-        };
-        const newComments = comments.map((comment) => {
-          if (comment.comment_id === commentId) {
-            return {
-              ...comment,
-              replies: [...comment.replies, newReply],
-              replyText: "",
-            } as Comment;
-          }
-          return comment;
-        });
-        setComments(newComments);
-      } catch (error) {
-        if (error.response && error.response.status === 403) {
-          alert("작성자만 답글을 쓸 수 있습니다.");
-        } else {
-          console.error("답글 작성 중 오류 발생:", error);
-        }
+      // 백엔드 API 호출
+      const response = await replyApi.writeReply(newReplyData);
+      if (response.status === 403) {
+        return alert("권한 다메");
       }
+      const newReply = {
+        author: response.data.newReply.username,
+        user_id: response.data.newReply.user_id,
+        role: ownerInfo && response.data.newReply.user_id === ownerInfo.owner.uid ? "작성자" : "",
+        date: new Date(response.data.newReply.create_dt).toISOString().split("T")[0],
+        text: response.data.newReply.description,
+      };
+      const newComments = comments.map((comment) => {
+        if (comment.comment_id === commentId) {
+          return {
+            ...comment,
+            replies: [...comment.replies, newReply],
+            replyText: "",
+          } as Comment;
+        }
+        return comment;
+      });
+      setComments(newComments);
     }
   };
 
