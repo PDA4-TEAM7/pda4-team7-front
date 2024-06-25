@@ -35,7 +35,11 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setI
 
   const isFormValid = () => {
     //data가 안에 있어서 그냥 하나하나 정의 해줌
-    return ![title, description, price, detailDescription].some(isBlankValue);
+    return (
+      ![title, description, price, detailDescription].some(isBlankValue) &&
+      parseFloat(price) > 0 &&
+      parseFloat(price) < 100000000
+    );
   };
 
   useEffect(() => {
