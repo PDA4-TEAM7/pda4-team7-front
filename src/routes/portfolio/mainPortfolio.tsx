@@ -129,19 +129,6 @@ export default function MainPortfolio() {
 
   return (
     <div>
-      <header className="flex justify-between items-center p-4 border-b bg-gray-100">
-        <div className="flex items-center">
-          <input type="text" placeholder="원하는 포트폴리오를 검색" className="p-2 border rounded-l-md" />
-          <button className="p-2 bg-gray-300 border rounded-r-md">
-            <img src="search-icon.png" alt="검색" className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex items-center">
-          <img src="" alt="알림" className="w-5 h-5 mx-2" />
-          <img src="settings-icon.png" alt="설정" className="w-5 h-5 mx-2" />
-          <span className="mx-2">ENG</span>
-        </div>
-      </header>
       <main className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Stock Portfolio</h1>
