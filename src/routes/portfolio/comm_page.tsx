@@ -266,7 +266,13 @@ const CommPage = ({ id }: Props) => {
           <div className="p-4 bg-gray-100 rounded-lg text-center">
             <div className="text-lg font-semibold mb-4">포트폴리오 오너 소개</div>
             <div className="mb-4">
-              <img className="mx-auto w-16 h-16 rounded-full" src={ownerInfo.profileImage} alt="profile" />
+              <div className="mx-auto profile-photo w-16 h-16 ">
+                <img
+                  src={`https://source.boringavatars.com/beam/500/${ownerInfo.name}`}
+                  alt="프로필 이미지"
+                  className="w-full h-full"
+                />
+              </div>
             </div>
             <div className="font-bold mb-2">{ownerInfo.name}</div>
             <div className="text-sm text-gray-500 mb-4">마지막 업데이트: {ownerInfo.updateDate}</div>

@@ -162,7 +162,7 @@ export default function Layout() {
               <>
                 <div className="profile-photo w-16 h-16 mb-4">
                   <img
-                    src={`https://source.boringavatars.com/beam/500/${user.userId}`}
+                    src={`https://source.boringavatars.com/beam/500/${user.userName}`}
                     alt=""
                     className="w-full h-full"
                   />

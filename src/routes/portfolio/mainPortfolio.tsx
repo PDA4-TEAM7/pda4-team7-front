@@ -260,7 +260,13 @@ export default function MainPortfolio() {
                       생성일자 {new Date(item.createDate).toLocaleString()}
                     </span>
                     <div className="flex items-center mt-2">
-                      <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
+                      <div className="profile-photo w-6 h-6 mr-2">
+                        <img
+                          src={`https://source.boringavatars.com/beam/500/${item.username}`}
+                          alt="프로필 이미지"
+                          className="w-full h-full"
+                        />
+                      </div>
                       <span className="text-base text-gray-500">{item.username}</span>
                       <div className="flex items-center ml-auto">
                         <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
