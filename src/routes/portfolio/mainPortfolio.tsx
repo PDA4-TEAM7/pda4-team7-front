@@ -261,7 +261,7 @@ export default function MainPortfolio() {
                   </div>
                 </div>
                 <div className="flex justify-between mt-20">
-                  <span className=" text-base">구독료 : {item.price} 원 /월</span>
+                  <span className=" text-base">구독료 : {formatNumber(item.price)} 원 /월</span>
                 </div>
               </div>
             );
