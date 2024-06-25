@@ -158,11 +158,19 @@ export default function Layout() {
               !open && "hidden"
             } profile flex flex-col text-[#E0E4EA] items-center justify-center w-full gap-1 pb-10`}
           >
-            <div className="profile-photo w-16 h-16 mb-4">
-              <img src={"/icon-profile.png"} alt="" className="w-full h-full" />
-            </div>
-            <p className="text-white font-bold text-lg">{user.userName}</p>
-            <p>{user.userId}</p>
+            {user.userId && (
+              <>
+                <div className="profile-photo w-16 h-16 mb-4">
+                  <img
+                    src={`https://source.boringavatars.com/beam/500/${user.userId}`}
+                    alt=""
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-white font-bold text-lg">{user.userName}</p>
+                <p>{user.userId}</p>
+              </>
+            )}
           </div>
         )}
         <List>
