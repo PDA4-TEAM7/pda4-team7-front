@@ -131,6 +131,14 @@ export default function Layout() {
     <div className="flex">
       <Drawer variant="permanent" open={open} className="[&_div]:bg-[#23272c]">
         <DrawerHeader>
+          {open && (
+            <div className="text-left flex-1 flex flex-row gap-2 items-center">
+              <div className="profile-photo w-10 h-10 ">
+                <img src={"/public/icon-logo.png"} alt="" />
+              </div>
+              <p className="text-white text-lg">E.G</p>
+            </div>
+          )}
           <IconButton
             aria-label="open drawer"
             onClick={handleDrawerOpen}
@@ -156,11 +164,11 @@ export default function Layout() {
           <div
             className={`${
               !open && "hidden"
-            } profile flex flex-col text-[#E0E4EA] items-center justify-center w-full gap-1 pb-10`}
+            } profile flex flex-col text-[#E0E4EA] items-center justify-center w-full gap-1 pb-8`}
           >
             {user.userId && (
               <>
-                <div className="profile-photo w-16 h-16 mb-4">
+                <div className="profile-photo w-16 h-16 mb-4 mt-4">
                   <img
                     src={`https://source.boringavatars.com/beam/500/${user.userName}`}
                     alt=""
