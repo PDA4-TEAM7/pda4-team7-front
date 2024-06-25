@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import StockApi from "@/apis/stockAPI";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/nums";
-import { useEffect, useRef } from "react";
-type Props = { modalShow: boolean; modalClose: () => void; data: any[] };
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
+type Props = { modalShow: boolean; modalClose: () => void; accountId: string };
 
-export default function TradingHistoryPopup({ modalShow, modalClose, data }: Props) {
+export default function TradingHistoryPopup({ modalShow, modalClose, accountId }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [tradingData, setTradingData] = useState<any[]>([]);
 
   useEffect(() => {
     if (modalShow) {
@@ -21,6 +24,20 @@ export default function TradingHistoryPopup({ modalShow, modalClose, data }: Pro
       document.body.style.overflow = "auto";
     };
   }, [modalShow]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const service = new StockApi();
+        const data = await service.getTradingHistory(accountId);
+        console.log("data:", data);
+        setTradingData(data);
+      } catch {
+        console.log("error to trading");
+      }
+    }
+    fetchData();
+  }, []);
 
   if (!modalShow) return null;
   return (
@@ -50,24 +67,49 @@ export default function TradingHistoryPopup({ modalShow, modalClose, data }: Pro
             </div>
           </div>
           <div className="py-4 space-y-3 overflow-scroll h-full pr-3 flex-1">
-            {data &&
-              data.map((stock, i) => (
-                <div key={i} className="flex justify-between items-center mb-2 p-3 bg-gray-100 rounded-lg shadow">
-                  <div className="text-left">
-                    <span className="block ">{stock.stock_name}</span>
-                    <span className="block text-sm text-zinc-600">{formatNumber(stock.hldg_qty)}주</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="block text-sm ">{formatNumber(stock.evlu_amt)}원</span>
-                    <span className={`block ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"} text-sm`}>
-                      {stock.evlu_pfls_rt >= 0
-                        ? `+${formatNumber(stock.evlu_amt)}원`
-                        : `-${formatNumber(stock.evlu_amt)}원`}{" "}
-                      ({formatNumber(stock.evlu_pfls_rt, 2)}%)
-                    </span>
-                  </div>
-                </div>
-              ))}
+            {tradingData &&
+              tradingData.map((his, i, array) => {
+                //array[i-1]확인해서, 전에꺼랑 날짜가 다르면 true 같으면 false
+                const showDay =
+                  i > 0 &&
+                  dayjs(array[i - 1].trade_dt).isSame(his.trade_dt, "month") &&
+                  dayjs(array[i - 1].trade_dt).isSame(his.trade_dt, "day")
+                    ? false
+                    : true;
+                return (
+                  <>
+                    <div>{showDay && <p className="pt-2">{dayjs(his.trade_dt).format("MM월 DD일")}</p>}</div>
+                    <div key={i} className="flex justify-between items-center mb-2 p-3 bg-gray-100 rounded-lg shadow">
+                      <div className="text-left">
+                        <p>
+                          <span className="">{his.stock.name} </span>
+                          <span className="font-semibold">{formatNumber(his.tot_ccld_qty)}주 </span>
+                          <span>
+                            {his.sll_buy_dvsn_cd == "02" && "구매"}
+                            {his.sll_buy_dvsn_cd == "01" && "판매"}
+                          </span>
+                        </p>
+                        <p className="text-slate-600 text-xs">
+                          {dayjs(his.trade_dt).format("HH:mm")}
+                          <span> 주당 {formatNumber(+his.tot_ccld_amt / +his.tot_ccld_qty)}원</span>
+                        </p>
+                      </div>
+
+                      <div className="text-right flex flex-col">
+                        <span className="text-sm font-medium">{formatNumber(his.tot_ccld_amt)}원</span>
+                        {his.sll_buy_dvsn_cd == "01" && (
+                          <span className={` ${his.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"} text-sm`}>
+                            {his.evlu_pfls_rt >= 0
+                              ? `+${formatNumber(his.evlu_pfls_amt)}원`
+                              : `${formatNumber(his.evlu_pfls_amt)}원`}
+                            <span className="">({formatNumber(Math.abs(his.evlu_pfls_rt), 2)}%)</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                );
+              })}
           </div>
           <div className="flex justify-center pt-4">
             <Button

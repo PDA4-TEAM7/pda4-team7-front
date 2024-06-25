@@ -134,7 +134,7 @@ export default function Layout() {
           {open && (
             <div className="text-left flex-1 flex flex-row gap-2 items-center">
               <div className="profile-photo w-10 h-10 ">
-                <img src={"/public/icon-logo.png"} alt="" />
+                <img src={"/icon-logo.png"} alt="" />
               </div>
               <p className="text-white text-lg">E.G</p>
             </div>

@@ -42,4 +42,10 @@ export default class StockApi extends BaseApi {
     console.log(resp.data);
     return resp.data;
   }
+
+  async getTradingHistory(accountId: string) {
+    const resp = await this.fetcher.get(`/tradinghistory/${accountId}`);
+    console.log("trd : ", resp.data);
+    return resp.data;
+  }
 }
