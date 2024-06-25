@@ -15,6 +15,11 @@ class SubscribeApi extends BaseApi {
     const response = await this.fetcher.get("/subscriptions");
     return response.data;
   }
+
+  async getSubscriberCount(portfolio_id: number) {
+    const response = await this.fetcher.get(`/subscriber/count/${portfolio_id}`);
+    return response.data;
+  }
 }
 
 export const subscribeApi = new SubscribeApi();
