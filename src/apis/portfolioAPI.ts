@@ -34,6 +34,18 @@ class PortfolioApi extends BaseApi {
     const resp = await this.fetcher.get("/portfolios");
     return resp.data;
   }
+
+  // 커뮤니티 페이지를 위한 정보들.
+  async getPortfolioComm(account_id: string) {
+    const resp = await this.fetcher.get(`/portfolio/comm/${account_id}`);
+    return resp.data;
+  }
+
+  //get : portfolioId도 포트폴리오 가져오기
+  async getPortfolioByPortfolioId(portfolio_id: string) {
+    const resp = await this.fetcher.get(`/portfolio/pid/${portfolio_id}`);
+    return resp.data;
+  }
 }
 
 export const portfolioApi = new PortfolioApi();
