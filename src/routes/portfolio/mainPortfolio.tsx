@@ -129,19 +129,6 @@ export default function MainPortfolio() {
 
   return (
     <div>
-      <header className="flex justify-between items-center p-4 border-b bg-gray-100">
-        <div className="flex items-center">
-          <input type="text" placeholder="원하는 포트폴리오를 검색" className="p-2 border rounded-l-md" />
-          <button className="p-2 bg-gray-300 border rounded-r-md">
-            <img src="search-icon.png" alt="검색" className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex items-center">
-          <img src="" alt="알림" className="w-5 h-5 mx-2" />
-          <img src="settings-icon.png" alt="설정" className="w-5 h-5 mx-2" />
-          <span className="mx-2">ENG</span>
-        </div>
-      </header>
       <main className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Stock Portfolio</h1>
@@ -260,8 +247,19 @@ export default function MainPortfolio() {
                       생성일자 {new Date(item.createDate).toLocaleString()}
                     </span>
                     <div className="flex items-center mt-2">
+<<<<<<< feat-KAN-57-user-
+                      <div className="profile-photo w-6 h-6 mr-2">
+                        <img
+                          src={`https://source.boringavatars.com/beam/500/${item.username}`}
+                          alt="프로필 이미지"
+                          className="w-full h-full"
+                        />
+                      </div>
+                      <span className="text-base text-gray-500">{item.username}</span>
+=======
                       <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
                       <span className="text-base">{item.username}</span>
+>>>>>>> main
                       <div className="flex items-center ml-auto">
                         <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
                         <span className="text-base text-gray-500">구독자 수</span>

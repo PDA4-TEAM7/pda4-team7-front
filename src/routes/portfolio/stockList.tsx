@@ -5,6 +5,7 @@ import StockApi from "@/apis/stockAPI";
 import StockChart from "./detail/StockChart";
 import { Button } from "@/components/ui/button";
 import TradingHistoryPopup from "./detail/TradingHistoryPopup";
+import { formatNumber } from "@/lib/nums";
 interface WordData extends d3.SimulationNodeDatum {
   text: string;
   value: number;
@@ -230,14 +231,14 @@ export default function StockList({ id }: Props) {
                       <div key={i} className="flex justify-between items-center mb-1 p-2 px-3 border-b ">
                         <div className="text-left ">
                           <span className="block">{stock.stock_name}</span>
-                          <span className="block text-sm text-zinc-600">{stock.hldg_qty}주</span>
+                          <span className="block text-sm text-zinc-600">{formatNumber(stock.hldg_qty)}주</span>
                         </div>
                         <div className="text-right">
-                          <span className="block">{stock.evlu_amt}원</span>
+                          <span className="block">{formatNumber(stock.evlu_amt)}원</span>
                           <span
                             className={`block text-sm ${stock.evlu_pfls_rt >= 0 ? "text-red-600" : "text-blue-600"}`}
                           >
-                            {stock.evlu_pfls_amt}원<span>({parseFloat(stock.evlu_pfls_rt).toFixed(2)}%)</span>
+                            {formatNumber(stock.evlu_pfls_amt)}원<span>({formatNumber(stock.evlu_pfls_rt, 2)}%)</span>
                           </span>
                         </div>
                       </div>

@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser";
+import { formatNumber } from "@/lib/nums";
 import { useEffect, useRef, useState } from "react";
 
 export default function MyPage() {
@@ -58,7 +59,14 @@ export default function MyPage() {
       <div className="my-page-container m-8 h-full">
         <p className="text-xl text-bold mb-8">{user.userName}의 페이지</p>
         <div className="flex flex-col gap-2 border-2 rounded-md p-8 w-full py-10 max-w-[1043px]">
-          <div className="submit-wrap b-4 flex flex-col gap-2 space-y-2">
+          <div className="submit-wrap b-4 flex flex-col gap-2 space-y-2 justify-center items-center">
+            <div className="profile-photo w-16 h-16">
+              <img
+                src={`https://source.boringavatars.com/beam/500/${user.userName}`}
+                alt="프로필 이미지"
+                className="w-full h-full"
+              />
+            </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <Label htmlFor="id" className="text-lg">
                 ID
@@ -119,7 +127,7 @@ export default function MyPage() {
                 Charge
               </Label>
               <div className="flex flex-row gap-1 justify-between">
-                <p className="w-2/3">{userInfo.credit} 원</p>
+                <p className="w-2/3">{formatNumber(userInfo.credit)} 원</p>
                 <Button
                   onClick={() => {
                     setShowChargeModal(true);
@@ -139,7 +147,7 @@ export default function MyPage() {
             </div>
           </div>
           <Button
-            className="mr-auto mt-12  w-full max-w-sm disabled:opacity-75"
+            className="m-auto mt-12  w-full max-w-sm disabled:opacity-75"
             disabled={disableSubmit}
             onClick={handleSubmit}
           >
