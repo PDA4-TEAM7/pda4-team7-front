@@ -30,13 +30,20 @@ export default function ChargePopup({ modalShow, modalClose, setCredit }: Props)
     }
   };
   const handleCharge = async () => {
-    // TODO: 계좌 추가 API연결
-    if (inputRef.current && +inputRef.current?.value > 0) {
-      const res = await charge(+inputRef.current?.value);
-      if (res) {
-        handleModal({ title: "성공!", text: "충전 완료했습니다!", success: true });
-        setCredit(+inputRef.current?.value);
-      } else handleModal({ title: "실패!", text: "실패했어요..", success: false });
+    const value = inputRef.current?.value;
+    const amount = Number(value);
+
+    if (amount <= 0 || amount > 100000000) {
+      handleModal({ title: "오류", text: "충전 금액은 0보다 크고 1억 이하이어야 합니다.", success: false });
+      return;
+    }
+
+    const res = await charge(amount);
+    if (res) {
+      handleModal({ title: "성공!", text: "충전 완료했습니다!", success: true });
+      setCredit(amount);
+    } else {
+      handleModal({ title: "실패!", text: "충전 실패했습니다.", success: false });
     }
   };
 
