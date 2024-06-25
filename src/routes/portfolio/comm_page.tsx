@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { IComment, commentApi } from "@/apis/commentAPI";
 import { replyApi } from "@/apis/replyAPI";
-import axios from "axios";
+import { portfolioApi } from "@/apis/portfolioAPI";
 
 type Reply = {
   author: string;
@@ -14,6 +12,7 @@ type Reply = {
   create_dt: Date;
   description: string;
 };
+
 type Comment = {
   comment_id: number;
   author: string;
@@ -25,46 +24,51 @@ type Comment = {
 };
 
 type OwnerInfo = {
-  name: string;
+  title: string;
+  description: string;
   updateDate: string;
-  profileImage: string;
-  uid: number;
+  owner: {
+    name: string;
+    uid: number;
+    profileImage: string;
+    introduce: string;
+  };
 };
+
 type Props = {
   id: string;
 };
+
 const CommPage = ({ id }: Props) => {
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
-  const [portfolioId] = useState(id); // 실제 포트폴리오 ID로 대체하세요.
-  const [ownerInfo, setOwnerInfo] = useState<OwnerInfo>({
-    name: "",
-    updateDate: "",
-    uid: 0,
-    profileImage: "",
-  });
+  const [ownerInfo, setOwnerInfo] = useState<OwnerInfo | null>(null); // 초기값을 null로 설정
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
     // 포트폴리오의 오너 정보를 가져옵니다.
     const fetchOwnerInfo = async () => {
       try {
-        const response = await axios.get<OwnerInfo>(`http://localhost:3000/api/portfolio/user/${portfolioId}`);
-        setOwnerInfo(response.data);
-        console.log("가져왔다.", response.data);
+        const portfolioResponse = await portfolioApi.getPortfolioByPortfolioId(id);
+        const accountId = portfolioResponse.account_id;
+        const response = await portfolioApi.getPortfolioComm(accountId);
+        setOwnerInfo(response);
+        setIsLoading(false); // 데이터 로드 완료 시 로딩 상태 false로 설정
+        console.log("가져왔다.", response);
       } catch (error) {
         console.error("오너 정보를 가져오는 중 오류 발생:", error);
+        setIsLoading(false); // 오류 발생 시에도 로딩 상태 false로 설정
       }
     };
 
     fetchOwnerInfo();
-  }, [portfolioId]);
+  }, [id]);
 
   useEffect(() => {
     // 초기 로드 시 포트폴리오의 댓글을 가져옵니다.
     const fetchComments = async () => {
       try {
-        const response = await commentApi.readComments(+portfolioId);
+        const response = await commentApi.readComments(+id);
         console.log("Comments API response:", response.data); // Debugging line
 
         const commentsData = await Promise.all(
@@ -77,7 +81,7 @@ const CommPage = ({ id }: Props) => {
               replies: repliesResponse.data.replies.map((reply: Reply) => ({
                 author: reply.author,
                 user_id: reply.user_id,
-                role: reply.user_id === ownerInfo.uid ? "작성자" : "",
+                role: ownerInfo && reply.user_id === ownerInfo.owner.uid ? "작성자" : "",
                 date: new Date(reply.create_dt).toISOString().split("T")[0],
                 text: reply.description,
               })),
@@ -91,14 +95,10 @@ const CommPage = ({ id }: Props) => {
       }
     };
 
-    if (ownerInfo.uid !== 0) {
+    if (ownerInfo && ownerInfo.owner.uid !== 0) {
       fetchComments();
     }
-  }, [portfolioId, ownerInfo.uid]);
-
-  const handleSubscribe = () => {
-    setIsSubscribed(!isSubscribed);
-  };
+  }, [id, ownerInfo]);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setComment(e.target.value);
@@ -111,7 +111,7 @@ const CommPage = ({ id }: Props) => {
           // DUMMY: 더미로 넣어놨어용
           userId: 1,
           description: comment,
-          portfolioId: +portfolioId,
+          portfolioId: +id,
         };
         const response = await commentApi.writeComment(newCommentData);
         const newCommentResponse = response.data.newComment;
@@ -157,8 +157,7 @@ const CommPage = ({ id }: Props) => {
       try {
         const newReplyData = {
           description: comment.replyText,
-          // DUMMY: 더미로 넣어놨어용
-          userId: 1,
+          userId: 0,
           comment_id: commentId,
         };
 
@@ -168,7 +167,7 @@ const CommPage = ({ id }: Props) => {
         const newReply = {
           author: response.data.newReply.username,
           user_id: response.data.newReply.user_id,
-          role: response.data.newReply.user_id === ownerInfo.uid ? "작성자" : "",
+          role: ownerInfo && response.data.newReply.user_id === ownerInfo.owner.uid ? "작성자" : "",
           date: new Date(response.data.newReply.create_dt).toISOString().split("T")[0],
           text: response.data.newReply.description,
         };
@@ -205,11 +204,19 @@ const CommPage = ({ id }: Props) => {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+  }
+
+  if (!ownerInfo) {
+    return <div>포트폴리오 정보를 불러오는 중 오류가 발생했습니다.</div>;
+  }
+
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <h1 className="text-2xl font-bold mb-6">PORTFOLIO TITLE</h1>
+          <h1 className="text-2xl font-bold mb-6">{ownerInfo.title}</h1>
           <div className="mb-4 flex items-stretch gap-1">
             <input
               type="text"
@@ -263,22 +270,14 @@ const CommPage = ({ id }: Props) => {
           ))}
         </div>
         <div>
-          <div className="p-4 bg-gray-100 rounded-lg text-center">
+          <div className="p-4 bg-gray-100 rounded-lg text-center" style={{ minHeight: "400px" }}>
             <div className="text-lg font-semibold mb-4">포트폴리오 오너 소개</div>
             <div className="mb-4">
-              <img className="mx-auto w-16 h-16 rounded-full" src={ownerInfo.profileImage} alt="profile" />
+              <img className="mx-auto w-16 h-16 rounded-full" src={ownerInfo.owner.profileImage} alt="profile" />
             </div>
-            <div className="font-bold mb-2">{ownerInfo.name}</div>
+            <div className="font-bold mb-2">{ownerInfo.owner.name}</div>
             <div className="text-sm text-gray-500 mb-4">마지막 업데이트: {ownerInfo.updateDate}</div>
-            <button
-              onClick={handleSubscribe}
-              className={`px-4 py-2 text-white rounded ${isSubscribed ? "bg-red-500" : "bg-blue-500"}`}
-            >
-              {isSubscribed ? "구독 취소" : "구독하기"}
-            </button>
-            <div className="mt-4">
-              <button className="px-4 py-2 bg-gray-200 rounded">다른 포트폴리오 보기</button>
-            </div>
+            <div className="text-sm  mb-4">{ownerInfo.owner.introduce}</div>
           </div>
         </div>
       </div>

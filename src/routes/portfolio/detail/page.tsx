@@ -4,17 +4,28 @@ import { useEffect, useState } from "react";
 import StockList from "../stockList";
 import BackTest from "./BackTest";
 import CommPage from "../comm_page";
+import { portfolioApi } from "@/apis/portfolioAPI";
 // portfolio/detail/1
 export default function DetailPage() {
   const [title, setTitle] = useState<string>();
   const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
+  const [accountId, setAccountId] = useState<string>();
   //TODO: portfolio id를 받아와서 portfolio조회하고, accountID 값을 받고 다시 조회하기
   const { id } = useParams();
 
   useEffect(() => {
     setTitle("제목");
-  }, []);
+    const AccountId = async (portfolioId: string) => {
+      const port = await portfolioApi.getPortfolioByPortfolioId(portfolioId);
+      setAccountId(port.account_id); // account_id를 상태로 설정
+    };
+    if (id) {
+      AccountId(id);
+    }
+  }, [id]);
+
   if (!id) return <div>param not found</div>;
+  if (!accountId) return <div>loading...</div>;
   return (
     <div className="portfolio-detail-container h-screen flex flex-col">
       <nav className="flex flex-row items-center justify-between p-2 text-2xl h-14 box-border">
@@ -55,8 +66,8 @@ export default function DetailPage() {
         </div>
       </nav>
       <div className="tab-container px-6 overflow-y-auto flex-1">
-        {tab === "StockList" && <StockList id={id} />}
-        {tab === "BackTest" && <BackTest id={id} />}
+        {tab === "StockList" && <StockList id={accountId} />}
+        {tab === "BackTest" && <BackTest id={accountId} />}
         {tab === "Community" && <CommPage id={id} />}
       </div>
     </div>

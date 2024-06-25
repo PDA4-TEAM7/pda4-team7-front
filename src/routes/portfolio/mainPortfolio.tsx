@@ -57,7 +57,7 @@ export default function MainPortfolio() {
     const isSubscribed = subscribedPortfolios.some((sub) => sub.portfolio_id === item.id);
 
     if (isSubscribed) {
-      navigate(`/portfolio/detail/${item.account_id}`);
+      navigate(`/portfolio/detail/${item.id}`);
     } else {
       alert("구독 하지 않은 포트폴리오입니다.");
     }
@@ -261,13 +261,16 @@ export default function MainPortfolio() {
                     </span>
                     <div className="flex items-center mt-2">
                       <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
-                      <span className="text-base text-gray-500">{item.username}</span>
+                      <span className="text-base">{item.username}</span>
                       <div className="flex items-center ml-auto">
                         <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
                         <span className="text-base text-gray-500">구독자 수</span>
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className="flex justify-between mt-20">
+                  <span className=" text-base">구독료 : {item.price} 원 /월</span>
                 </div>
               </div>
             );

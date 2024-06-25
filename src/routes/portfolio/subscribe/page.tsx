@@ -102,7 +102,7 @@ export default function SubscribePortfolio() {
                 <div
                   key={item.portfolio_id}
                   className="border p-4 rounded-md cursor-pointer"
-                  onClick={() => handlePortfolioClick(item.account_id)}
+                  onClick={() => handlePortfolioClick(item.portfolio_id)}
                 >
                   <div className="flex justify-between mb-4">
                     <div className="text-base font-bold">{portfolio.title || "N/A"}</div>
