@@ -6,12 +6,31 @@ import PortfolioSubmit from "@/components/PortfolioSubmit";
 import { portfolioApi } from "@/apis/portfolioAPI";
 import StockList from "./stockList";
 import BackTest from "./detail/BackTest";
+import accountAPI from "@/apis/accountAPI";
 
 export function Myportfolio() {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [showSheet, setShowSheet] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [tab, setTab] = useState<"StockList" | "BackTest">("StockList");
+  const [accounts, setAccounts] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        //연결된 어카운트 다 가져옴
+        const response = await new accountAPI().getAccountList();
+        //response에 메시지 포함이라 리스트만 가져옴
+        const accountList = response.accountList.map((account: { account_number: string }) => account.account_number);
+        // 같은 string으로 넣어줘야함
+        setAccounts(accountList);
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
+    };
+    fetchAccounts();
+  }, []);
+
   // 계좌 선택 시 포트폴리오 상태 체크
   useEffect(() => {
     const checkPortfolioStatus = async () => {
@@ -88,11 +107,17 @@ export function Myportfolio() {
           </div>
         </div>
       </nav>
-      {selectedAccount && (
-        <div className="tab-container px-6 overflow-y-auto flex-1">
-          {tab === "StockList" && <StockList id={selectedAccount} />}
-          {tab === "BackTest" && <BackTest id={selectedAccount} />}
+      {!accounts.length ? (
+        <div className="flex flex-1 justify-center items-center">
+          <p>연결된 계좌가 없습니다.</p>
         </div>
+      ) : (
+        selectedAccount && (
+          <div className="tab-container px-6 overflow-y-auto flex-1">
+            {tab === "StockList" && <StockList id={selectedAccount} />}
+            {tab === "BackTest" && <BackTest id={selectedAccount} />}
+          </div>
+        )
       )}
       <PortfolioSubmit
         selectedAccount={selectedAccount}
