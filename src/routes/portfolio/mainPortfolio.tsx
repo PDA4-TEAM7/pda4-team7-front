@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
@@ -10,46 +9,50 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { portfolioApi } from "@/apis/portfolioAPI";
 import { subscribeApi } from "@/apis/subscribeAPI";
 import useModal from "@/hooks/useModal";
-import useUser from "@/hooks/useUser"; // import useUser
+import useUser from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
 import { formatNumber } from "@/lib/nums";
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
-  // 로그인한 유저만 사용하는 상태
   const [subscribedPortfolios, setSubscribedPortfolios] = useState<any[]>([]);
   const navigate = useNavigate();
   const { open, close } = useModal();
-  const { getUserInfo, submitUserInfo } = useUser(); // useUser hook
+  const { getUserInfo, submitUserInfo } = useUser();
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const portfolioResponse = await portfolioApi.getAllPortfolios();
-        //구독중인 정보는 로그인한 유저만 호출
+        const portfolioDataWithSubscribers = await Promise.all(
+          portfolioResponse.map(async (portfolio: any) => {
+            const { subscriberCount } = await subscribeApi.getSubscriberCount(portfolio.id);
+            return { ...portfolio, subscriberCount };
+          })
+        );
+        setPortfolioData(portfolioDataWithSubscribers);
+
         if (user.userId) {
           const subscriptionResponse = await subscribeApi.getUserSubscriptions();
           setSubscribedPortfolios(subscriptionResponse);
         }
-        setPortfolioData(portfolioResponse);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [user.userId]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value as string);
   };
 
   const handlePortfolioClick = (item: any) => {
-    //TODO: 로그인창 이동 모달!
     if (!user.userId) {
-      open("알림", `회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.`, () => {
+      open("알림", "회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.", () => {
         navigate("/signup");
       });
       return;
@@ -65,7 +68,7 @@ export default function MainPortfolio() {
 
   const handleSubscribe = async (item: any) => {
     if (!user.userId) {
-      open("알림", `회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.`, () => {
+      open("알림", "회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.", () => {
         navigate("/signup");
       });
       return;
@@ -83,7 +86,6 @@ export default function MainPortfolio() {
         await subscribeApi.subscribe(item.id);
         const updatedSubscriptions = await subscribeApi.getUserSubscriptions();
 
-        // Update user's credit
         await submitUserInfo({
           userName: userInfo.userName,
           introduce: userInfo.introduce,
@@ -100,9 +102,8 @@ export default function MainPortfolio() {
   };
 
   const handleUnsubscribe = async (portfolio_id: number) => {
-    //여긴 올일 없을텐데 그래도 추가
     if (!user.userId) {
-      open("알림", `회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.`, () => {
+      open("알림", "회원만 사용할 수 있는 기능입니다! 회원가입 해주세요.", () => {
         navigate("/signup");
       });
       return;
@@ -121,8 +122,6 @@ export default function MainPortfolio() {
   };
 
   const isPortfolioSubscribed = (portfolioId: number): boolean => {
-    // 비로그인일시 다 구독하기로 노출.
-    //TODO: 비로그인 유저가 구독하기 버튼 클릭시 로그인하세요 모달띄우고 로그인페이지로 이동
     if (!user) return false;
     return subscribedPortfolios.some((sub) => sub.portfolio_id === portfolioId);
   };
@@ -201,7 +200,7 @@ export default function MainPortfolio() {
                         maintainAspectRatio: false,
                         plugins: {
                           datalabels: {
-                            display: false, // 데이터 값 숨기기
+                            display: false,
                           },
                           legend: {
                             display: false,
@@ -209,7 +208,6 @@ export default function MainPortfolio() {
                           tooltip: {
                             callbacks: {
                               label: (context) => {
-                                // 데이터 값에 100을 곱하고 소수점 제거하여 퍼센테이지로 변형
                                 const value: number = Number(context.raw);
                                 return `${context.label}: ${Math.round(value * 100)}%`;
                               },
@@ -247,7 +245,6 @@ export default function MainPortfolio() {
                       생성일자 {new Date(item.createDate).toLocaleString()}
                     </span>
                     <div className="flex items-center mt-2">
-<<<<<<< feat-KAN-57-user-
                       <div className="profile-photo w-6 h-6 mr-2">
                         <img
                           src={`https://source.boringavatars.com/beam/500/${item.username}`}
@@ -256,19 +253,15 @@ export default function MainPortfolio() {
                         />
                       </div>
                       <span className="text-base text-gray-500">{item.username}</span>
-=======
-                      <img src="" alt="프로필 이미지" className="w-6 h-6 rounded-full mr-2" />
-                      <span className="text-base">{item.username}</span>
->>>>>>> main
                       <div className="flex items-center ml-auto">
                         <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
-                        <span className="text-base text-gray-500">구독자 수</span>
+                        <span className="text-base text-gray-500">구독자 수: {item.subscriberCount}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="flex justify-between mt-20">
-                  <span className=" text-base">구독료 : {item.price} 원 /월</span>
+                  <span className=" text-base">구독료 : {formatNumber(item.price)} 원 /월</span>
                 </div>
               </div>
             );
