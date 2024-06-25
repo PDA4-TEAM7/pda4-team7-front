@@ -10,6 +10,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { subscribeApi } from "@/apis/subscribeAPI";
 import { useAuth } from "@/hooks/useAuth";
 import { formatNumber } from "@/lib/nums";
+import { Button } from "@/components/ui/button";
 
 export default function SubscribePortfolio() {
   const [sort, setSort] = useState<string>("10");
@@ -53,7 +54,9 @@ export default function SubscribePortfolio() {
       console.error("Error unsubscribing from portfolio:", error);
     }
   };
-
+  const handleRecencyClick = () => {
+    navigate("recency");
+  };
   return (
     <div>
       <header className="flex justify-between items-center p-4 border-b bg-gray-100">
@@ -73,6 +76,12 @@ export default function SubscribePortfolio() {
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
             <h1 className="text-2xl font-bold mr-3">구독한 포트폴리오</h1>
+            <Button
+              className="text-l focus:outline-none px-8 bg-indigo-500 m-2 p-3 rounded-lg text-white hover:bg-indigo-400"
+              onClick={handleRecencyClick}
+            >
+              통계 보기
+            </Button>
           </div>
           <div className="flex items-center">
             <FormControl fullWidth style={{ maxWidth: 200 }}>
