@@ -1,68 +1,42 @@
-// Transaction 인터페이스
+import { useEffect, useState } from "react";
+import RecencyAPI from "@/apis/recencyAPI";
+
 export interface Transaction {
-  stockName: string;
-  transactionType: "buy" | "sell";
-  averagePrice: number;
-  totalVolume: number;
-  totalPrice: number;
+  name: string;
+  sll_buy_dvsn_cd: "buy" | "sell";
+  avg_prvs: number;
+  tot_ccld_qty: number;
+  tot_ccld_amt: number;
   user: string;
 }
 
-// 테스트 데이터
-const users = ["오수연", "박소연", "임찬솔", "장호익"];
-const stocks = [
-  { name: "삼성전자", basePrice: 90000 },
-  { name: "현대차", basePrice: 90000 },
-  { name: "LG화학", basePrice: 800000 },
-  { name: "NAVER", basePrice: 380000 },
-  { name: "카카오", basePrice: 150000 },
-  { name: "SK하이닉스", basePrice: 120000 },
-  { name: "셀트리온", basePrice: 270000 },
-  { name: "기아", basePrice: 85000 },
-  { name: "POSCO", basePrice: 260000 },
-  { name: "삼성바이오로직스", basePrice: 900000 },
-];
-
-// 무작위 정수 생성 함수
-function getRandomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// 트랜잭션 데이터 생성
-const transactions: Transaction[] = Array.from({ length: 20 }, (): Transaction => {
-  const stock = stocks[getRandomInt(0, stocks.length - 1)];
-  const priceAdjustmentFactor = getRandomInt(-10, 10) / 100;
-  const price = stock.basePrice * (1 + priceAdjustmentFactor);
-  const volume = getRandomInt(1, 10);
-  const totalPrice = price * volume;
-
-  return {
-    stockName: stock.name,
-    transactionType: getRandomInt(0, 1) === 0 ? "buy" : "sell",
-    averagePrice: Math.round(price),
-    totalVolume: volume,
-    totalPrice: Math.round(totalPrice),
-    user: users[getRandomInt(0, users.length - 1)],
-  };
-});
-
 const TransactionCard = () => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const formattedDate = yesterday.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const [recencyHistory, setRecencyHistory] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const fetchRecencyHistory = async () => {
+      const recencyAPI = new RecencyAPI();
+      const resp = await recencyAPI.getMyRecencyTradingHistory();
+      const transactions = resp.map((item: Transaction) => ({
+        name: item.name,
+        sll_buy_dvsn_cd: (item.sll_buy_dvsn_cd as string) === "02" ? "buy" : ("sell" as string),
+        avg_prvs: Number(item.avg_prvs),
+        tot_ccld_qty: Number(item.tot_ccld_qty),
+        tot_ccld_amt: Number(item.tot_ccld_amt),
+        user: "투자자 이름 매핑", // 실제 투자자 이름 매핑 로직이 필요합니다.
+      }));
+      setRecencyHistory(transactions);
+    };
+
+    fetchRecencyHistory();
+  }, []);
 
   return (
     <>
-      {/* 제목 추가 */}
-      <div className="flex items-center">
-        <span className="text-shadow-strong text-xl font-bold p-2">{formattedDate}에 이루어진 투자현황</span>
-        <span className="ml-auto">전체 체결: {transactions.length}건</span>
+      <div className="flex items-center justify-between p-4 bg-gray-100">
+        <span className="text-xl font-bold">최근 거래 내역</span>
+        <span>전체 체결: {recencyHistory.length}건</span>
       </div>
-
       <div className="col-span-1 bg-white p-4 rounded-lg border border-gray-300 overflow-auto">
         <div className="max-h-64 overflow-auto">
           {/* 헤더 추가 */}
@@ -76,25 +50,23 @@ const TransactionCard = () => {
               <div className="font-bold">투자자</div>
             </div>
           </div>
-
-          {/* 트랜잭션 데이터 표시 */}
-          {transactions.map((transaction, index) => (
+          {recencyHistory.map((transaction, index) => (
             <div
               key={index}
-              className={`m-2 p-4 rounded shadow-lg ${
-                transaction.transactionType === "buy" ? "bg-red-200/50" : "bg-blue-200/50"
+              className={`m-2 p-4 rounded-lg shadow-md ${
+                transaction.sll_buy_dvsn_cd === "buy" ? "bg-red-200/50" : "bg-blue-200/50"
               }`}
             >
               <div className="grid grid-cols-6 gap-4 text-center">
-                <div className="font-bold">{transaction.stockName}</div>
+                <div className="font-bold">{transaction.name}</div>
                 <div
-                  className={`font-bold ${transaction.transactionType === "buy" ? "text-red-600" : "text-blue-600"}`}
+                  className={`font-bold ${transaction.sll_buy_dvsn_cd === "buy" ? "text-red-600" : "text-blue-600"}`}
                 >
-                  {transaction.transactionType === "buy" ? "매수" : "매도"}
+                  {transaction.sll_buy_dvsn_cd === "buy" ? "매수" : "매도"}
                 </div>
-                <div>{transaction.averagePrice.toLocaleString()}</div>
-                <div>{transaction.totalVolume}</div>
-                <div>{transaction.totalPrice.toLocaleString()}</div>
+                <div>{transaction.avg_prvs.toLocaleString()}원</div>
+                <div>{transaction.tot_ccld_qty}주</div>
+                <div>{transaction.tot_ccld_amt.toLocaleString()}원</div>
                 <div>{transaction.user}</div>
               </div>
             </div>

@@ -11,7 +11,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import axios from "axios";
 import { portfolioApi, Portfolio } from "@/apis/portfolioAPI";
 
 interface PortfolioSubmitProps {
@@ -34,7 +33,6 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setI
   };
 
   const isFormValid = () => {
-    //data가 안에 있어서 그냥 하나하나 정의 해줌
     return (
       ![title, description, price, detailDescription].some(isBlankValue) &&
       parseFloat(price) > 0 &&
@@ -60,19 +58,11 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setI
       published: true, // 등록 시 published를 true로 설정
     };
 
-    try {
-      const response = await portfolioApi.addPortfolio(data);
-      console.log("Portfolio saved successfully:", response);
-      alert("포트폴리오가 등록되었습니다.");
-      setShowSheet(false); // Sheet 닫기
-      setIsPublished(true); // 상태 변경
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 409) {
-        alert("이미 이 계정에 대한 포트폴리오가 존재합니다.");
-      } else {
-        console.error("Error saving portfolio:", error);
-      }
-    }
+    const response = await portfolioApi.addPortfolio(data);
+    console.log("Portfolio saved successfully:", response);
+    alert("포트폴리오가 등록되었습니다.");
+    setShowSheet(false); // Sheet 닫기
+    setIsPublished(true); // 상태 변경
   };
 
   const handleClose = () => {

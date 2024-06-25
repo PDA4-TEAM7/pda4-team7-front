@@ -283,7 +283,7 @@ export default function StockList({ id }: Props) {
       </div>
       <TradingHistoryPopup
         modalShow={showModal}
-        data={accountdata}
+        accountId={id}
         modalClose={() => {
           setShowModal(false);
         }}
