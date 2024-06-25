@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser";
+import { formatNumber } from "@/lib/nums";
 import { useEffect, useRef, useState } from "react";
 
 export default function MyPage() {
@@ -126,7 +127,7 @@ export default function MyPage() {
                 Charge
               </Label>
               <div className="flex flex-row gap-1 justify-between">
-                <p className="w-2/3">{userInfo.credit} 원</p>
+                <p className="w-2/3">{formatNumber(userInfo.credit)} 원</p>
                 <Button
                   onClick={() => {
                     setShowChargeModal(true);
