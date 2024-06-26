@@ -14,10 +14,10 @@ export default function DetailPage() {
   const { id } = useParams();
 
   useEffect(() => {
-    setTitle("제목");
     const AccountId = async (portfolioId: string) => {
       const port = await portfolioApi.getPortfolioByPortfolioId(portfolioId);
       setAccountId(port.account_id); // account_id를 상태로 설정
+      setTitle(port.title);
     };
     if (id) {
       AccountId(id);
