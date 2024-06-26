@@ -37,7 +37,7 @@ export default function TradingHistoryPopup({ modalShow, modalClose, accountId }
       }
     }
     fetchData();
-  }, []);
+  }, [accountId]);
 
   if (!modalShow) return null;
   return (
