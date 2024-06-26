@@ -81,11 +81,11 @@ export default function DetailPage() {
   if (!accountId) return <div>loading...</div>;
 
   return (
-    <div className="portfolio-detail-container h-screen flex flex-col">
+    <div className="portfolio-detail-container h-screen flex flex-col ">
       <nav className="flex flex-row items-center justify-between p-2 text-2xl h-14 box-border">
         <div className="flex items-center">
           <p className="text-2xl font-bold pb-2 pl-4">{title}</p>
-          <Button className="ml-2 bg-transparent p-0" onClick={handleModalOpen}>
+          <Button className="ml-2 bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
