@@ -103,13 +103,14 @@ export default function SubscribePortfolio() {
                   <div className="flex justify-between mb-4">
                     <div className="text-base font-bold">{portfolio.title || "N/A"}</div>
                     <button
-                      className="text-base text-red-500"
+                      className="text-base bg-red-500 text-white px-3 py-1 rounded"
+                      style={{ minWidth: "70px", whiteSpace: "nowrap" }}
                       onClick={(e) => {
                         e.stopPropagation(); // prevent triggering onClick on the parent div
                         handleUnsubscribe(item.portfolio_id);
                       }}
                     >
-                      구독 취소
+                      취소
                     </button>
                   </div>
                   <div className="flex">
