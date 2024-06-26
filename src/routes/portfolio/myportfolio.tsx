@@ -70,7 +70,10 @@ export function Myportfolio() {
   return (
     <>
       <div className="my-portfolio-container flex flex-col h-screen min-h-screen">
-        <nav className="flex md:flex-row justify-between p-2 md:h-14 h-24 md:items-center box-border flex-col">
+        <nav
+          className="flex md:flex-row justify-between p-2 md:h-14 h-24 md:items-center box-border flex-col fixed md:relative w-full md:w-auto bg-white"
+          style={{ zIndex: 1000 }}
+        >
           <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
           <div className="flex flex-row md:justify-between justify-around gap-2">
             <div
@@ -127,7 +130,7 @@ export function Myportfolio() {
           </div>
         </nav>
         {!accounts.length ? (
-          <div className="flex flex-col flex-1 justify-center items-center">
+          <div className="flex flex-col flex-1 justify-center items-center pt-8">
             <p>연결된 계좌가 없습니다. </p>
             <p> 계좌를 추가해볼까요?</p>
             <Button
@@ -139,7 +142,7 @@ export function Myportfolio() {
           </div>
         ) : (
           selectedAccount && (
-            <div className="tab-container px-6 overflow-y-auto flex-1">
+            <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-24">
               {tab === "StockList" && <StockList id={selectedAccount} title={null} />}
               {tab === "BackTest" && <BackTest id={selectedAccount} />}
               {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}

@@ -114,15 +114,15 @@ export default function BackTest({ id }: Props) {
     console.log("isloading useEffect:", backTestData);
   }, [backTestData]);
   return (
-    <div className="portfolio-detail-container sm:h-full w-full">
-      <div className="wrap-section flex sm:flex-row gap-10 flex-col">
-        <div className="section inline-block sm:w-1/2 w-full box-border sm:px-4 px-1 sm:overflow-y-auto pb-4 sm:h-calc-100vh-minus-2rem ">
+    <div className="portfolio-detail-container md:h-full w-full">
+      <div className="wrap-section flex md:flex-row gap-10 flex-col">
+        <div className="section inline-block md:w-1/2 w-full box-border md:px-4 px-1 md:overflow-y-auto pb-4 md:h-calc-100vh-minus-2rem ">
           <div className="section ">
             <div className="chart-wrap w-full h-screen/2 min-h-[380px] relative overflow-hidden">
               <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
-            <div className="date-wrap flex flex-col mt-12 sm:p-6 p-3 bg-slate-100 rounded-lg sm:mx-4 mx-1 mb-2">
-              <p className="sm:text-lg sm:pb-6 pb-4 ">투자 성과 조회 기준 설정</p>
+            <div className="date-wrap flex flex-col mt-12 md:p-6 p-3 bg-slate-100 rounded-lg md:mx-4 mx-1 mb-2">
+              <p className="md:text-lg md:pb-6 pb-4 ">투자 성과 조회 기준 설정</p>
               <div className="flex flex-col gap-3">
                 <div className="date-wrap flex flex-row gap-4 justify-between ">
                   <DatePicker
@@ -159,7 +159,7 @@ export default function BackTest({ id }: Props) {
             </div>
           </div>
         </div>
-        <div className="section inline-block sm:w-1/2 w-full box-border px-4 sm:overflow-y-auto  pb-4 sm:overflow-y-auto pb-4 sm:h-calc-100vh-minus-2rem">
+        <div className="section inline-block md:w-1/2 w-full box-border px-4 md:overflow-y-auto  pb-4 md:overflow-y-auto pb-4 md:h-calc-100vh-minus-2rem">
           {/* chart */}
           {!isLoading ? (
             backTestData && <StockLineChart backTestData={backTestData.portfolio.backtest} />
@@ -168,7 +168,7 @@ export default function BackTest({ id }: Props) {
               <Lottie animationData={loadingAnimation} style={{ width: "140%", height: "140%", opacity: 0.5 }} />
             </div>
           )}
-          <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
+          <div className="flex flex-col mt-12 md:p-8 p-4 bg-slate-100 rounded-lg">
             <p className="text-xl pb-6 font-semibold">상세 지표</p>
             <div className="date-wrap flex flex-row gap-4 justify-between ">
               <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
@@ -227,7 +227,7 @@ export default function BackTest({ id }: Props) {
             />
           )}
           {isLoading && (
-            <div className="monthly-data sm:mt-12 mt-8">
+            <div className="monthly-data md:mt-12 mt-8 mb-20">
               <p className="text-xl pb-6 font-semibold">날짜 별 종목 성과</p>
               <div className="flex items-center justify-center">
                 <Skeleton sx={{ bgcolor: "grey.300" }} variant="rectangular" width={"100%"} height={200} />

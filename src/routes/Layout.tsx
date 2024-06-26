@@ -166,7 +166,7 @@ export default function Layout() {
           sx={{
             position: "fixed",
             ...(open && { display: "none" }),
-            zIndex: 1000,
+            zIndex: 1001,
           }}
           className={`md:!text-white !text-slate-900`}
         >
@@ -324,7 +324,7 @@ export default function Layout() {
         className={`w-full fixed h-screen bg-[#23272c] absolute md:hidden ${
           open ? "block" : "hidden"
         } inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster`}
-        style={{ background: "rgba(0,0,0,.7)", zIndex: "1000" }}
+        style={{ background: "rgba(0,0,0,.7)", zIndex: "1001" }}
         onClick={() => {
           setOpen(false);
         }}
