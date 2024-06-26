@@ -7,7 +7,6 @@ import StockApi, { IBackTestReq } from "@/apis/stockAPI";
 import StockChart from "./StockChart";
 import StockLineChart from "./StockLineChart";
 import MonthlyInfo from "./MonthlyInfo";
-import dummyData from "../../../../data/dummyBack.json";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/nums";
 import Skeleton from "@mui/material/Skeleton";
