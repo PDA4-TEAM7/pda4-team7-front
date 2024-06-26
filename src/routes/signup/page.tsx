@@ -71,7 +71,7 @@ export default function SignUp() {
         setFormData({ ...SignUpInitValue, password: "", confirm_password: "" });
       }
     } catch (error) {
-      console.error("회원가입 에러: ", error);
+      console.error("회원가입 에러입니다. ", error);
     }
 
     // TODO: 모달로 변경 및 네비게이터 사용하기
@@ -83,26 +83,26 @@ export default function SignUp() {
       if (field === "user_id") {
         const available = await validateUserId(formData["user_id"]);
         setCheckId(available);
-        const message = available ? "사용 가능한 아이디" : "이미 사용중인 아이디";
+        const message = available ? "사용 가능한 아이디입니다." : "이미 사용중인 아이디입니다.";
         handleModal({ title: "알림", message: message });
       } else if (field === "username") {
         const available = await validateUsername(formData["username"]);
         setCheckName(available);
-        const message = available ? "사용 가능한 닉네임" : "이미 사용중인 닉네임";
+        const message = available ? "사용 가능한 닉네임입니다." : "이미 사용중인 닉네임입니다.";
         handleModal({ title: "알림", message: message });
       }
     } else {
-      const message = "원하시는 값을 입력해주세요";
+      const message = "원하시는 값을 입력해주세요.";
       handleModal({ title: "알림", message: message });
     }
   };
 
   const checkPassword = (pass: string, re_pass: string) => {
     if (isBlankValue(pass) || isBlankValue(re_pass)) {
-      handleModal({ title: "알림", message: "비밀번호를 모두 입력해주세요" });
+      handleModal({ title: "알림", message: "비밀번호를 모두 입력해주세요." });
       return false;
     } else if (pass !== re_pass) {
-      handleModal({ title: "알림", message: "동일한 비밀번호를 입력해주세요" });
+      handleModal({ title: "알림", message: "동일한 비밀번호를 입력해주세요." });
       return false;
     }
     return true;
