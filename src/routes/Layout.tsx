@@ -74,7 +74,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(({ theme, open }) => ({
-  width: drawerWidth,
+  width: "0px",
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
@@ -86,6 +86,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
     ...closedMixin(theme),
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
+  "@media (max-width: 640px)": {
+    position: "absolute",
+    width: drawerWidth,
+    ...(!open && {
+      width: 0,
+      "& .MuiDrawer-paper": {
+        width: 0,
+      },
+    }),
+  },
 }));
 
 export default function Layout() {
@@ -129,12 +139,26 @@ export default function Layout() {
 
   return (
     <div className="flex">
-      <Drawer variant="permanent" open={open} className="[&_div]:bg-[#23272c]">
+      {open && <div className="w-full fixed h-full bg-[#23272c] opacity-60 absolute sm:hidden z-1000"></div>}
+      <div className={`absolute sm:hidden`} onClick={handleDrawerOpen}>
+        <IconButton
+          aria-label="open drawer"
+          onClick={handleDrawerOpen}
+          sx={{
+            position: "absolute",
+            ...(open && { display: "none" }),
+          }}
+          className={`sm:!text-white !text-slate-900`}
+        >
+          <MenuIcon />
+        </IconButton>
+      </div>
+      <Drawer variant="permanent" open={open} className={`[&_div]:bg-[#23272c] `}>
         <DrawerHeader>
           {open && (
             <div className="text-left flex-1 flex flex-row gap-2 items-center">
               <div className="profile-photo w-10 h-10 ">
-                <img src={"/icon-logo.png"} alt="" />
+                <img src={"/public/icon-logo.png"} alt="" />
               </div>
               <p className="text-white text-lg">E.G</p>
             </div>
@@ -146,7 +170,7 @@ export default function Layout() {
               position: "absolute",
               ...(open && { display: "none" }),
             }}
-            className="!text-white"
+            className={`sm:!text-white !text-slate-900`}
           >
             <MenuIcon />
           </IconButton>
@@ -181,44 +205,46 @@ export default function Layout() {
             )}
           </div>
         )}
-        <List>
-          {navMenu.map(({ text, page, icon, display }, index) => {
-            if (display === "login" && !user.userId) return <></>;
-            return (
-              <ListItem
-                onClick={() => handleNavigate(page)}
-                key={text + index}
-                disablePadding
-                sx={{ display: "block" }}
-              >
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
-                  }}
-                  className={`${location.pathname === page && "!bg-[#121417]"}`}
+        {open && (
+          <List>
+            {navMenu.map(({ text, page, icon, display }, index) => {
+              if (display === "login" && !user.userId) return <></>;
+              return (
+                <ListItem
+                  onClick={() => handleNavigate(page)}
+                  key={text + index}
+                  disablePadding
+                  sx={{ display: "block" }}
                 >
-                  <ListItemIcon
+                  <ListItemButton
                     sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
                     }}
-                    className="center !bg-transparent"
+                    className={`${location.pathname === page && "!bg-[#121417]"}`}
                   >
-                    {icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    sx={{ opacity: open ? 1 : 0 }}
-                    className="text-[#E0E4EA] !bg-transparent"
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                      }}
+                      className="center !bg-transparent"
+                    >
+                      {icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      sx={{ opacity: open ? 1 : 0 }}
+                      className="text-[#E0E4EA] !bg-transparent"
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
         {open && (
           <div className="mt-auto mb-4 px-2 text-right">
             {user.userId ? (

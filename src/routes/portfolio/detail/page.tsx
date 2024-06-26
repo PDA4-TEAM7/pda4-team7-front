@@ -4,7 +4,7 @@ import StockList from "../stockList";
 import BackTest from "./BackTest";
 import CommPage from "../comm_page";
 import { portfolioApi } from "@/apis/portfolioAPI";
-import { Button } from "@/components/ui/button";
+
 import useModal from "@/hooks/useModal";
 
 // portfolio/detail/1
@@ -13,7 +13,7 @@ export default function DetailPage() {
   const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
   const [accountId, setAccountId] = useState<string>();
   const { id } = useParams();
-  const { close, openExtended } = useModal();
+  const { close, open } = useModal();
 
   useEffect(() => {
     const AccountId = async (portfolioId: string) => {
@@ -73,8 +73,9 @@ export default function DetailPage() {
     </div>
   );
 
+  // TODO: 이거 컴포넌트로 쓸거면 모달에서 받는 값 컴포넌트로 변경해주세요.
   const handleModalOpen = () => {
-    openExtended("과거 투자 성과란?", modalContent, close, close);
+    open("과거 투자 성과란?", modalContent, close);
   };
 
   if (!id) return <div>param not found</div>;
@@ -82,17 +83,34 @@ export default function DetailPage() {
 
   return (
     <div className="portfolio-detail-container h-screen flex flex-col ">
-      <nav className="flex flex-row items-center justify-between p-2 text-2xl h-14 box-border">
-        <div className="flex items-center">
-          <p className="text-xl font-bold pb-2 pl-4">{title}</p>
-          <Button className="ml-2 bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
+      <nav className="flex lg:flex-row items-center justify-end p-2 gap-4 h-22 box-border flex-row mr-4">
+        <div
+          className={`text-zinc-900 hover:text-zinc-700 box-border pb-[4px] ${
+            tab === "StockList" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
+          }`}
+          onClick={() => {
+            if (tab !== "StockList") setTab("StockList");
+          }}
+        >
+          <span> 종목 리스트</span>
+        </div>
+        <div
+          className={`text-zinc-900 hover:text-zinc-700 flex box-border flex-row items-center pb-[4px] ${
+            tab === "BackTest" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
+          }`}
+          onClick={() => {
+            if (tab !== "BackTest") setTab("BackTest");
+          }}
+        >
+          <span>과거 투자 성과</span>
+          <div className="ml-1 bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={1.5}
+              strokeWidth={1}
               stroke="currentColor"
-              className="w-6 h-6 text-black"
+              className="w-4 h-4 text-black"
             >
               <path
                 strokeLinecap="round"
@@ -100,43 +118,21 @@ export default function DetailPage() {
                 d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
               />
             </svg>
-          </Button>
+          </div>
         </div>
-        <div className="space-x-4 flex flex-row gap-4 pr-12 text-lg">
-          <div
-            className={`text-zinc-900 hover:text-zinc-700 pb-1 ${
-              tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
-            }`}
-            onClick={() => {
-              if (tab !== "StockList") setTab("StockList");
-            }}
-          >
-            종목 리스트
-          </div>
-          <div
-            className={`text-zinc-900 hover:text-zinc-700 pb-2 ${
-              tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
-            }`}
-            onClick={() => {
-              if (tab !== "BackTest") setTab("BackTest");
-            }}
-          >
-            과거 투자 성과
-          </div>
-          <div
-            className={`text-zinc-900 hover:text-zinc-700 pb-2 ${
-              tab === "Community" && "active border-b-[3px] border-indigo-500/100"
-            }`}
-            onClick={() => {
-              if (tab !== "Community") setTab("Community");
-            }}
-          >
-            질의응답
-          </div>
+        <div
+          className={`text-zinc-900 hover:text-zinc-700 box-border pb-[4px] ${
+            tab === "Community" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
+          }`}
+          onClick={() => {
+            if (tab !== "Community") setTab("Community");
+          }}
+        >
+          <span> 질의응답</span>
         </div>
       </nav>
-      <div className="tab-container px-6 overflow-y-auto flex-1">
-        {tab === "StockList" && <StockList id={accountId} />}
+      <div className="tab-container px-6 overflow-y-auto flex-1 ">
+        {tab === "StockList" && <StockList id={accountId} title={title || ""} />}
         {tab === "BackTest" && <BackTest id={accountId} />}
         {tab === "Community" && <CommPage id={id} />}
       </div>
