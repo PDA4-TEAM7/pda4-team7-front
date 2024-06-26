@@ -123,7 +123,7 @@ export function Myportfolio() {
       ) : (
         selectedAccount && (
           <div className="tab-container px-6 overflow-y-auto flex-1">
-            {tab === "StockList" && <StockList id={selectedAccount} />}
+            {tab === "StockList" && <StockList id={selectedAccount} title={null} />}
             {tab === "BackTest" && <BackTest id={selectedAccount} />}
             {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}
           </div>

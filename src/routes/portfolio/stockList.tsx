@@ -15,7 +15,7 @@ interface WordData extends d3.SimulationNodeDatum {
 }
 type Props = {
   id: string;
-  title: string;
+  title: string | null;
 };
 
 const truncateText = (text: string, length: number) => {
@@ -209,7 +209,7 @@ export default function StockList({ id, title }: Props) {
         <div className="wrap-section flex sm:flex-row flex-col gap-6">
           <div className="section inline-block sm:w-1/2 w-full box-border sm:h-calc-100vh-minus-2rem">
             <div className="section flex flex-col h-full">
-              <p className="text-lg font-bold pb-2 pl-4 ">{title}</p>
+              {title && <p className="text-lg font-bold pb-2 pl-4 ">{title}</p>}
               <p className="text-lg font-medium pt-2">자산 구성</p>
               <div className="chart-wrap w-full min-h-[320px] relative">
                 <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
