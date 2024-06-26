@@ -8,7 +8,7 @@ export default function useModal() {
     dispatch(closeModal());
   };
 
-  const open = (title: string, message: string, onClick: () => void) => {
+  const open = (title: string, message: string | JSX.Element, onClick: () => void) => {
     dispatch(
       showModal({
         title: title,
