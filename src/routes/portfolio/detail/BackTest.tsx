@@ -32,13 +32,13 @@ export default function BackTest({ id }: Props) {
   const [backTestData, setBackTestData] = useState<any>([]);
   const [resStockData, setResStockData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const backTestFetcher = async () => {
+  const backTestFetcher = async (stockdata: any, quantities: number[]) => {
     if (!startDate || !endDate) return;
     try {
       console.log("update...", isLoading);
       const service = new StockApi();
-      const total: number = stocks.reduce((acc, curr) => acc + curr, 0);
-      const stockList = resStockData.map((account: any) => {
+      const total: number = quantities.reduce((acc, curr) => acc + curr, 0);
+      const stockList = stockdata.map((account: any) => {
         return [account.code, account.stock_name, +account.hldg_qty / total];
       });
 
@@ -53,9 +53,9 @@ export default function BackTest({ id }: Props) {
       if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
       setBackTestData(backTestingDataRes);
 
-      return dummyData;
+      return backTestingDataRes;
     } finally {
-      setIsLoading(true);
+      setIsLoading(false);
     }
   };
   const handleBackTestUpdate = async () => {
@@ -63,7 +63,7 @@ export default function BackTest({ id }: Props) {
     setIsLoading(true);
     setStartDate(selectedStDate);
     setEndDate(selectedEdDate);
-    const res = await backTestFetcher();
+    const res = await backTestFetcher(resStockData, stocks);
     if (res) setBackTestData(res);
   };
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function BackTest({ id }: Props) {
         setStockNames(stockNames);
         setIsLoading(true);
         console.log("loading : ", isLoading);
-        const res = await backTestFetcher();
+        const res = await backTestFetcher(updatedData, quantities);
         setBackTestData(res);
       } catch (error) {
         console.error("Error fetching data:", error);
