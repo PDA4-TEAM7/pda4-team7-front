@@ -12,7 +12,7 @@ import { formatNumber } from "@/lib/nums";
 import Skeleton from "@mui/material/Skeleton";
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/chart-lottie.json"; // JSON 파일 경로
-import dummyData from "../../../../data/dummyBack.json";
+// import dummyData from "../../../../data/dummyBack.json";
 type Props = {
   id: string;
 };
@@ -51,7 +51,6 @@ export default function BackTest({ id }: Props) {
       const backTestingDataRes = await service.getBackTest(portfolio);
       if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
       setBackTestData(backTestingDataRes);
-
 
       return backTestingDataRes;
     } finally {
