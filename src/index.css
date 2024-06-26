@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .h-calc-100vh-minus-2rem {
+    height: calc(100vh - 2rem);
+  }
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

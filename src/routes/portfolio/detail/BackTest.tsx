@@ -12,7 +12,7 @@ import { formatNumber } from "@/lib/nums";
 import Skeleton from "@mui/material/Skeleton";
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/chart-lottie.json"; // JSON 파일 경로
-
+// import dummyData from "../../../../data/dummyBack.json";
 type Props = {
   id: string;
 };
@@ -114,17 +114,14 @@ export default function BackTest({ id }: Props) {
     console.log("isloading useEffect:", backTestData);
   }, [backTestData]);
   return (
-    <div className="portfolio-detail-container h-full w-full">
+    <div className="portfolio-detail-container sm:h-full w-full">
       <div className="wrap-section flex sm:flex-row gap-10 flex-col">
-        <div
-          className="section inline-block sm:w-1/2 w-full box-border sm:px-4 px-1 sm:overflow-y-auto pb-4"
-          style={{ height: "calc(100vh - 2rem)" }}
-        >
+        <div className="section inline-block sm:w-1/2 w-full box-border sm:px-4 px-1 sm:overflow-y-auto pb-4 sm:h-calc-100vh-minus-2rem ">
           <div className="section ">
             <div className="chart-wrap w-full h-screen/2 min-h-[380px] relative overflow-hidden">
               <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
-            <div className="date-wrap flex flex-col mt-12 sm:p-6 p-3 bg-slate-100 rounded-lg sm:mx-4 mx-1">
+            <div className="date-wrap flex flex-col mt-12 sm:p-6 p-3 bg-slate-100 rounded-lg sm:mx-4 mx-1 mb-2">
               <p className="sm:text-lg sm:pb-6 pb-4 ">투자 성과 조회 기준 설정</p>
               <div className="flex flex-col gap-3">
                 <div className="date-wrap flex flex-row gap-4 justify-between ">
@@ -162,10 +159,7 @@ export default function BackTest({ id }: Props) {
             </div>
           </div>
         </div>
-        <div
-          className="section inline-block sm:w-1/2 w-full box-border px-4 sm:overflow-y-auto  pb-4"
-          style={{ height: "calc(100vh - 2rem)" }}
-        >
+        <div className="section inline-block sm:w-1/2 w-full box-border px-4 sm:overflow-y-auto  pb-4 sm:overflow-y-auto pb-4 sm:h-calc-100vh-minus-2rem">
           {/* chart */}
           {!isLoading ? (
             backTestData && <StockLineChart backTestData={backTestData.portfolio.backtest} />
