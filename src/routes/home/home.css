@@ -1,4 +1,3 @@
-/* index.css  */
 .hero {
   align-items: center;
   display: flex;
@@ -6,6 +5,7 @@
   height: 100vh;
   justify-content: center;
   width: 100%;
+  position: relative;
 }
 
 .hero__waves {
@@ -56,17 +56,6 @@
   margin-bottom: 30px;
 }
 
-.hero__button {
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 800;
-  height: 40px;
-  position: relative;
-  width: 170px;
-}
-
 .content {
   align-items: center;
   background-color: #fff;
@@ -80,6 +69,7 @@
   line-height: 1.4;
   min-height: 100vh;
   padding: 20px;
+  position: relative; /* Ensure this is present for arrow positioning */
 }
 
 .content__paragraph {
@@ -105,4 +95,32 @@ body:has(.main-container) {
 
 * {
   box-sizing: border-box;
+}
+
+.arrow-container {
+  position: absolute;
+  bottom: 20px;
+  right: 50%;
+  transform: translateX(50%);
+  z-index: 100;
+  animation: blink 1s infinite;
+  cursor: pointer;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.arrow {
+  width: 50px; /* 화살표 크기 키우기 */
+  height: 50px; /* 화살표 크기 키우기 */
+  fill: #000; /* 색상은 필요에 따라 변경 가능 */
 }
