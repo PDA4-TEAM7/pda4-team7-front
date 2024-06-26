@@ -205,7 +205,7 @@ export default function StockList({ id, title }: Props) {
 
   return (
     <>
-      <div className="portfolio-detail-container h-full">
+      <div className="portfolio-detail-container h-full w-full">
         <div className="wrap-section flex flex-row gap-6">
           <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 2rem)" }}>
             <div className="section flex flex-col h-full">

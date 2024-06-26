@@ -131,7 +131,7 @@ export default function DetailPage() {
           <span> 질의응답</span>
         </div>
       </nav>
-      <div className="tab-container px-6 overflow-y-auto flex-1 ">
+      <div className="tab-container sm:px-6 px-2 overflow-y-auto flex-1 ">
         {tab === "StockList" && <StockList id={accountId} title={title || ""} />}
         {tab === "BackTest" && <BackTest id={accountId} />}
         {tab === "Community" && <CommPage id={id} />}
