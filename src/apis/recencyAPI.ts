@@ -5,4 +5,8 @@ export default class RecencyAPI extends BaseApi {
     const resp = await this.fetcher.get("/recency/getMyRecencyTradingHistory");
     return resp.data;
   }
+  async getStockInfoByAccountId(accountId: number, name: string) {
+    const resp = await this.fetcher.get(`/recency/getStockInfo/${accountId}/${name}`);
+    return resp.data;
+  }
 }
