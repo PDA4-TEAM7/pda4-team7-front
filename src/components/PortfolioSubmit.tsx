@@ -60,9 +60,14 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setI
 
     const response = await portfolioApi.addPortfolio(data);
     console.log("Portfolio saved successfully:", response);
-    alert("포트폴리오가 등록되었습니다.");
-    setShowSheet(false); // Sheet 닫기
-    setIsPublished(true); // 상태 변경
+    if (!data.account_id) {
+      alert("등록할 포트폴리오가 존재하지 않습니다.");
+      setShowSheet(false);
+    } else {
+      alert("포트폴리오가 등록되었습니다.");
+      setShowSheet(false); // Sheet 닫기
+      setIsPublished(true); // 상태 변경
+    }
   };
 
   const handleClose = () => {

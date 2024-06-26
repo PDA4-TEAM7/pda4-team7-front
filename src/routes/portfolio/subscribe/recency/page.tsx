@@ -1,36 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Prev from "@/assets/icon-back-white.png";
 import TransactionCard from "./components/transactionCard";
 import { ChartComponent } from "./components/ChartComponent";
-import { DetailPanel } from "./components/detailPanel";
+import { DetailPanel, SelectedItem } from "./components/detailPanel";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import RecencyAPI from "@/apis/recencyAPI";
 // Chart.js 라이브러리에 필요한 구성 요소 등록
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface GroupData {
   group: string;
   value: number;
-}
-
-interface DetailData {
-  stock?: string;
-  value?: number;
-  investor?: string;
-  shares?: number;
-  profit?: number;
-  rate?: number;
-}
-
-interface DetailedData {
-  [key: string]: DetailData[];
-}
-
-interface SelectedItem {
-  group: string;
-  value: number;
-  details: DetailData[];
 }
 
 const createChartData = (data: GroupData[], isIndustry: boolean) => {
@@ -62,7 +45,7 @@ const options = {
     x: {
       title: {
         display: true,
-        text: "Group",
+        text: "산업 / 종목",
       },
       grid: {
         offset: true,
@@ -71,44 +54,75 @@ const options = {
     y: {
       title: {
         display: true,
-        text: "Value",
+        text: "종목 / 투자자",
       },
     },
   },
 };
 export default function SubscribePortfolioRecency() {
-  const [selectedChart, setSelectedChart] = useState<string>("data1");
+  const [selectedChart, setSelectedChart] = useState<string>("investIdstTop5");
   const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
   const navigate = useNavigate();
+  const [investIdstTop5, setInvestIdstTop5] = useState([]);
+  const [investStockTop5, setInvestStockTop5] = useState([]);
+
+  useEffect(() => {
+    const fetchTop5 = async () => {
+      const recencyAPI = new RecencyAPI();
+      const respIdst = await recencyAPI.getInvestIdstTop5();
+      setInvestIdstTop5(respIdst);
+      const respStock = await recencyAPI.getInvestStockTop5();
+      setInvestStockTop5(respStock);
+    };
+    fetchTop5();
+  }, []);
+
   // Chart 인스턴스에 대한 참조를 저장하기 위해 useRef를 사용하고, 타입을 Chart로 지정
   const chartRef = useRef<ChartJS<"bar", number[], unknown> | null>(null);
 
   const handleSubPortfolioClick = () => navigate("/portfolio/subscribe");
-
-  const handleElementClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleElementClick = async (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!chartRef.current) return;
-    // Chart 인스턴스에서 getElementsAtEventForMode 메소드를 안전하게 호출
+
     const nativeEvent = event.nativeEvent as Event;
     const elements = chartRef.current.getElementsAtEventForMode(nativeEvent, "nearest", { intersect: true }, false);
-    if (elements.length > 0) {
-      const firstElement = elements[0];
-      // labels 배열과 해당 인덱스의 라벨이 존재하는지 확인
-      const labels = chartRef.current.data.labels;
-      if (!labels || firstElement.index >= labels.length) {
-        console.error("No label found at the clicked index");
+    if (elements.length === 0) return;
+
+    const firstElement = elements[0];
+    const labels = chartRef.current.data.labels;
+    if (!labels || firstElement.index >= labels.length) {
+      console.error("No label found at the clicked index");
+      return;
+    }
+
+    const group = labels[firstElement.index];
+    if (typeof group !== "string") {
+      console.error("Invalid label type");
+      return;
+    }
+
+    const recencyAPI = new RecencyAPI();
+    try {
+      let detailData;
+      if (selectedChart === "investIdstTop5") {
+        detailData = await recencyAPI.getStockListByIdst(group);
+      } else if (selectedChart === "investStockTop5") {
+        detailData = await recencyAPI.getStockDetailListByStock(group);
+        console.log(detailData);
+      }
+
+      if (!detailData) {
+        console.error("No data returned for this group");
         return;
       }
 
-      const group = labels[firstElement.index];
-      if (typeof group !== "string") {
-        console.error("Invalid label type");
-        return;
-      }
       setSelectedItem({
         group,
         value: chartRef.current.data.datasets[0].data[firstElement.index] as number,
-        details: selectedChart === "data1" ? detailedData[group] || [] : investorData[group] || [],
+        details: detailData, // API로부터 받은 데이터를 사용
       });
+    } catch (error) {
+      console.error("Failed to fetch detail data:", error);
     }
   };
 
@@ -117,63 +131,8 @@ export default function SubscribePortfolioRecency() {
     setSelectedItem(null);
   };
 
-  // 예시 데이터
-  const data1: GroupData[] = [
-    { group: "반도체", value: 2 },
-    { group: "금융", value: 1 },
-    { group: "자동차", value: 2 },
-    { group: "화학", value: 1 },
-    { group: "조선", value: 2 },
-  ];
+  const chartData = selectedChart === "investIdstTop5" ? investIdstTop5 : investStockTop5;
 
-  const data2: GroupData[] = [
-    { group: "SK하이닉스", value: 3 },
-    { group: "삼성전자", value: 2 },
-    { group: "신한지주", value: 1 },
-    { group: "현대차", value: 2 },
-    { group: "NAVER", value: 1 },
-  ];
-
-  const detailedData: DetailedData = {
-    반도체: [
-      { stock: "SK하이닉스", value: 9 },
-      { stock: "삼성전자", value: 8 },
-    ],
-    금융: [{ stock: "신한지주", value: 5 }],
-    자동차: [
-      { stock: "현대차", value: 10 },
-      { stock: "기아차", value: 8 },
-    ],
-    화학: [
-      { stock: "LG화학", value: 7 },
-      { stock: "롯데케미칼", value: 4 },
-    ],
-    조선: [
-      { stock: "현대중공업", value: 5 },
-      { stock: "대우조선해양", value: 6 },
-    ],
-  };
-
-  const investorData: DetailedData = {
-    SK하이닉스: [
-      { investor: "오수연", shares: 120, profit: 100000, rate: 5.0 },
-      { investor: "임찬솔", shares: 50, profit: 40000, rate: 3.5 },
-    ],
-    삼성전자: [
-      { investor: "박소연", shares: 200, profit: 150000, rate: 6.0 },
-      { investor: "장호익", shares: 80, profit: 70000, rate: 4.5 },
-    ],
-    신한지주: [{ investor: "오수연", shares: 70, profit: 30000, rate: 2.5 }],
-    현대차: [
-      { investor: "오수연", shares: 95, profit: 50000, rate: 3.0 },
-      { investor: "임찬솔", shares: 40, profit: 20000, rate: 2.0 },
-    ],
-    NAVER: [
-      { investor: "장호익", shares: 30, profit: 15000, rate: 1.5 },
-      { investor: "박소연", shares: 45, profit: 22000, rate: 2.3 },
-    ],
-  };
-  const chartData = selectedChart === "data1" ? data1 : data2;
   return (
     <div className="flex flex-col h-full">
       <header className="flex justify-between items-center p-4 border-b bg-gray-100">
@@ -201,17 +160,17 @@ export default function SubscribePortfolioRecency() {
           {/* 수정된 부분 */}
           <Button
             className={`text-l focus:outline-none px-8 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 ${
-              selectedChart === "data1" ? "bg-indigo-700" : "bg-indigo-500"
+              selectedChart === "investIdstTop5" ? "bg-indigo-700" : "bg-indigo-500"
             }`}
-            onClick={() => handleChartChange("data1")}
+            onClick={() => handleChartChange("investIdstTop5")}
           >
             산업별 투자
           </Button>
           <Button
             className={`text-l focus:outline-none px-8 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 ${
-              selectedChart === "data2" ? "bg-indigo-700" : "bg-indigo-500"
+              selectedChart === "investStockTop5" ? "bg-indigo-700" : "bg-indigo-500"
             }`}
-            onClick={() => handleChartChange("data2")}
+            onClick={() => handleChartChange("investStockTop5")}
           >
             종목별 투자
           </Button>
@@ -219,7 +178,7 @@ export default function SubscribePortfolioRecency() {
         <div className="grid grid-cols-2 gap-4 ">
           <div className="col-span-1 border rounded-lg border-gray-300">
             <ChartComponent
-              data={createChartData(chartData, selectedChart === "data1")}
+              data={createChartData(chartData, selectedChart === "investIdstTop5")}
               options={options}
               onElementClick={handleElementClick}
               chartRef={chartRef}
@@ -228,7 +187,9 @@ export default function SubscribePortfolioRecency() {
           <DetailPanel selectedItem={selectedItem} selectedChart={selectedChart} />
         </div>
         <div className="mt-10 mb-3">
-          <TransactionCard />
+          <TooltipProvider>
+            <TransactionCard />
+          </TooltipProvider>
         </div>
       </main>
     </div>

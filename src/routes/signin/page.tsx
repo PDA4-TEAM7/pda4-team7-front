@@ -104,9 +104,14 @@ export default function SignIn() {
           </form>
           <div className="mt-10">
             <p className="text-gray-600">계정이 없습니다.</p>
-            <a href="/signup" className="text-blue-500">
-              가입하기
-            </a>
+            <div className="flex justify-between">
+              <a href="/signup" className="text-blue-500">
+                가입하기
+              </a>
+              <a href="/portfolio/mainportfolio" className="text-blue-500">
+                홈으로 이동하기
+              </a>
+            </div>
           </div>
         </div>
 
