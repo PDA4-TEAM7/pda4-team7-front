@@ -52,7 +52,7 @@ export default function StockList({ id }: Props) {
             account_id: account.account_id,
             stock_id: account.stock_id,
             market_id: account.market_id,
-            hldg_qty: account.hldg_qty,
+            hldg_qty: +account.hldg_qty,
             pchs_amt: account.pchs_amt,
             code: account.stock.code,
             evlu_amt: account.evlu_amt,
