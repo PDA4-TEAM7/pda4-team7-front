@@ -13,7 +13,7 @@ export default function DetailPage() {
   const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
   const [accountId, setAccountId] = useState<string>();
   const { id } = useParams();
-  const { close, open } = useModal();
+  const { open, close } = useModal();
 
   useEffect(() => {
     const AccountId = async (portfolioId: string) => {

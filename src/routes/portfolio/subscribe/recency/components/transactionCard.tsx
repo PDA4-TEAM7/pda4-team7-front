@@ -138,9 +138,9 @@ const TransactionCard = () => {
             <div className="mt-4 ml-10">
               {hoverInfo[index] && (
                 <Tooltip>
-                  <p>거래 후 보유 수량: {formatNumber(Number(hoverInfo[index]?.hldg_qty as string))}주</p>
-                  <p>거래 후 평가 금액: {formatNumber(Number(hoverInfo[index]?.pchs_amt))}원</p>
-                  <p>거래 후 평가 손익 금액: {formatNumber(Number(hoverInfo[index]?.evlu_amt))}원</p>
+                  <p>총 보유 수량: {formatNumber(Number(hoverInfo[index]?.hldg_qty as string))}주</p>
+                  <p>총 매수 금액: {formatNumber(Number(hoverInfo[index]?.pchs_amt))}원</p>
+                  <p>평가 금액: {formatNumber(Number(hoverInfo[index]?.evlu_amt))}원</p>
                   <div className="flex justify-end">
                     <span
                       className="mr-6 mt-4 cursor-pointer text-blue-500 hover:text-blue-700"

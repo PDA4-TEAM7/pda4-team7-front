@@ -21,7 +21,7 @@ type Props = {
 export default function BackTest({ id }: Props) {
   //TODO: 시작, 종료 날짜를 default값을 넣어두고 바로 백테스팅api호출되도록.
   //TODO: 그 후로는 날짜 값 변경시 새로 호출하도록.
-  const startYear2004 = dayjs("2020-01-01");
+  const startYear2004 = dayjs("2010-01-01");
   const today = dayjs();
   const [selectedStDate, setSelectedStDate] = useState<Dayjs | null>(startYear2004);
   const [selectedEdDate, setSelectedEdDate] = useState<Dayjs | null>(today);
@@ -159,7 +159,7 @@ export default function BackTest({ id }: Props) {
                   조회하기
                 </Button>
               </div>
-              <p className="mt-4 text-sm text-gray-600">시작일 지정은 2004-01부터 지원됩니다.</p>
+              <p className="mt-4 text-sm text-gray-600">시작일 지정은 2010-01부터 지원됩니다.</p>
             </div>
           </div>
         </div>
