@@ -16,13 +16,26 @@ import { formatNumber } from "@/lib/nums";
 import dayjs from "dayjs";
 
 export default function MainPortfolio() {
-  const [sort, setSort] = useState("");
+  const [sort, setSort] = useState("10");
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
   const [subscribedPortfolios, setSubscribedPortfolios] = useState<any[]>([]);
   const navigate = useNavigate();
   const { open, close } = useModal();
   const { getUserInfo, submitUserInfo } = useUser();
   const { user } = useAuth();
+
+  const sortPortfolios = (portfolios: any[], sort: string) => {
+    switch (sort) {
+      case "10": // 수익률 순
+        return portfolios.sort((a, b) => Math.abs(b.profitLoss) - Math.abs(a.profitLoss));
+      case "20": // 구독자 순
+        return portfolios.sort((a, b) => b.subscriberCount - a.subscriberCount);
+      case "30": // 최신 순
+        return portfolios.sort((a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime());
+      default:
+        return portfolios;
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +47,7 @@ export default function MainPortfolio() {
             return { ...portfolio, subscriberCount };
           })
         );
-        setPortfolioData(portfolioDataWithSubscribers);
+        setPortfolioData(sortPortfolios(portfolioDataWithSubscribers, sort));
 
         if (user.userId) {
           const subscriptionResponse = await subscribeApi.getUserSubscriptions();
@@ -46,10 +59,11 @@ export default function MainPortfolio() {
     };
 
     fetchData();
-  }, [user.userId]);
+  }, [user.userId, sort]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value as string);
+    setPortfolioData(sortPortfolios([...portfolioData], event.target.value));
   };
 
   const handlePortfolioClick = (item: any) => {
@@ -144,9 +158,9 @@ export default function MainPortfolio() {
               label="정렬 순"
               onChange={handleChange}
             >
-              <MenuItem value={10}>수익률 순</MenuItem>
-              <MenuItem value={20}>구독자 순</MenuItem>
-              <MenuItem value={30}>최신 순</MenuItem>
+              <MenuItem value="10">수익률 순</MenuItem>
+              <MenuItem value="20">구독자 순</MenuItem>
+              <MenuItem value="30">최신 순</MenuItem>
             </Select>
           </FormControl>
         </div>
