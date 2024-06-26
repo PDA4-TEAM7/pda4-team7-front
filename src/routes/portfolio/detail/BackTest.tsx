@@ -170,24 +170,24 @@ export default function BackTest({ id }: Props) {
             <div className="w-full h-[400px]">Loading..</div>
           )}
           <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
-            <p className="text-xl pb-6">상세 지표</p>
+            <p className="text-xl pb-6 font-bold">상세 지표</p>
             <div className="date-wrap flex flex-row gap-4 justify-between ">
-              <div className="backtest-info flex-1">
-                <p className="title">샤프지수</p>
+              <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
+                <p className="title font-semibold">샤프지수</p>
                 {!isLoading ? <span>{formatNumber(backTestData.sharpe_ratio, 2)}</span> : <span>Loading</span>}
               </div>
-              <div className="backtest-info flex-1">
-                <p className="title">MDD</p>
+              <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
+                <p className="title font-semibold">MDD</p>
                 {!isLoading ? <span>{formatNumber(backTestData.mdd, 4)}</span> : <span>Loading</span>}
               </div>
             </div>
             <div className="date-wrap flex flex-row gap-4 justify-between mt-8">
-              <div className="backtest-info flex-1">
-                <p className="title">표준편차</p>
+              <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
+                <p className="title font-semibold">표준편차</p>
                 {!isLoading ? <span>{formatNumber(backTestData.standard_deviation, 2)}</span> : <span>Loading</span>}
               </div>
-              <div className="backtest-info flex-1">
-                <p className="title">연간 수익률</p>
+              <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
+                <p className="title font-semibold">연간 수익률</p>
                 {!isLoading ? <span>{formatNumber(backTestData.annual_return, 2)}</span> : <span>Loading</span>}
               </div>
             </div>
