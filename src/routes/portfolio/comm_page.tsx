@@ -44,7 +44,7 @@ const CommPage = ({ id }: Props) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [ownerInfo, setOwnerInfo] = useState<OwnerInfo | null>(null); // 초기값을 null로 설정
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
-
+  const [sending, setSending] = useState(false); //댓글 작성 중복안되게
   useEffect(() => {
     // 포트폴리오의 오너 정보를 가져옵니다.
     const fetchOwnerInfo = async () => {
@@ -105,6 +105,8 @@ const CommPage = ({ id }: Props) => {
   };
 
   const handleCommentSubmit = async () => {
+    if (sending) return;
+    setSending(true);
     if (comment.trim()) {
       try {
         const newCommentData: IComment = {
@@ -134,6 +136,8 @@ const CommPage = ({ id }: Props) => {
         setComment("");
       } catch (error) {
         console.error("댓글 작성 중 오류 발생:", error);
+      } finally {
+        setSending(false);
       }
     }
   };
@@ -152,37 +156,43 @@ const CommPage = ({ id }: Props) => {
   };
 
   const handleReplySubmit = async (commentId: number) => {
-    const comment = comments.find((comment) => comment.comment_id === commentId);
-    if (comment && comment.replyText?.trim()) {
-      const newReplyData = {
-        description: comment.replyText,
-        userId: 0,
-        comment_id: commentId,
-      };
+    if (sending) return;
+    setSending(true);
+    try {
+      const comment = comments.find((comment) => comment.comment_id === commentId);
+      if (comment && comment.replyText?.trim()) {
+        const newReplyData = {
+          description: comment.replyText,
+          userId: 0,
+          comment_id: commentId,
+        };
 
-      // 백엔드 API 호출
-      const response = await replyApi.writeReply(newReplyData);
-      if (response.status === 403) {
-        return alert("권한 다메");
-      }
-      const newReply = {
-        author: response.data.newReply.username,
-        user_id: response.data.newReply.user_id,
-        role: ownerInfo && response.data.newReply.user_id === ownerInfo.owner.uid ? "작성자" : "",
-        date: new Date(response.data.newReply.create_dt).toISOString().split("T")[0],
-        text: response.data.newReply.description,
-      };
-      const newComments = comments.map((comment) => {
-        if (comment.comment_id === commentId) {
-          return {
-            ...comment,
-            replies: [...comment.replies, newReply],
-            replyText: "",
-          } as Comment;
+        // 백엔드 API 호출
+        const response = await replyApi.writeReply(newReplyData);
+        if (response.status === 403) {
+          return alert("권한 다메");
         }
-        return comment;
-      });
-      setComments(newComments);
+        const newReply = {
+          author: response.data.newReply.username,
+          user_id: response.data.newReply.user_id,
+          role: ownerInfo && response.data.newReply.user_id === ownerInfo.owner.uid ? "작성자" : "",
+          date: new Date(response.data.newReply.create_dt).toISOString().split("T")[0],
+          text: response.data.newReply.description,
+        };
+        const newComments = comments.map((comment) => {
+          if (comment.comment_id === commentId) {
+            return {
+              ...comment,
+              replies: [...comment.replies, newReply],
+              replyText: "",
+            } as Comment;
+          }
+          return comment;
+        });
+        setComments(newComments);
+      }
+    } finally {
+      setSending(false);
     }
   };
 
@@ -210,7 +220,6 @@ const CommPage = ({ id }: Props) => {
     <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <h1 className="text-2xl font-bold mb-6">{ownerInfo.title}</h1>
           <div className="mb-4 flex items-stretch gap-1">
             <input
               type="text"
@@ -230,7 +239,14 @@ const CommPage = ({ id }: Props) => {
           {comments.map((comment) => (
             <div key={comment.comment_id} className="mb-6 p-4 rounded-lg">
               <div className="flex items-center mb-2">
-                <div className="font-semibold">{comment.author}</div>
+                <div className="profile-photo w-5 h-5">
+                  <img
+                    src={`https://source.boringavatars.com/beam/500/${comment.author}`}
+                    alt="프로필 이미지"
+                    className="w-full h-full"
+                  />
+                </div>
+                <div className="font-semibold ml-1">{comment.author}</div>
                 <div className="ml-4 text-gray-500">{new Date(comment.create_dt).toISOString().split("T")[0]}</div>
               </div>
               <p className="mb-2">{comment.description}</p>
