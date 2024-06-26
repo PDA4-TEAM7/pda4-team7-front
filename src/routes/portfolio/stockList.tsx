@@ -206,8 +206,8 @@ export default function StockList({ id, title }: Props) {
   return (
     <>
       <div className="portfolio-detail-container h-full w-full">
-        <div className="wrap-section flex flex-row gap-6">
-          <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 2rem)" }}>
+        <div className="wrap-section flex sm:flex-row flex-col gap-6">
+          <div className="section inline-block sm:w-1/2 w-full box-border sm:h-calc-100vh-minus-2rem">
             <div className="section flex flex-col h-full">
               <p className="text-lg font-bold pb-2 pl-4 ">{title}</p>
               <p className="text-lg font-medium pt-2">자산 구성</p>
@@ -250,10 +250,7 @@ export default function StockList({ id, title }: Props) {
               </div>
             </div>
           </div>
-          <div
-            className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
-            style={{ height: "calc(100vh - 3.5rem)" }}
-          >
+          <div className="section inline-block sm:w-1/2 w-full box-border px-4 overflow-y-auto  pb-4 sm:h-calc-100vh-minus-2rem">
             <div className="">
               <p className="text-lg text-lg font-medium pt-2">업종별 보유정보</p>
               <div className="h-screen/2 min-h-[320px]">
