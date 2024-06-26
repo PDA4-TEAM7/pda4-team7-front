@@ -7,6 +7,7 @@ import StockList from "./stockList";
 import BackTest from "./detail/BackTest";
 import CommPage from "./comm_page"; // CommPage import 추가
 import accountAPI from "@/apis/accountAPI";
+import AddAccountPopup from "@/components/AddAccountPopup";
 
 export function Myportfolio() {
   const [selectedAccount, setSelectedAccount] = useState("");
@@ -15,19 +16,21 @@ export function Myportfolio() {
   const [isPublished, setIsPublished] = useState(false);
   const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
   const [accounts, setAccounts] = useState<string[]>([]);
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
 
+  const fetchAccounts = async () => {
+    try {
+      const response = await new accountAPI().getAccountList();
+      const accountList = response.accountList.map((account: { account_number: string }) => account.account_number);
+      setAccounts(accountList);
+      if (accountList > 0) setSelectedAccount(response.accountList[0].account_id);
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+    }
+  };
   useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const response = await new accountAPI().getAccountList();
-        const accountList = response.accountList.map((account: { account_number: string }) => account.account_number);
-        setAccounts(accountList);
-      } catch (error) {
-        console.error("Error fetching accounts:", error);
-      }
-    };
     fetchAccounts();
-  }, []);
+  }, [showAddAccountModal]);
 
   useEffect(() => {
     const checkPortfolioStatus = async () => {
@@ -63,79 +66,94 @@ export function Myportfolio() {
   };
 
   return (
-    <div className="my-portfolio-container flex flex-col h-screen min-h-screen">
-      <nav className="flex flex-row justify-between p-2 h-14 items-center box-border">
-        <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
-        <div className="flex flex-row justify-between gap-2">
-          <div
-            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
-              tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
-            } `}
-            onClick={() => {
-              if (tab !== "StockList") setTab("StockList");
-            }}
-          >
-            종목 리스트
-          </div>
-          <div
-            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
-              tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
-            }`}
-            onClick={() => {
-              if (tab !== "BackTest") setTab("BackTest");
-            }}
-          >
-            과거 투자 성과
-          </div>
-          {isPublished && (
+    <>
+      <div className="my-portfolio-container flex flex-col h-screen min-h-screen">
+        <nav className="flex flex-row justify-between p-2 h-14 items-center box-border">
+          <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
+          <div className="flex flex-row justify-between gap-2">
             <div
               className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
-                tab === "Community" && "active border-b-[3px] border-indigo-500/100"
-              }`}
+                tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
+              } `}
               onClick={() => {
-                if (tab !== "Community") setTab("Community");
+                if (tab !== "StockList") setTab("StockList");
               }}
             >
-              질의응답
+              종목 리스트
             </div>
-          )}
-          <div className="flex justify-end">
-            {isPublished ? (
-              <Button
-                variant="outline"
-                className="bg-red-600 text-white hover:bg-red-700"
-                onClick={handleCancelRegistration}
+            <div
+              className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+                tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
+              }`}
+              onClick={() => {
+                if (tab !== "BackTest") setTab("BackTest");
+              }}
+            >
+              과거 투자 성과
+            </div>
+            {isPublished && (
+              <div
+                className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+                  tab === "Community" && "active border-b-[3px] border-indigo-500/100"
+                }`}
+                onClick={() => {
+                  if (tab !== "Community") setTab("Community");
+                }}
               >
-                등록 취소
-              </Button>
-            ) : (
-              <Button variant="outline" className="bg-blue-600 text-white hover:bg-blue-700" onClick={handleRegister}>
-                등록
-              </Button>
+                질의응답
+              </div>
             )}
+            <div className="flex justify-end">
+              {isPublished ? (
+                <Button
+                  variant="outline"
+                  className="bg-red-600 text-white hover:bg-red-700"
+                  onClick={handleCancelRegistration}
+                >
+                  등록 취소
+                </Button>
+              ) : (
+                <Button variant="outline" className="bg-blue-600 text-white hover:bg-blue-700" onClick={handleRegister}>
+                  등록
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </nav>
-      {!accounts.length ? (
-        <div className="flex flex-1 justify-center items-center">
-          <p>연결된 계좌가 없습니다.</p>
-        </div>
-      ) : (
-        selectedAccount && (
-          <div className="tab-container px-6 overflow-y-auto flex-1">
-            {tab === "StockList" && <StockList id={selectedAccount} title={null} />}
-            {tab === "BackTest" && <BackTest id={selectedAccount} />}
-            {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}
+        </nav>
+        {!accounts.length ? (
+          <div className="flex flex-col flex-1 justify-center items-center">
+            <p>연결된 계좌가 없습니다. </p>
+            <p> 계좌를 추가해볼까요?</p>
+            <Button
+              onClick={() => setShowAddAccountModal(true)}
+              className="focus:outline-none mt-4 px-4 bg-indigo-500 p-3 ml-3 rounded-lg text-white hover:bg-indigo-400 w-[120px]"
+            >
+              계좌 추가하기
+            </Button>
           </div>
-        )
-      )}
-      <PortfolioSubmit
-        selectedAccount={selectedAccount}
-        showSheet={showSheet}
-        setShowSheet={setShowSheet}
-        setIsPublished={setIsPublished}
+        ) : (
+          selectedAccount && (
+            <div className="tab-container px-6 overflow-y-auto flex-1">
+              {tab === "StockList" && <StockList id={selectedAccount} title={null} />}
+              {tab === "BackTest" && <BackTest id={selectedAccount} />}
+              {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}
+            </div>
+          )
+        )}
+        <PortfolioSubmit
+          selectedAccount={selectedAccount}
+          showSheet={showSheet}
+          setShowSheet={setShowSheet}
+          setIsPublished={setIsPublished}
+        />
+      </div>
+      <AddAccountPopup
+        modalShow={showAddAccountModal}
+        modalClose={() => {
+          setShowAddAccountModal(false);
+        }}
       />
-    </div>
+    </>
   );
 }
 

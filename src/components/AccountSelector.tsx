@@ -30,7 +30,7 @@ export function AccountSelector({ selectedAccount, setSelectedAccount }: Account
       }
     };
     fetchAccounts();
-  }, []);
+  }, [selectedAccount]);
 
   const handleAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAccount(e.target.value);
