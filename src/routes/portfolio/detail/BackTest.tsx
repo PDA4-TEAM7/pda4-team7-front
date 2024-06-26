@@ -41,7 +41,7 @@ export default function BackTest({ id }: Props) {
       const stockList = resStockData.map((account: any) => {
         return [account.code, account.stock_name, +account.hldg_qty / total];
       });
-      const fetchedAccount = await service.stockJoin(id);
+
       const portfolio: IBackTestReq = {
         stock_list: stockList,
         balance: 100000000, ///1억 기준
@@ -49,9 +49,9 @@ export default function BackTest({ id }: Props) {
         start_date: startDate.startOf("month").format("YYYYMMDD"), // "20221231"
         end_date: endDate.endOf("month").format("YYYYMMDD"),
       };
-      // const backTestingDataRes = await service.getBackTest(portfolio);
-      // if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
-      // setBackTestData(backTestingDataRes);
+      const backTestingDataRes = await service.getBackTest(portfolio);
+      if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
+      setBackTestData(backTestingDataRes);
 
       return dummyData;
     } finally {
