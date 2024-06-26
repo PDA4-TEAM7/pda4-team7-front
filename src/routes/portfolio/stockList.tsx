@@ -209,7 +209,6 @@ export default function StockList({ id, title }: Props) {
         <div className="wrap-section flex sm:flex-row flex-col gap-6">
           <div className="section inline-block sm:w-1/2 w-full box-border sm:h-calc-100vh-minus-2rem">
             <div className="section flex flex-col h-full">
-              {title && <p className="text-lg font-bold pb-2 pl-4 ">{title}</p>}
               <p className="text-lg font-medium pt-2">자산 구성</p>
               <div className="chart-wrap w-full min-h-[320px] relative">
                 <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />
@@ -218,7 +217,7 @@ export default function StockList({ id, title }: Props) {
                 className="holding-stock-wrap flex flex-col flex-grow overflow-hidden pb-2"
                 style={{ flex: "1 1 auto" }}
               >
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-row justify-between px-2">
                   <p className="text-lg pb-3 font-medium">보유 종목 정보</p>
                   <Button
                     className="py-1 px-2 text-sm h-7 bg-blue-100 text-blue-900 hover:bg-blue-200"
@@ -227,7 +226,7 @@ export default function StockList({ id, title }: Props) {
                     거래 내역 조회
                   </Button>
                 </div>
-                <div className="overflow-y-auto flex-grow">
+                <div className="overflow-y-auto md:flex-grow h-64">
                   <div className="data-wrap">
                     {accountdata.map((stock, i) => (
                       <div key={i} className="flex justify-between items-center mb-1 p-2 px-3 border-b ">
@@ -250,7 +249,7 @@ export default function StockList({ id, title }: Props) {
               </div>
             </div>
           </div>
-          <div className="section inline-block sm:w-1/2 w-full box-border px-4 overflow-y-auto  pb-4 sm:h-calc-100vh-minus-2rem">
+          <div className="section inline-block md:w-1/2 w-full box-border px-4 overflow-y-auto  pb-4 md:h-calc-100vh-minus-2rem mb-8 mb:mb-0">
             <div className="">
               <p className="text-lg text-lg font-medium pt-2">업종별 보유정보</p>
               <div className="h-screen/2 min-h-[320px]">

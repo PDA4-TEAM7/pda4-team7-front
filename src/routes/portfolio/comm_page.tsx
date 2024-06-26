@@ -217,7 +217,7 @@ const CommPage = ({ id }: Props) => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg">
+    <div className="max-w-7xl mx-auto md:p-6 p-2 bg-white shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
           <div className="mb-4 flex items-stretch gap-1">
@@ -251,7 +251,7 @@ const CommPage = ({ id }: Props) => {
               </div>
               <p className="mb-2">{comment.description}</p>
               {comment.replies.map((reply, index) => (
-                <div key={index} className="ml-8 mt-4 p-4 border border-gray-300 rounded-lg">
+                <div key={index} className="md:ml-8 ml-4 mt-4 p-4 border border-gray-300 rounded-lg">
                   <div className="flex items-center mb-2">
                     <div className="profile-photo w-5 h-5">
                       <img
@@ -260,14 +260,14 @@ const CommPage = ({ id }: Props) => {
                         className="w-full h-full"
                       />
                     </div>
-                    <div className="ml-1 font-semibold">{reply.author}</div>
-                    {reply.role && <div className="ml-4 text-red-500 font-semibold">{reply.role}</div>}
-                    <div className="ml-4 text-gray-500">{reply.date}</div>
+                    <div className="ml-1 font-semibold text-nowrap">{reply.author}</div>
+                    {reply.role && <div className="ml-4 text-red-500 font-semibold text-nowrap">{reply.role}</div>}
+                    <div className="ml-4 text-gray-500 text-nowrap">{reply.date}</div>
                   </div>
                   <p className="mb-2">{reply.text}</p>
                 </div>
               ))}
-              <div className="ml-8 mt-4 flex flex-row gap-1">
+              <div className="md:ml-8 ml-4 mt-4 flex flex-row gap-1">
                 <input
                   type="text"
                   placeholder="답글을 입력하세요 :)"
@@ -286,7 +286,7 @@ const CommPage = ({ id }: Props) => {
             </div>
           ))}
         </div>
-        <div>
+        <div className="mb-40">
           <div className="p-4 bg-gray-100 rounded-lg text-center" style={{ minHeight: "400px" }}>
             <div className="text-lg font-semibold mb-4">포트폴리오 오너 소개</div>
             <div className="mb-4">

@@ -5,7 +5,8 @@ import { Input } from "./ui/input";
 import useModal from "@/hooks/useModal";
 import { IAccountInfo } from "@/apis/accountAPI";
 import useAccount from "@/hooks/useAccount";
-
+import Lottie from "lottie-react";
+import loadingAnim from "../assets/lottie-loading.json";
 //TODO: userId 로 계좌 조회 해서 리스트 표시
 export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: boolean; modalClose: () => void }) {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -17,6 +18,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
   const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
   const { open, close } = useModal();
   const { addAccount } = useAccount();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -42,11 +44,16 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
   };
 
   const handleAddAccount = async () => {
-    const res = await addAccount(accountInfo);
-    if (res) {
-      handleModal({ title: "알림", text: "등록 완료했습니다.", success: true });
-    } else {
-      handleModal({ title: "알림", text: "등록에 실패했습니다.", success: false });
+    setIsLoading(true);
+    try {
+      const res = await addAccount(accountInfo);
+      if (res) {
+        handleModal({ title: "알림", text: "등록 완료했습니다.", success: true });
+      } else {
+        handleModal({ title: "알림", text: "등록에 실패했습니다.", success: false });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,14 +106,14 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
               </svg>
             </div>
           </div>
-          <div className="py-4 space-y-4 overflow-scroll h-full pr-3 flex-1">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+          <div className="py-4 space-y-4 overflow-x-auto h-full  flex-1 ">
+            <div className="grid max-w-sm items-center gap-1.5 mx-1">
               <Label htmlFor="appkey" className="text-lg">
                 App Key
               </Label>
               <Input type="string" id="appkey" name="appkey" placeholder="app key" onChange={handleChange} />
             </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid  max-w-sm items-center gap-1.5 mx-1">
               <Label htmlFor="appsecretkey" className="text-lg">
                 App Secret Key
               </Label>
@@ -118,7 +125,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
                 onChange={handleChange}
               />
             </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid max-w-sm items-center gap-1.5 mx-1">
               <Label htmlFor="accountNo" className="text-lg">
                 Account
               </Label>
@@ -127,11 +134,17 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
           </div>
           <div className="flex justify-center pt-4">
             <Button
-              disabled={disableSubmit}
+              disabled={disableSubmit || isLoading}
               onClick={handleAddAccount}
               className="focus:outline-none px-4 bg-indigo-500 p-3 ml-3 rounded-lg text-white hover:bg-indigo-400 w-[120px] disabled:opacity-75"
             >
-              계좌 추가하기
+              {isLoading ? (
+                <div className="w-[42px]">
+                  <Lottie animationData={loadingAnim} />{" "}
+                </div>
+              ) : (
+                <p>계좌 추가하기</p>
+              )}
             </Button>
             <Button
               onClick={() => modalClose()}

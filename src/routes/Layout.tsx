@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { styled, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
@@ -86,7 +86,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
     ...closedMixin(theme),
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
-  "@media (max-width: 640px)": {
+  "@media (max-width: 768px)": {
     position: "absolute",
     width: drawerWidth,
     ...(!open && {
@@ -122,6 +122,7 @@ export default function Layout() {
       return;
     }
     navigate(page);
+    setOpen(false);
   };
 
   const handleLogout = async () => {
@@ -137,23 +138,42 @@ export default function Layout() {
     navigate("/signin");
   };
 
+  useEffect(() => {
+    const isMobileView = window.matchMedia("(max-width: 768px)").matches;
+    if (open && isMobileView) {
+      // 모달이 열리면 body의 overflow를 hidden으로 설정하여 배경 스크롤을 막음
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden"; // 추가
+    } else {
+      // 모달이 닫히면 body의 overflow를 auto로 설정하여 배경 스크롤을 허용함
+      document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto"; // 추가
+    }
+
+    // 클린업 함수: 모달이 언마운트될 때 overflow를 auto로 설정하여 배경 스크롤을 허용함
+    return () => {
+      document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto"; // 추가
+    };
+  }, [open]);
+
   return (
     <div className="flex">
-      {open && <div className="w-full fixed h-full bg-[#23272c] opacity-60 absolute sm:hidden z-1000"></div>}
-      <div className={`absolute sm:hidden`} onClick={handleDrawerOpen}>
+      <div className={`absolute md:hidden top-2 left-2`} onClick={handleDrawerOpen}>
         <IconButton
           aria-label="open drawer"
           onClick={handleDrawerOpen}
           sx={{
-            position: "absolute",
+            position: "fixed",
             ...(open && { display: "none" }),
+            zIndex: 1001,
           }}
-          className={`sm:!text-white !text-slate-900`}
+          className={`md:!text-white !text-slate-900`}
         >
           <MenuIcon />
         </IconButton>
       </div>
-      <Drawer variant="permanent" open={open} className={`[&_div]:bg-[#23272c] `}>
+      <Drawer variant="permanent" open={open} className={`[&_div]:bg-[#23272c] h-screen [&_.MuiPaper-root]:h-screen`}>
         <DrawerHeader>
           {open && (
             <div className="text-left flex-1 flex flex-row gap-2 items-center">
@@ -170,7 +190,7 @@ export default function Layout() {
               position: "absolute",
               ...(open && { display: "none" }),
             }}
-            className={`sm:!text-white !text-slate-900`}
+            className={`md:!text-white !text-slate-900`}
           >
             <MenuIcon />
           </IconButton>
@@ -300,7 +320,16 @@ export default function Layout() {
           </div>
         )}
       </Drawer>
-      <div className="grow-[1] w-full">
+      <div
+        className={`w-full fixed h-screen bg-[#23272c] absolute md:hidden ${
+          open ? "block" : "hidden"
+        } inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster`}
+        style={{ background: "rgba(0,0,0,.7)", zIndex: "1001" }}
+        onClick={() => {
+          setOpen(false);
+        }}
+      ></div>
+      <div className="grow-[1]">
         <Outlet />
       </div>
     </div>

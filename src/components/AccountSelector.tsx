@@ -30,16 +30,16 @@ export function AccountSelector({ selectedAccount, setSelectedAccount }: Account
       }
     };
     fetchAccounts();
-  }, []);
+  }, [selectedAccount]);
 
   const handleAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAccount(e.target.value);
   };
 
   return (
-    <div className="pr-8 flex flex-row items-center gap-4">
-      <h1 className="text-xl font-bold">계좌 선택</h1>
-      <select value={selectedAccount} onChange={handleAccountChange} className="p-2 border rounded-md w-64">
+    <div className="flex flex-row items-center gap-4">
+      <h1 className="text-lg font-semibold text-nowrap pl-10 md:pl-0">계좌 선택</h1>
+      <select value={selectedAccount} onChange={handleAccountChange} className="p-2 border rounded-md w-32">
         {accounts.map((account) => (
           <option key={account.account_id} value={account.account_id}>
             {account.account_number}
