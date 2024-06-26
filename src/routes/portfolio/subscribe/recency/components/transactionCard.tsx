@@ -78,8 +78,8 @@ const TransactionCard = () => {
     fetchRecencyHistory();
   }, []);
 
-  const handleMovePortfolioClick = (account_id: number) => {
-    navigate(`/portfolio/detail/${account_id}`);
+  const handleMovePortfolioClick = (portfolio_id: number) => {
+    navigate(`/portfolio/detail/${portfolio_id}`);
   };
   const handleCardClick = async (index: number, accountId: number, name: string) => {
     if (hoverInfo[index] !== null) {
@@ -117,43 +117,59 @@ const TransactionCard = () => {
               <div className="font-bold">총 체결 금액(원)</div>
             </div>
           </div>
-        </div>
-        {recencyHistory.map((transaction, index) => (
-          <div
-            key={index}
-            className={`m-2 p-4 rounded-lg shadow-md ${
-              transaction.sll_buy_dvsn_cd === "buy" ? "bg-red-200/50" : "bg-blue-200/50"
-            }`}
-            onClick={() => handleCardClick(index, transaction.account_id, transaction.name)}
-          >
-            <div className="grid grid-cols-5 gap-4 text-center">
-              <div className="font-bold">{transaction.name}</div>
-              <div className={`font-bold ${transaction.sll_buy_dvsn_cd === "buy" ? "text-red-600" : "text-blue-600"}`}>
-                {transaction.sll_buy_dvsn_cd === "buy" ? "매수" : "매도"}
+
+          {recencyHistory.map((transaction, index) => (
+            <div
+              key={index}
+              className={`m-2 p-4 rounded-lg shadow-md ${
+                transaction.sll_buy_dvsn_cd === "buy" ? "bg-red-200/50" : "bg-blue-200/50"
+              }`}
+              onClick={() => handleCardClick(index, transaction.account_id, transaction.name)}
+            >
+              <div className="grid grid-cols-5 gap-4 text-center">
+                <div className="font-bold">{transaction.name}</div>
+                <div
+                  className={`font-bold ${transaction.sll_buy_dvsn_cd === "buy" ? "text-red-600" : "text-blue-600"}`}
+                >
+                  {transaction.sll_buy_dvsn_cd === "buy" ? "매수" : "매도"}
+                </div>
+                <div>{transaction.avg_prvs.toLocaleString()}원</div>
+                <div>{transaction.tot_ccld_qty}주</div>
+                <div>{transaction.tot_ccld_amt.toLocaleString()}원</div>
               </div>
-              <div>{transaction.avg_prvs.toLocaleString()}원</div>
-              <div>{transaction.tot_ccld_qty}주</div>
-              <div>{transaction.tot_ccld_amt.toLocaleString()}원</div>
+              <div className="mt-4 ml-10">
+                {hoverInfo[index] && (
+                  <Tooltip>
+                    <p>
+                      {transaction.sll_buy_dvsn_cd === "buy" ? "매수" : "매도"} 후 보유 수량:{" "}
+                      {formatNumber(Number(hoverInfo[index]?.hldg_qty))}주
+                    </p>
+                    <p>평가 금액: {formatNumber(Number(hoverInfo[index]?.evlu_amt))}원</p>
+                    <p>
+                      평가 손익 금액:{" "}
+                      {(() => {
+                        const profit = Number(hoverInfo[index]?.evlu_amt) - Number(hoverInfo[index]?.pchs_amt);
+                        return profit < 0 ? (
+                          <span className="text-blue-500">{formatNumber(profit)}원</span>
+                        ) : (
+                          <span className="text-red-500">+{formatNumber(profit)}원</span>
+                        );
+                      })()}
+                    </p>
+                    <div className="flex justify-end">
+                      <span
+                        className="mr-6 mt-4 cursor-pointer text-blue-500 hover:text-blue-700"
+                        onClick={() => handleMovePortfolioClick(transaction.portfolio_id)}
+                      >
+                        포트폴리오 바로 보기
+                      </span>
+                    </div>
+                  </Tooltip>
+                )}
+              </div>
             </div>
-            <div className="mt-4 ml-10">
-              {hoverInfo[index] && (
-                <Tooltip>
-                  <p>총 보유 수량: {formatNumber(Number(hoverInfo[index]?.hldg_qty as string))}주</p>
-                  <p>총 매수 금액: {formatNumber(Number(hoverInfo[index]?.pchs_amt))}원</p>
-                  <p>평가 금액: {formatNumber(Number(hoverInfo[index]?.evlu_amt))}원</p>
-                  <div className="flex justify-end">
-                    <span
-                      className="mr-6 mt-4 cursor-pointer text-blue-500 hover:text-blue-700"
-                      onClick={() => handleMovePortfolioClick(transaction.account_id)}
-                    >
-                      포트폴리오 바로 보기
-                    </span>
-                  </div>
-                </Tooltip>
-              )}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </>
   );
