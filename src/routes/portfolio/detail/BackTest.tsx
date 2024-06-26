@@ -7,6 +7,9 @@ import StockApi, { IBackTestReq } from "@/apis/stockAPI";
 import StockChart from "./StockChart";
 import StockLineChart from "./StockLineChart";
 import MonthlyInfo from "./MonthlyInfo";
+import dummyData from "../../../../data/dummyBack.json";
+import { Button } from "@/components/ui/button";
+import { formatNumber } from "@/lib/nums";
 
 type Props = {
   id: string;
@@ -17,28 +20,60 @@ export default function BackTest({ id }: Props) {
   //TODO: 그 후로는 날짜 값 변경시 새로 호출하도록.
   const startYear2004 = dayjs("2020-01-01");
   const today = dayjs();
+  const [selectedStDate, setSelectedStDate] = useState<Dayjs | null>(startYear2004);
+  const [selectedEdDate, setSelectedEdDate] = useState<Dayjs | null>(today);
   const [startDate, setStartDate] = useState<Dayjs | null>(startYear2004);
   const [endDate, setEndDate] = useState<Dayjs | null>(today);
   const [stocks, setStocks] = useState<number[]>([]);
   const [stockNames, setStockNames] = useState<string[]>([]);
-  const [backTestData, setBackTestData] = useState<any>();
-
+  const [backTestData, setBackTestData] = useState<any>([]);
+  const [resStockData, setResStockData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const backTestFetcher = async () => {
+    if (!startDate || !endDate) return;
+    try {
+      console.log("update...", isLoading);
+      const service = new StockApi();
+      const total: number = stocks.reduce((acc, curr) => acc + curr, 0);
+      const stockList = resStockData.map((account: any) => {
+        return [account.code, account.stock_name, +account.hldg_qty / total];
+      });
+      const fetchedAccount = await service.stockJoin(id);
+      const portfolio: IBackTestReq = {
+        stock_list: stockList,
+        balance: 100000000, ///1억 기준
+        interval_month: 1,
+        start_date: startDate.startOf("month").format("YYYYMMDD"), // "20221231"
+        end_date: endDate.endOf("month").format("YYYYMMDD"),
+      };
+      // const backTestingDataRes = await service.getBackTest(portfolio);
+      // if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
+      // setBackTestData(backTestingDataRes);
+      console.log("update...", isLoading);
+      return dummyData;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleBackTestUpdate = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    setStartDate(selectedStDate);
+    setEndDate(selectedEdDate);
+    const res = await backTestFetcher();
+    if (res) setBackTestData(res);
+  };
   useEffect(() => {
     const fetchAccountData = async () => {
-      if (!id) {
-        console.log("아이디없음", id);
-        return;
-      }
+      if (!id) return console.log("아이디없음", id);
       try {
         const service = new StockApi();
         console.log("Fetching account data...");
         const fetchedAccount = await service.stockJoin(id);
         console.log("Fetched account data:", fetchedAccount);
-
         // 데이터 가공
         const updatedData = fetchedAccount.map((account: any) => {
           const evlu_pfls_rt = (account.evlu_pfls_amt / account.pchs_amt) * 100;
-
           return {
             holdings_id: account.holdings_id,
             account_id: account.account_id,
@@ -54,32 +89,17 @@ export default function BackTest({ id }: Props) {
             std_idst_clsf_cd_name: account.stock.std_idst_clsf_cd_name,
           };
         });
-        // 파이차트
+        setResStockData(updatedData);
         // 각 주식의 수량을 가져오는 코드 파이차트안의 내용.
         const quantities: number[] = updatedData.map((account: any) => +account.hldg_qty);
         setStocks(quantities);
         // 주식 이름을 찾는 코드
         const stockNames = updatedData.map((account: any) => account.stock_name);
         setStockNames(stockNames);
-
-        const total: number = quantities.reduce((acc, curr) => acc + curr, 0);
-        if (!startDate || !endDate) return;
-        const stockList = updatedData.map((account: any) => {
-          return [account.code, account.stock_name, +account.hldg_qty / total];
-        });
-        const portfolio: IBackTestReq = {
-          stock_list: stockList,
-          balance: 100000000, ///1억 기준
-          interval_month: 1,
-          start_date: startDate.startOf("month").format("YYYYMMDD"), // "20221231"
-          end_date: endDate.endOf("month").format("YYYYMMDD"),
-        };
-        const backTestingDataRes = await service.getBackTest(portfolio);
-        if (backTestingDataRes) {
-          setBackTestData(backTestingDataRes);
-        } else {
-          console.log("error : ", backTestingDataRes);
-        }
+        setIsLoading(true);
+        console.log("loading : ", isLoading);
+        const res = await backTestFetcher();
+        setBackTestData(res);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -88,9 +108,8 @@ export default function BackTest({ id }: Props) {
   }, [id]);
 
   useEffect(() => {
-    console.log("back:", backTestData);
+    console.log("isloading useEffect:", backTestData);
   }, [backTestData]);
-
   return (
     <div className="portfolio-detail-container h-full">
       <div className="wrap-section flex flex-row gap-10">
@@ -104,29 +123,37 @@ export default function BackTest({ id }: Props) {
             </div>
             <div className="date-wrap flex flex-col mt-12 p-6 bg-slate-100 rounded-lg mx-4">
               <p className="text-lg pb-6">투자 성과 조회 기준 설정</p>
-              <div className="date-wrap flex flex-row gap-4 justify-between ">
-                <DatePicker
-                  label={"시작"}
-                  views={["month", "year"]}
-                  value={startDate}
-                  onChange={(newValue) => {
-                    setStartDate(newValue);
-                  }}
-                  minDate={startYear2004}
-                  maxDate={endDate || today} // endDate 이전 날짜만 선택 가능
-                  className="flex-1"
-                />
-                <DatePicker
-                  label={"종료"}
-                  views={["month", "year"]}
-                  value={endDate}
-                  minDate={startDate || undefined} // startDate 이후 날짜만 선택 가능
-                  maxDate={today} // endDate 이전 날짜만 선택 가능
-                  onChange={(newValue) => {
-                    setEndDate(newValue);
-                  }}
-                  className="flex-1"
-                />
+              <div className="flex flex-col gap-3">
+                <div className="date-wrap flex flex-row gap-4 justify-between ">
+                  <DatePicker
+                    label={"시작"}
+                    views={["month", "year"]}
+                    value={selectedStDate}
+                    onChange={(newValue) => {
+                      setSelectedStDate(newValue);
+                    }}
+                    minDate={startYear2004}
+                    maxDate={selectedEdDate || today} // endDate 이전 날짜만 선택 가능
+                    className="flex-1"
+                  />
+                  <DatePicker
+                    label={"종료"}
+                    views={["month", "year"]}
+                    value={selectedEdDate}
+                    minDate={selectedStDate || undefined} // startDate 이후 날짜만 선택 가능
+                    maxDate={today} // endDate 이전 날짜만 선택 가능
+                    onChange={(newValue) => {
+                      setSelectedEdDate(newValue);
+                    }}
+                    className="flex-1"
+                  />
+                </div>
+                <Button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => handleBackTestUpdate()}
+                >
+                  조회하기
+                </Button>
               </div>
               <p className="mt-4 text-sm text-gray-600">시작일 지정은 2004-01부터 지원됩니다.</p>
             </div>
@@ -137,59 +164,35 @@ export default function BackTest({ id }: Props) {
           style={{ height: "calc(100vh - 3.5rem)" }}
         >
           {/* chart */}
-          {backTestData && backTestData.portfolio && <StockLineChart backTestData={backTestData.portfolio.backtest} />}
+          {!isLoading ? (
+            backTestData && <StockLineChart backTestData={backTestData.portfolio.backtest} />
+          ) : (
+            <div className="w-full h-[400px]">Loading..</div>
+          )}
           <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
             <p className="text-xl pb-6">상세 지표</p>
             <div className="date-wrap flex flex-row gap-4 justify-between ">
-              <DatePicker
-                label={"시작"}
-                views={["month", "year"]}
-                value={startDate}
-                onChange={(newValue) => {
-                  setStartDate(newValue);
-                }}
-                minDate={startYear2004}
-                maxDate={endDate || today} // endDate 이전 날짜만 선택 가능
-                className="flex-1"
-              />
-              <DatePicker
-                label={"종료"}
-                views={["month", "year"]}
-                value={endDate}
-                minDate={startDate || undefined} // startDate 이후 날짜만 선택 가능
-                maxDate={today} // endDate 이전 날짜만 선택 가능
-                onChange={(newValue) => {
-                  setEndDate(newValue);
-                }}
-                className="flex-1"
-              />
+              <div className="backtest-info flex-1">
+                <p className="title">샤프지수</p>
+                {!isLoading ? <span>{formatNumber(backTestData.sharpe_ratio, 2)}</span> : <span>Loading</span>}
+              </div>
+              <div className="backtest-info flex-1">
+                <p className="title">MDD</p>
+                {!isLoading ? <span>{formatNumber(backTestData.mdd, 4)}</span> : <span>Loading</span>}
+              </div>
             </div>
             <div className="date-wrap flex flex-row gap-4 justify-between mt-8">
-              <DatePicker
-                label={"시작"}
-                views={["month", "year"]}
-                value={startDate}
-                onChange={(newValue) => {
-                  setStartDate(newValue);
-                }}
-                minDate={startYear2004}
-                maxDate={endDate || today} // endDate 이전 날짜만 선택 가능
-                className="flex-1"
-              />
-              <DatePicker
-                label={"종료"}
-                views={["month", "year"]}
-                value={endDate}
-                minDate={startDate || undefined} // startDate 이후 날짜만 선택 가능
-                maxDate={today} // endDate 이전 날짜만 선택 가능
-                onChange={(newValue) => {
-                  setEndDate(newValue);
-                }}
-                className="flex-1"
-              />
+              <div className="backtest-info flex-1">
+                <p className="title">표준편차</p>
+                {!isLoading ? <span>{formatNumber(backTestData.standard_deviation, 2)}</span> : <span>Loading</span>}
+              </div>
+              <div className="backtest-info flex-1">
+                <p className="title">연간 수익률</p>
+                {!isLoading ? <span>{formatNumber(backTestData.annual_return, 2)}</span> : <span>Loading</span>}
+              </div>
             </div>
           </div>
-          {startDate && endDate && backTestData && backTestData.portfolio && (
+          {!isLoading && startDate && endDate && backTestData && backTestData.portfolio && (
             <MonthlyInfo
               startDate={startDate}
               endDate={endDate}
@@ -199,6 +202,12 @@ export default function BackTest({ id }: Props) {
                   [name]: backTestData.portfolio[name],
                 }))}
             />
+          )}
+          {isLoading && (
+            <div className="monthly-data mt-12">
+              <p className="text-xl pb-6">날짜 별 종목 성과</p>
+              <p>Loading</p>
+            </div>
           )}
         </div>
       </div>
