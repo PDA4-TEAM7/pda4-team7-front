@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseApi } from "./baseAPI";
 
 export interface IAccountInfo {
@@ -9,14 +10,21 @@ export interface IAccountInfo {
 export default class accountAPI extends BaseApi {
   //POST : 계좌 추가. 로그인 한 유저의 계좌 추가
   async addAccount(accountInfo: IAccountInfo) {
-    const resp = await this.fetcher.post("/account", accountInfo);
-    console.log(resp.data);
-    return resp.data;
+    try {
+      const resp = await this.fetcher.post("/account", accountInfo);
+      console.log(resp.data);
+      if (resp.status >= 400) {
+        throw Error;
+      }
+      return resp.data;
+    } catch (e: any) {
+      console.error("fail to add Account");
+    }
   }
   //GET : user의 account조회
   async getAccountList() {
     const resp = await this.fetcher.get(`/accountlist`);
-    console.log(resp.data);
+    if (resp.status) console.log(resp.data);
     return resp.data;
   }
   // GET : 특정 account조회
