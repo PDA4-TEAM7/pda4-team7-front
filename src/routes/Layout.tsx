@@ -206,7 +206,7 @@ export default function Layout() {
           </div>
         )}
         {open && (
-          <List>
+          <List key={"list"}>
             {navMenu.map(({ text, page, icon, display }, index) => {
               if (display === "login" && !user.userId) return <></>;
               return (
@@ -223,6 +223,7 @@ export default function Layout() {
                       px: 2.5,
                     }}
                     className={`${location.pathname === page && "!bg-[#121417]"}`}
+                    key={index + text}
                   >
                     <ListItemIcon
                       sx={{
@@ -231,6 +232,7 @@ export default function Layout() {
                         justifyContent: "center",
                       }}
                       className="center !bg-transparent"
+                      key={text + index + page}
                     >
                       {icon}
                     </ListItemIcon>
@@ -238,6 +240,7 @@ export default function Layout() {
                       primary={text}
                       sx={{ opacity: open ? 1 : 0 }}
                       className="text-[#E0E4EA] !bg-transparent"
+                      key={text + page}
                     />
                   </ListItemButton>
                 </ListItem>
@@ -273,6 +276,7 @@ export default function Layout() {
                       backgroundColor: "transparent",
                     },
                   }}
+                  key="btn1"
                 >
                   로그인
                 </Button>
@@ -287,6 +291,7 @@ export default function Layout() {
                       backgroundColor: "transparent",
                     },
                   }}
+                  key="btn2"
                 >
                   회원가입
                 </Button>
@@ -295,7 +300,7 @@ export default function Layout() {
           </div>
         )}
       </Drawer>
-      <div className="grow-[1]">
+      <div className="grow-[1] w-full">
         <Outlet />
       </div>
     </div>
