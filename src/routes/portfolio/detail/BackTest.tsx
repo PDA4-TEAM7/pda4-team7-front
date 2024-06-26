@@ -49,11 +49,11 @@ export default function BackTest({ id }: Props) {
         start_date: startDate.startOf("month").format("YYYYMMDD"), // "20221231"
         end_date: endDate.endOf("month").format("YYYYMMDD"),
       };
-      const backTestingDataRes = await service.getBackTest(portfolio);
-      if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
-      setBackTestData(backTestingDataRes);
+      // const backTestingDataRes = await service.getBackTest(portfolio);
+      // if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
+      // setBackTestData(backTestingDataRes);
 
-      return backTestingDataRes;
+      return dummyData;
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +118,7 @@ export default function BackTest({ id }: Props) {
       <div className="wrap-section flex flex-row gap-10">
         <div
           className="section inline-block w-1/2 box-border px-4 overflow-y-auto pb-4"
-          style={{ height: "calc(100vh - 3.5rem)" }}
+          style={{ height: "calc(100vh - 2rem)" }}
         >
           <div className="section ">
             <div className="chart-wrap w-full h-screen/2 min-h-[380px] relative overflow-hidden">

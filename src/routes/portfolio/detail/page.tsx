@@ -13,7 +13,7 @@ export default function DetailPage() {
   const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
   const [accountId, setAccountId] = useState<string>();
   const { id } = useParams();
-  const { open, close } = useModal();
+  const { close, openExtended } = useModal();
 
   useEffect(() => {
     const AccountId = async (portfolioId: string) => {
@@ -74,7 +74,7 @@ export default function DetailPage() {
   );
 
   const handleModalOpen = () => {
-    open("과거 투자 성과란?", modalContent);
+    openExtended("과거 투자 성과란?", modalContent, close, close);
   };
 
   if (!id) return <div>param not found</div>;
@@ -84,7 +84,7 @@ export default function DetailPage() {
     <div className="portfolio-detail-container h-screen flex flex-col ">
       <nav className="flex flex-row items-center justify-between p-2 text-2xl h-14 box-border">
         <div className="flex items-center">
-          <p className="text-2xl font-bold pb-2 pl-4">{title}</p>
+          <p className="text-xl font-bold pb-2 pl-4">{title}</p>
           <Button className="ml-2 bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -102,9 +102,9 @@ export default function DetailPage() {
             </svg>
           </Button>
         </div>
-        <div className="space-x-4 flex flex-row gap-4 pr-12">
+        <div className="space-x-4 flex flex-row gap-4 pr-12 text-lg">
           <div
-            className={`text-zinc-900 hover:text-zinc-700 pb-2 ${
+            className={`text-zinc-900 hover:text-zinc-700 pb-1 ${
               tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
             }`}
             onClick={() => {
