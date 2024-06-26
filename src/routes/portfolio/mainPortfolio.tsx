@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
@@ -129,10 +130,12 @@ export default function MainPortfolio() {
   return (
     <div>
       <main className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Stock Portfolio</h1>
-          <FormControl fullWidth style={{ maxWidth: 200 }}>
-            <InputLabel id="demo-simple-select-label">정렬 순</InputLabel>
+        <div className="flex justify-between items-start mb-4">
+          <h1 className="text-xl font-semibold text-nowrap pl-10 md:pl-0">Stock Portfolio</h1>
+          <FormControl fullWidth style={{ maxWidth: 200 }} className="h-14">
+            <InputLabel id="demo-simple-select-label" className={""}>
+              정렬 순
+            </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -146,7 +149,7 @@ export default function MainPortfolio() {
             </Select>
           </FormControl>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1">
           {portfolioData.map((item) => {
             const isSubscribed = isPortfolioSubscribed(item.id);
             const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
@@ -154,7 +157,7 @@ export default function MainPortfolio() {
             return (
               <div
                 key={item.id}
-                className={`border p-4 rounded-md ${isSubscribed ? "cursor-pointer" : "cursor-not-allowed"}`}
+                className={`border p-4 rounded-md cursor-pointer`}
                 onClick={() => handlePortfolioClick(item)}
               >
                 <div className="flex justify-between mb-4">
@@ -174,7 +177,6 @@ export default function MainPortfolio() {
                     </button>
                   </div>
                 </div>
-
                 <div className="flex">
                   <div className="w-1/2">
                     <Pie
