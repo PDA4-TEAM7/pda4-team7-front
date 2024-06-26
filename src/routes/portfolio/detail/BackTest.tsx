@@ -12,7 +12,7 @@ import { formatNumber } from "@/lib/nums";
 import Skeleton from "@mui/material/Skeleton";
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/chart-lottie.json"; // JSON 파일 경로
-// import dummyData from "../../../../data/dummyBack.json";
+
 type Props = {
   id: string;
 };
