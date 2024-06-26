@@ -13,6 +13,7 @@ import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
 import { formatNumber } from "@/lib/nums";
+import dayjs from "dayjs";
 
 export default function MainPortfolio() {
   const [sort, setSort] = useState("");
@@ -128,7 +129,7 @@ export default function MainPortfolio() {
   };
 
   return (
-    <div>
+    <div className="mb-10">
       <main className="p-4">
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-xl font-semibold text-nowrap pl-10 md:pl-0">Stock Portfolio</h1>
@@ -149,7 +150,7 @@ export default function MainPortfolio() {
             </Select>
           </FormControl>
         </div>
-        <div className="grid gap-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1">
+        <div className="grid gap-4 xl:grid-cols-3 md:grid-cols-2 grid-cols-1">
           {portfolioData.map((item) => {
             const isSubscribed = isPortfolioSubscribed(item.id);
             const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
@@ -157,119 +158,125 @@ export default function MainPortfolio() {
             return (
               <div
                 key={item.id}
-                className={`border p-4 rounded-md cursor-pointer`}
+                className={`border p-4 rounded-md cursor-pointer flex flex-col justify-between`}
                 onClick={() => handlePortfolioClick(item)}
               >
-                <div className="flex justify-between mb-4">
-                  <div className="flex-1 text-base font-bold">{item.title}</div>
-                  <div className="flex-none">
-                    <button
-                      className={`text-base ${
-                        isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                      } px-3 py-1 rounded`}
-                      style={{ minWidth: "70px", whiteSpace: "nowrap" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
-                      }}
-                    >
-                      {isSubscribed ? "취소" : "구독"}
-                    </button>
+                <div>
+                  <div className="flex justify-end mb-4 items-start">
+                    <div className="flex-none">
+                      <button
+                        className={`text-base ${
+                          isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                        } px-3 py-1 rounded`}
+                        style={{ minWidth: "70px", whiteSpace: "nowrap" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
+                        }}
+                      >
+                        {isSubscribed ? "취소" : "구독"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex">
-                  <div className="w-1/2">
-                    <Pie
-                      data={{
-                        labels: stockNameData,
-                        datasets: [
-                          {
-                            label: "비율",
-                            data: stockAmtData,
-                            backgroundColor: [
-                              "rgba(255, 99, 132, 1)",
-                              "rgba(54, 162, 235, 1)",
-                              "rgba(255, 206, 86, 1)",
-                              "rgba(75, 192, 192, 1)",
-                              "rgba(153, 102, 255, 1)",
-                              "rgba(255, 159, 64, 1)",
-                              "rgba(255, 99, 132, 0.8)",
-                              "rgba(54, 162, 235, 0.8)",
-                              "rgba(255, 206, 86, 0.8)",
-                              "rgba(75, 192, 192, 0.8)",
-                              "rgba(153, 102, 255, 0.8)",
-                              "rgba(255, 159, 64, 0.8)",
-                            ],
-                            borderWidth: 1,
-                          },
-                        ],
-                      }}
-                      options={{
-                        maintainAspectRatio: false,
-                        plugins: {
-                          datalabels: {
-                            display: false,
-                          },
-                          legend: {
-                            display: false,
-                          },
-                          tooltip: {
-                            callbacks: {
-                              label: (context) => {
-                                const value: number = Number(context.raw);
-                                return `${context.label}: ${Math.round(value * 100)}%`;
+                  <div className="flex">
+                    <div className="w-1/2">
+                      <Pie
+                        data={{
+                          labels: stockNameData,
+                          datasets: [
+                            {
+                              label: "비율",
+                              data: stockAmtData,
+                              backgroundColor: [
+                                "rgba(255, 99, 132, 1)",
+                                "rgba(54, 162, 235, 1)",
+                                "rgba(255, 206, 86, 1)",
+                                "rgba(75, 192, 192, 1)",
+                                "rgba(153, 102, 255, 1)",
+                                "rgba(255, 159, 64, 1)",
+                                "rgba(255, 99, 132, 0.8)",
+                                "rgba(54, 162, 235, 0.8)",
+                                "rgba(255, 206, 86, 0.8)",
+                                "rgba(75, 192, 192, 0.8)",
+                                "rgba(153, 102, 255, 0.8)",
+                                "rgba(255, 159, 64, 0.8)",
+                              ],
+                              borderWidth: 1,
+                            },
+                          ],
+                        }}
+                        options={{
+                          maintainAspectRatio: false,
+                          plugins: {
+                            datalabels: {
+                              display: false,
+                            },
+                            legend: {
+                              display: false,
+                            },
+                            tooltip: {
+                              callbacks: {
+                                label: (context) => {
+                                  const value: number = Number(context.raw);
+                                  return `${context.label}: ${Math.round(value * 100)}%`;
+                                },
                               },
                             },
                           },
-                        },
-                      }}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="w-1/2 pl-4 flex flex-col justify-center">
-                    <div>
-                      <p className="font-bold">총 자산: {formatNumber(item.totalAsset)}원</p>
-                      <p
-                        className={`font-bold ${
-                          +item.profitLoss > 0
-                            ? "text-red-500"
-                            : +item.profitLoss == 0
-                            ? "text-black-900"
-                            : "text-blue-500"
-                        }`}
-                      >
-                        {+item.profitLoss > 0 && <span>+</span>}
-                        {formatNumber(item.loss)} <span>({Math.abs(item.profitLoss.toFixed(2))}%)</span>
-                      </p>
+                        }}
+                        width={200}
+                        height={200}
+                      />
+                    </div>
+                    <div className="w-1/2 pl-4 flex flex-col justify-center">
+                      <div>
+                        <p className="font-bold">총 자산: {formatNumber(item.totalAsset)}원</p>
+                        <p
+                          className={`font-bold ${
+                            +item.profitLoss > 0
+                              ? "text-red-500"
+                              : +item.profitLoss == 0
+                              ? "text-black-900"
+                              : "text-blue-500"
+                          }`}
+                        >
+                          {+item.profitLoss > 0 && <span>+</span>}
+                          {formatNumber(item.loss)} <span>({Math.abs(item.profitLoss.toFixed(2))}%)</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="mt-4">
-                  <h3 className="font-bold">{item.title}</h3>
-                  <p>{item.description}</p>
+                <div className="mt-4 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold">{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
+
                   <div className="mt-4">
-                    <span className="text-base text-gray-500">
-                      생성일자 {new Date(item.createDate).toLocaleString()}
-                    </span>
-                    <div className="flex items-center mt-2">
-                      <div className="profile-photo w-6 h-6 mr-2">
-                        <img
-                          src={`https://source.boringavatars.com/beam/500/${item.username}`}
-                          alt="프로필 이미지"
-                          className="w-full h-full"
-                        />
+                    <div className="flex flex-row justify-between">
+                      <div className="flex items-center flex-row">
+                        <div className="profile-photo w-6 h-6 mr-2 inline-block">
+                          <img
+                            src={`https://source.boringavatars.com/beam/500/${item.username}`}
+                            alt="프로필 이미지"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <span className="text-base text-gray-500">{item.username}</span>
                       </div>
-                      <span className="text-base text-gray-500">{item.username}</span>
+                      <span className="text-base text-gray-500">
+                        {"작성일: " + dayjs(item.createDate).format("YYYY/MM/DD")}
+                      </span>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <span className=" text-base">구독료 : {formatNumber(item.price)} 원 /월</span>
                       <div className="flex items-center ml-auto">
                         <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
                         <span className="text-base text-gray-500">구독자 수: {item.subscriberCount}</span>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex justify-between mt-20">
-                  <span className=" text-base">구독료 : {formatNumber(item.price)} 원 /월</span>
                 </div>
               </div>
             );
