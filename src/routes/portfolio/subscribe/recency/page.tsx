@@ -6,6 +6,7 @@ import Prev from "@/assets/icon-back-white.png";
 import TransactionCard from "./components/transactionCard";
 import { ChartComponent } from "./components/ChartComponent";
 import { DetailPanel } from "./components/detailPanel";
+import { TooltipProvider } from "@/components/ui/tooltip";
 // Chart.js 라이브러리에 필요한 구성 요소 등록
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -174,6 +175,7 @@ export default function SubscribePortfolioRecency() {
     ],
   };
   const chartData = selectedChart === "data1" ? data1 : data2;
+
   return (
     <div className="flex flex-col h-full">
       <header className="flex justify-between items-center p-4 border-b bg-gray-100">
@@ -228,7 +230,9 @@ export default function SubscribePortfolioRecency() {
           <DetailPanel selectedItem={selectedItem} selectedChart={selectedChart} />
         </div>
         <div className="mt-10 mb-3">
-          <TransactionCard />
+          <TooltipProvider>
+            <TransactionCard />
+          </TooltipProvider>
         </div>
       </main>
     </div>
