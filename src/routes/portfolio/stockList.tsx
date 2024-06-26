@@ -15,13 +15,14 @@ interface WordData extends d3.SimulationNodeDatum {
 }
 type Props = {
   id: string;
+  title: string;
 };
 
 const truncateText = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
 };
 
-export default function StockList({ id }: Props) {
+export default function StockList({ id, title }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [stocks, setStocks] = useState<WordData[]>([]);
   const [accountdata, setAccountdata] = useState<any[]>([]);
@@ -204,10 +205,11 @@ export default function StockList({ id }: Props) {
 
   return (
     <>
-      <div className="portfolio-detail-container h-full">
+      <div className="portfolio-detail-container h-full w-full">
         <div className="wrap-section flex flex-row gap-6">
-          <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 3.5rem)" }}>
+          <div className="section inline-block w-1/2 box-border" style={{ height: "calc(100vh - 2rem)" }}>
             <div className="section flex flex-col h-full">
+              <p className="text-lg font-bold pb-2 pl-4 ">{title}</p>
               <p className="text-lg font-medium pt-2">자산 구성</p>
               <div className="chart-wrap w-full min-h-[320px] relative">
                 <StockChart stockData={stockList} stockNames={stockNameList} showLabel={false} />

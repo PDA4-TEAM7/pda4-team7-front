@@ -52,6 +52,7 @@ export default function BackTest({ id }: Props) {
       if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
       setBackTestData(backTestingDataRes);
 
+      // return dummyData;
       return backTestingDataRes;
     } finally {
       setIsLoading(false);
@@ -113,18 +114,18 @@ export default function BackTest({ id }: Props) {
     console.log("isloading useEffect:", backTestData);
   }, [backTestData]);
   return (
-    <div className="portfolio-detail-container h-full">
-      <div className="wrap-section flex flex-row gap-10">
+    <div className="portfolio-detail-container h-full w-full">
+      <div className="wrap-section flex sm:flex-row gap-10 flex-col">
         <div
-          className="section inline-block w-1/2 box-border px-4 overflow-y-auto pb-4"
-          style={{ height: "calc(100vh - 3.5rem)" }}
+          className="section inline-block sm:w-1/2 w-full box-border sm:px-4 px-1 sm:overflow-y-auto pb-4"
+          style={{ height: "calc(100vh - 2rem)" }}
         >
           <div className="section ">
             <div className="chart-wrap w-full h-screen/2 min-h-[380px] relative overflow-hidden">
               <StockChart stockData={stocks} stockNames={stockNames} showLabel={true} />
             </div>
-            <div className="date-wrap flex flex-col mt-12 p-6 bg-slate-100 rounded-lg mx-4">
-              <p className="text-lg pb-6">투자 성과 조회 기준 설정</p>
+            <div className="date-wrap flex flex-col mt-12 sm:p-6 p-3 bg-slate-100 rounded-lg sm:mx-4 mx-1">
+              <p className="sm:text-lg sm:pb-6 pb-4 ">투자 성과 조회 기준 설정</p>
               <div className="flex flex-col gap-3">
                 <div className="date-wrap flex flex-row gap-4 justify-between ">
                   <DatePicker
@@ -162,8 +163,8 @@ export default function BackTest({ id }: Props) {
           </div>
         </div>
         <div
-          className="section inline-block w-1/2 box-border px-4 overflow-y-auto  pb-4"
-          style={{ height: "calc(100vh - 3.5rem)" }}
+          className="section inline-block sm:w-1/2 w-full box-border px-4 sm:overflow-y-auto  pb-4"
+          style={{ height: "calc(100vh - 2rem)" }}
         >
           {/* chart */}
           {!isLoading ? (
@@ -174,7 +175,7 @@ export default function BackTest({ id }: Props) {
             </div>
           )}
           <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
-            <p className="text-xl pb-6 font-bold">상세 지표</p>
+            <p className="text-xl pb-6 font-semibold">상세 지표</p>
             <div className="date-wrap flex flex-row gap-4 justify-between ">
               <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
                 <p className="title font-semibold">샤프지수</p>
@@ -232,8 +233,8 @@ export default function BackTest({ id }: Props) {
             />
           )}
           {isLoading && (
-            <div className="monthly-data mt-12">
-              <p className="text-xl pb-6">날짜 별 종목 성과</p>
+            <div className="monthly-data sm:mt-12 mt-8">
+              <p className="text-xl pb-6 font-semibold">날짜 별 종목 성과</p>
               <div className="flex items-center justify-center">
                 <Skeleton sx={{ bgcolor: "grey.300" }} variant="rectangular" width={"100%"} height={200} />
               </div>
