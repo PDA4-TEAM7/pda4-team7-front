@@ -23,7 +23,9 @@ export function Myportfolio() {
       const response = await new accountAPI().getAccountList();
       const accountList = response.accountList.map((account: { account_number: string }) => account.account_number);
       setAccounts(accountList);
-      if (accountList > 0) setSelectedAccount(response.accountList[0].account_id);
+      if (accountList > 0) {
+        setSelectedAccount(response.accountList[0].account_id);
+      }
     } catch (error) {
       console.error("Error fetching accounts:", error);
     }
@@ -68,11 +70,11 @@ export function Myportfolio() {
   return (
     <>
       <div className="my-portfolio-container flex flex-col h-screen min-h-screen">
-        <nav className="flex flex-row justify-between p-2 h-14 items-center box-border">
+        <nav className="flex md:flex-row justify-between p-2 md:h-14 h-24 md:items-center box-border flex-col">
           <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
-          <div className="flex flex-row justify-between gap-2">
+          <div className="flex flex-row md:justify-between justify-around gap-2">
             <div
-              className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+              className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap cursor-pointer ${
                 tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
               } `}
               onClick={() => {
@@ -82,7 +84,7 @@ export function Myportfolio() {
               종목 리스트
             </div>
             <div
-              className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+              className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap cursor-pointer  ${
                 tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
               }`}
               onClick={() => {
@@ -93,7 +95,7 @@ export function Myportfolio() {
             </div>
             {isPublished && (
               <div
-                className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap ${
+                className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap box-border cursor-pointer ${
                   tab === "Community" && "active border-b-[3px] border-indigo-500/100"
                 }`}
                 onClick={() => {
@@ -107,13 +109,17 @@ export function Myportfolio() {
               {isPublished ? (
                 <Button
                   variant="outline"
-                  className="bg-red-600 text-white hover:bg-red-700"
+                  className="bg-red-600 text-white hover:bg-red-700 px-2"
                   onClick={handleCancelRegistration}
                 >
                   등록 취소
                 </Button>
               ) : (
-                <Button variant="outline" className="bg-blue-600 text-white hover:bg-blue-700" onClick={handleRegister}>
+                <Button
+                  variant="outline"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-2"
+                  onClick={handleRegister}
+                >
                   등록
                 </Button>
               )}

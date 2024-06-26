@@ -83,11 +83,11 @@ export default function DetailPage() {
 
   return (
     <div className="portfolio-detail-container h-screen flex flex-col ">
-      <nav className="flex lg:flex-row items-center justify-end p-2 gap-4 h-22 box-border flex-row mr-4">
+      <nav className="flex lg:flex-row justify-end p-2 gap-4 flex-row mr-4">
         <div
-          className={`text-zinc-900 hover:text-zinc-700 box-border pb-[4px] ${
-            tab === "StockList" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
-          }`}
+          className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap cursor-pointer ${
+            tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
+          } `}
           onClick={() => {
             if (tab !== "StockList") setTab("StockList");
           }}
@@ -95,15 +95,15 @@ export default function DetailPage() {
           <span> 종목 리스트</span>
         </div>
         <div
-          className={`text-zinc-900 hover:text-zinc-700 flex box-border flex-row items-center pb-[4px] ${
-            tab === "BackTest" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
+          className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap flex flex-row cursor-pointer items-center${
+            tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
           }`}
           onClick={() => {
             if (tab !== "BackTest") setTab("BackTest");
           }}
         >
           <span>과거 투자 성과</span>
-          <div className="ml-1 bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
+          <div className="ml-[2px] mt-[4px] bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -121,8 +121,8 @@ export default function DetailPage() {
           </div>
         </div>
         <div
-          className={`text-zinc-900 hover:text-zinc-700 box-border pb-[4px] ${
-            tab === "Community" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
+          className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap box-border cursor-pointer ${
+            tab === "Community" && "active border-b-[3px] border-indigo-500/100"
           }`}
           onClick={() => {
             if (tab !== "Community") setTab("Community");
