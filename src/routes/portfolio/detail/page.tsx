@@ -82,56 +82,66 @@ export default function DetailPage() {
   if (!accountId) return <div>loading...</div>;
 
   return (
-    <div className="portfolio-detail-container h-screen flex flex-col ">
-      <nav className="flex lg:flex-row items-center justify-end p-2 gap-4 h-22 box-border flex-row mr-4">
-        <div
-          className={`text-zinc-900 hover:text-zinc-700 box-border pb-[4px] ${
-            tab === "StockList" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
-          }`}
-          onClick={() => {
-            if (tab !== "StockList") setTab("StockList");
-          }}
-        >
-          <span> 종목 리스트</span>
+    <div className="portfolio-detail-container h-screen flex flex-col min-h-screen">
+      <nav
+        className="flex md:flex-row justify-between p-2 gap-4 flex-row mr-4 h-14 fixed md:relative w-full md:w-auto bg-white"
+        style={{ zIndex: 1000 }}
+      >
+        <div className="flex flex-row items-center gap-4">
+          <p className="text-lg font-semibold text-nowrap truncate pl-10 md:pl-4 max-w-[100px] md:max-w-[470px]">
+            {title}
+          </p>
         </div>
-        <div
-          className={`text-zinc-900 hover:text-zinc-700 flex box-border flex-row items-center pb-[4px] ${
-            tab === "BackTest" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
-          }`}
-          onClick={() => {
-            if (tab !== "BackTest") setTab("BackTest");
-          }}
-        >
-          <span>과거 투자 성과</span>
-          <div className="ml-1 bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1}
-              stroke="currentColor"
-              className="w-4 h-4 text-black"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
-              />
-            </svg>
+        <div className="flex flex-row md:justify-between justify-around gap-2">
+          <div
+            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap cursor-pointer ${
+              tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
+            } `}
+            onClick={() => {
+              if (tab !== "StockList") setTab("StockList");
+            }}
+          >
+            <span> 종목 리스트</span>
+          </div>
+          <div
+            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap flex flex-row cursor-pointer items-center${
+              tab === "BackTest" && "active border-b-[3px] border-indigo-500/100"
+            }`}
+            onClick={() => {
+              if (tab !== "BackTest") setTab("BackTest");
+            }}
+          >
+            <span>과거 투자 성과</span>
+            <div className="ml-[2px] mt-[4px] bg-transparent p-0 hover:bg-transparent " onClick={handleModalOpen}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1}
+                stroke="currentColor"
+                className="w-4 h-4 text-black"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap box-border cursor-pointer ${
+              tab === "Community" && "active border-b-[3px] border-indigo-500/100"
+            }`}
+            onClick={() => {
+              if (tab !== "Community") setTab("Community");
+            }}
+          >
+            <span> 질의응답</span>
           </div>
         </div>
-        <div
-          className={`text-zinc-900 hover:text-zinc-700 box-border pb-[4px] ${
-            tab === "Community" && "active border-b-[3px] pb-[1px] font-semibold border-indigo-500/100"
-          }`}
-          onClick={() => {
-            if (tab !== "Community") setTab("Community");
-          }}
-        >
-          <span> 질의응답</span>
-        </div>
       </nav>
-      <div className="tab-container sm:px-6 px-2 overflow-y-auto flex-1 ">
+      <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-12">
         {tab === "StockList" && <StockList id={accountId} title={title || ""} />}
         {tab === "BackTest" && <BackTest id={accountId} />}
         {tab === "Community" && <CommPage id={id} />}
