@@ -142,7 +142,7 @@ export default function DetailPage() {
         </div>
       </nav>
       <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-12">
-        {tab === "StockList" && <StockList id={accountId} title={title || ""} />}
+        {tab === "StockList" && <StockList id={accountId} />}
         {tab === "BackTest" && <BackTest id={accountId} />}
         {tab === "Community" && <CommPage id={id} />}
       </div>
