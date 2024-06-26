@@ -255,10 +255,15 @@ export default function SignUp() {
             </div>
           </form>
           <div className="mt-10">
-            <p className="text-gray-600">이미 계정이 있습니다.</p>
-            <a href="/signin" className="text-blue-500">
-              로그인하기
-            </a>
+            <p className="text-gray-600 ">이미 계정이 있습니다.</p>
+            <div className="flex justify-between">
+              <a href="/signin" className="text-blue-500">
+                로그인하기
+              </a>
+              <a href="/portfolio/mainportfolio" className="text-blue-500">
+                홈으로 이동하기
+              </a>
+            </div>
           </div>
         </div>
 
