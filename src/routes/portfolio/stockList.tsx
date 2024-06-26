@@ -22,7 +22,7 @@ const truncateText = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
 };
 
-export default function StockList({ id, title }: Props) {
+export default function StockList({ id }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [stocks, setStocks] = useState<WordData[]>([]);
   const [accountdata, setAccountdata] = useState<any[]>([]);
