@@ -74,7 +74,7 @@ export default function DetailPage() {
   );
 
   const handleModalOpen = () => {
-    open("과거 투자 성과란?", modalContent);
+    open("과거 투자 성과란?", modalContent, close);
   };
 
   if (!id) return <div>param not found</div>;
