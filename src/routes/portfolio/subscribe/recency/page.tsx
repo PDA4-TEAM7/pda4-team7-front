@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Prev from "@/assets/icon-back-white.png";
 import TransactionCard from "./components/transactionCard";
 import { ChartComponent } from "./components/ChartComponent";
-import { DetailPanel } from "./components/detailPanel";
+import { DetailPanel, SelectedItem } from "./components/detailPanel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import RecencyAPI from "@/apis/recencyAPI";
 // Chart.js 라이브러리에 필요한 구성 요소 등록
@@ -14,21 +14,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 interface GroupData {
   group: string;
   value: number;
-}
-
-interface DetailData {
-  stock?: string;
-  value?: number;
-  investor?: string;
-  shares?: number;
-  profit?: number;
-  rate?: number;
-}
-
-interface SelectedItem {
-  group: string;
-  value: number;
-  details: DetailData[];
 }
 
 const createChartData = (data: GroupData[], isIndustry: boolean) => {
@@ -60,7 +45,7 @@ const options = {
     x: {
       title: {
         display: true,
-        text: "Group",
+        text: "산업 / 종목",
       },
       grid: {
         offset: true,
@@ -69,7 +54,7 @@ const options = {
     y: {
       title: {
         display: true,
-        text: "Value",
+        text: "종목 / 투자자",
       },
     },
   },
@@ -79,14 +64,17 @@ export default function SubscribePortfolioRecency() {
   const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
   const navigate = useNavigate();
   const [investIdstTop5, setInvestIdstTop5] = useState([]);
+  const [investStockTop5, setInvestStockTop5] = useState([]);
 
   useEffect(() => {
-    const fetchIdstTop5 = async () => {
+    const fetchTop5 = async () => {
       const recencyAPI = new RecencyAPI();
-      const resp = await recencyAPI.getInvestIdstTop5();
-      setInvestIdstTop5(resp);
+      const respIdst = await recencyAPI.getInvestIdstTop5();
+      setInvestIdstTop5(respIdst);
+      const respStock = await recencyAPI.getInvestStockTop5();
+      setInvestStockTop5(respStock);
     };
-    fetchIdstTop5();
+    fetchTop5();
   }, []);
 
   // Chart 인스턴스에 대한 참조를 저장하기 위해 useRef를 사용하고, 타입을 Chart로 지정
@@ -113,10 +101,16 @@ export default function SubscribePortfolioRecency() {
       return;
     }
 
-    // API를 호출하여 실제 데이터 가져오기
     const recencyAPI = new RecencyAPI();
     try {
-      const detailData = await recencyAPI.getStockListByIdst(group);
+      let detailData;
+      if (selectedChart === "investIdstTop5") {
+        detailData = await recencyAPI.getStockListByIdst(group);
+      } else if (selectedChart === "investStockTop5") {
+        detailData = await recencyAPI.getStockDetailListByStock(group);
+        console.log(detailData);
+      }
+
       if (!detailData) {
         console.error("No data returned for this group");
         return;
@@ -137,17 +131,7 @@ export default function SubscribePortfolioRecency() {
     setSelectedItem(null);
   };
 
-  // 예시 데이터
-
-  const data2: GroupData[] = [
-    { group: "SK하이닉스", value: 3 },
-    { group: "삼성전자", value: 2 },
-    { group: "신한지주", value: 1 },
-    { group: "현대차", value: 2 },
-    { group: "NAVER", value: 1 },
-  ];
-
-  const chartData = selectedChart === "investIdstTop5" ? investIdstTop5 : data2;
+  const chartData = selectedChart === "investIdstTop5" ? investIdstTop5 : investStockTop5;
 
   return (
     <div className="flex flex-col h-full">
@@ -184,9 +168,9 @@ export default function SubscribePortfolioRecency() {
           </Button>
           <Button
             className={`text-l focus:outline-none px-8 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 ${
-              selectedChart === "data2" ? "bg-indigo-700" : "bg-indigo-500"
+              selectedChart === "investStockTop5" ? "bg-indigo-700" : "bg-indigo-500"
             }`}
-            onClick={() => handleChartChange("data2")}
+            onClick={() => handleChartChange("investStockTop5")}
           >
             종목별 투자
           </Button>

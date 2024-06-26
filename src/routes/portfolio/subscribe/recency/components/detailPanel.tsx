@@ -1,29 +1,46 @@
+import { formatNumber } from "@/lib/nums";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-interface DetailData {
+export interface DetailData {
   stock?: string;
   value?: number;
-  investor?: string;
-  shares?: number;
-  profit?: number;
-  rate?: number;
+  holding_id: number;
+  portfolio_id: number;
+  account_id: number;
+  uid: number;
+  name: string;
+  hldg_qty: string;
+  pchs_amt: string;
+  evlu_amt: string;
+  evlu_pfls_amt: string;
+  evlu_pfls_rt: string;
+  std_idst_clsf_cd_name: string;
+  closing_price: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface SelectedItem {
+export interface SelectedItem {
   group: string;
   value: number;
   details: DetailData[];
 }
 
-interface DetailPanelProps {
+export interface DetailPanelProps {
   selectedItem: SelectedItem | null;
   selectedChart: string;
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({ selectedItem, selectedChart }) => {
+  const navigate = useNavigate();
   if (!selectedItem) {
     return <p>막대를 클릭하여 상세 정보를 확인하세요.</p>;
   }
+
+  const handleTextClick = (portfolio_id: number) => {
+    navigate(`/portfolio/detail/${portfolio_id}`);
+  };
 
   return (
     <div className="col-span-1 bg-white p-4 border border-gray-300 rounded-lg overflow-auto">
@@ -38,8 +55,13 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ selectedItem, selected
             );
           } else {
             return (
-              <li key={index} className="mb-1">
-                {detail.investor}: {detail.shares}주, 손익금액: {detail.profit}, 손익률: {detail.rate}%
+              <li
+                key={index}
+                className="mb-1 cursor-pointer hover:text-blue-500"
+                onClick={() => handleTextClick(detail.portfolio_id)}
+              >
+                총 {detail.hldg_qty}주 소유 | 총 매입금액: {formatNumber(Number(detail.pchs_amt))} | 손익률:{" "}
+                {detail.evlu_pfls_rt}%
               </li>
             );
           }
