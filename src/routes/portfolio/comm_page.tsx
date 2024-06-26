@@ -253,7 +253,14 @@ const CommPage = ({ id }: Props) => {
               {comment.replies.map((reply, index) => (
                 <div key={index} className="ml-8 mt-4 p-4 border border-gray-300 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <div className="font-semibold">{reply.author}</div>
+                    <div className="profile-photo w-5 h-5">
+                      <img
+                        src={`https://source.boringavatars.com/beam/500/${reply.author}`}
+                        alt="프로필 이미지"
+                        className="w-full h-full"
+                      />
+                    </div>
+                    <div className="ml-1 font-semibold">{reply.author}</div>
                     {reply.role && <div className="ml-4 text-red-500 font-semibold">{reply.role}</div>}
                     <div className="ml-4 text-gray-500">{reply.date}</div>
                   </div>
