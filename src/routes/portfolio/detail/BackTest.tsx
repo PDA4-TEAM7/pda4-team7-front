@@ -10,6 +10,9 @@ import MonthlyInfo from "./MonthlyInfo";
 import dummyData from "../../../../data/dummyBack.json";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/nums";
+import Skeleton from "@mui/material/Skeleton";
+import Lottie from "lottie-react";
+import loadingAnimation from "@/assets/chart-lottie.json"; // JSON 파일 경로
 
 type Props = {
   id: string;
@@ -49,10 +52,10 @@ export default function BackTest({ id }: Props) {
       // const backTestingDataRes = await service.getBackTest(portfolio);
       // if (!backTestingDataRes) return console.log("error : ", backTestingDataRes);
       // setBackTestData(backTestingDataRes);
-      console.log("update...", isLoading);
+
       return dummyData;
     } finally {
-      setIsLoading(false);
+      setIsLoading(true);
     }
   };
   const handleBackTestUpdate = async () => {
@@ -167,28 +170,54 @@ export default function BackTest({ id }: Props) {
           {!isLoading ? (
             backTestData && <StockLineChart backTestData={backTestData.portfolio.backtest} />
           ) : (
-            <div className="w-full h-[400px]">Loading..</div>
+            <div className="w-full h-[400px] flex items-center justify-center">
+              <Lottie animationData={loadingAnimation} style={{ width: "140%", height: "140%", opacity: 0.5 }} />
+            </div>
           )}
           <div className="flex flex-col mt-12 p-8 bg-slate-100 rounded-lg">
             <p className="text-xl pb-6 font-bold">상세 지표</p>
             <div className="date-wrap flex flex-row gap-4 justify-between ">
               <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
                 <p className="title font-semibold">샤프지수</p>
-                {!isLoading ? <span>{formatNumber(backTestData.sharpe_ratio, 2)}</span> : <span>Loading</span>}
+                {!isLoading ? (
+                  <span>{formatNumber(backTestData.sharpe_ratio, 2)}</span>
+                ) : (
+                  <span>
+                    <Skeleton animation="wave" />
+                  </span>
+                )}
               </div>
               <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
                 <p className="title font-semibold">MDD</p>
-                {!isLoading ? <span>{formatNumber(backTestData.mdd, 4)}</span> : <span>Loading</span>}
+                {!isLoading ? (
+                  <span>{formatNumber(backTestData.mdd, 4)}</span>
+                ) : (
+                  <span>
+                    <Skeleton animation="wave" />
+                  </span>
+                )}
               </div>
             </div>
             <div className="date-wrap flex flex-row gap-4 justify-between mt-8">
               <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
                 <p className="title font-semibold">표준편차</p>
-                {!isLoading ? <span>{formatNumber(backTestData.standard_deviation, 2)}</span> : <span>Loading</span>}
+                {!isLoading ? (
+                  <span>{formatNumber(backTestData.standard_deviation, 2)}</span>
+                ) : (
+                  <span>
+                    <Skeleton animation="wave" />
+                  </span>
+                )}
               </div>
               <div className="backtest-info flex-1 bg-slate-200 rounded px-4 py-3">
                 <p className="title font-semibold">연간 수익률</p>
-                {!isLoading ? <span>{formatNumber(backTestData.annual_return, 2)}</span> : <span>Loading</span>}
+                {!isLoading ? (
+                  <span>{formatNumber(backTestData.annual_return, 2)}</span>
+                ) : (
+                  <span>
+                    <Skeleton animation="wave" />
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -206,7 +235,9 @@ export default function BackTest({ id }: Props) {
           {isLoading && (
             <div className="monthly-data mt-12">
               <p className="text-xl pb-6">날짜 별 종목 성과</p>
-              <p>Loading</p>
+              <div className="flex items-center justify-center">
+                <Skeleton sx={{ bgcolor: "grey.300" }} variant="rectangular" width={"100%"} height={200} />
+              </div>
             </div>
           )}
         </div>
