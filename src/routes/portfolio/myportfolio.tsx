@@ -8,7 +8,8 @@ import BackTest from "./detail/BackTest";
 import CommPage from "./comm_page"; // CommPage import 추가
 import accountAPI from "@/apis/accountAPI";
 import AddAccountPopup from "@/components/AddAccountPopup";
-
+import Lottie from "lottie-react";
+import loadingAnim from "@/assets/lottie-loading.json";
 export function Myportfolio() {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [selectedPortfolioId, setSelectedPortfolioId] = useState("");
@@ -17,6 +18,7 @@ export function Myportfolio() {
   const [tab, setTab] = useState<"StockList" | "BackTest" | "Community">("StockList");
   const [accounts, setAccounts] = useState<string[]>([]);
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchAccounts = async () => {
     try {
@@ -30,6 +32,7 @@ export function Myportfolio() {
       console.error("Error fetching accounts:", error);
     }
   };
+
   useEffect(() => {
     fetchAccounts();
   }, [showAddAccountModal]);
@@ -37,6 +40,7 @@ export function Myportfolio() {
   useEffect(() => {
     const checkPortfolioStatus = async () => {
       if (selectedAccount) {
+        setIsLoading(true);
         console.log("Selected Account:", selectedAccount);
         try {
           const portfolio = await portfolioApi.getPortfolioByAccountId(selectedAccount);
@@ -47,6 +51,8 @@ export function Myportfolio() {
           console.error("Error checking portfolio status:", error);
           setIsPublished(false);
           setSelectedPortfolioId("");
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -75,7 +81,7 @@ export function Myportfolio() {
           style={{ zIndex: 1000 }}
         >
           <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
-          <div className="flex flex-row md:justify-between justify-around gap-2">
+          <div className="flex flex-row md:justify-between justify-end md:gap-2 gap-4">
             <div
               className={`text-zinc-900 hover:text-zinc-700 py-2 text-nowrap cursor-pointer ${
                 tab === "StockList" && "active border-b-[3px] border-indigo-500/100"
@@ -120,7 +126,7 @@ export function Myportfolio() {
               ) : (
                 <Button
                   variant="outline"
-                  className="bg-blue-600 text-white hover:bg-blue-700 px-2"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-4"
                   onClick={handleRegister}
                 >
                   등록
@@ -129,7 +135,7 @@ export function Myportfolio() {
             </div>
           </div>
         </nav>
-        {!accounts.length ? (
+        {!isLoading && !accounts.length && (
           <div className="flex flex-col flex-1 justify-center items-center pt-8">
             <p>연결된 계좌가 없습니다. </p>
             <p> 계좌를 추가해볼까요?</p>
@@ -140,14 +146,20 @@ export function Myportfolio() {
               계좌 추가하기
             </Button>
           </div>
-        ) : (
-          selectedAccount && (
-            <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-24">
-              {tab === "StockList" && <StockList id={selectedAccount} />}
-              {tab === "BackTest" && <BackTest id={selectedAccount} />}
-              {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}
+        )}
+        {!isLoading && accounts.length > 0 && selectedAccount && (
+          <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-24">
+            {tab === "StockList" && <StockList id={selectedAccount} />}
+            {tab === "BackTest" && <BackTest id={selectedAccount} />}
+            {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}
+          </div>
+        )}
+        {isLoading && (
+          <div className="w-full flex items-center justify-center h-full">
+            <div className="w-[100px]" style={{ zIndex: 1 }}>
+              <Lottie animationData={loadingAnim} />
             </div>
-          )
+          </div>
         )}
         <PortfolioSubmit
           selectedAccount={selectedAccount}

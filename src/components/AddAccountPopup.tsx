@@ -6,7 +6,7 @@ import useModal from "@/hooks/useModal";
 import { IAccountInfo } from "@/apis/accountAPI";
 import useAccount from "@/hooks/useAccount";
 import Lottie from "lottie-react";
-import loadingAnim from "../assets/lottie-loading.json";
+import loadingBtnAnim from "../assets/lottie-btn-loading.json";
 //TODO: userId 로 계좌 조회 해서 리스트 표시
 export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: boolean; modalClose: () => void }) {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -106,14 +106,14 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
               </svg>
             </div>
           </div>
-          <div className="py-4 space-y-4 overflow-x-auto h-full  flex-1 ">
-            <div className="grid max-w-sm items-center gap-1.5 mx-1">
+          <div className="py-4 space-y-4  h-full flex flex-col items-center overflow-x-visible">
+            <div className="grid max-w-sm items-center gap-1.5 mx-1 w-full">
               <Label htmlFor="appkey" className="text-lg">
                 App Key
               </Label>
               <Input type="string" id="appkey" name="appkey" placeholder="app key" onChange={handleChange} />
             </div>
-            <div className="grid  max-w-sm items-center gap-1.5 mx-1">
+            <div className="grid  max-w-sm items-center gap-1.5 mx-1 w-full">
               <Label htmlFor="appsecretkey" className="text-lg">
                 App Secret Key
               </Label>
@@ -125,7 +125,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
                 onChange={handleChange}
               />
             </div>
-            <div className="grid max-w-sm items-center gap-1.5 mx-1">
+            <div className="grid max-w-sm items-center gap-1.5 mx-1 w-full">
               <Label htmlFor="accountNo" className="text-lg">
                 Account
               </Label>
@@ -140,7 +140,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
             >
               {isLoading ? (
                 <div className="w-[42px]">
-                  <Lottie animationData={loadingAnim} />{" "}
+                  <Lottie animationData={loadingBtnAnim} />{" "}
                 </div>
               ) : (
                 <p>계좌 추가하기</p>

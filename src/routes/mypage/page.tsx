@@ -11,6 +11,8 @@ import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser";
 import { formatNumber } from "@/lib/nums";
 import { useEffect, useRef, useState } from "react";
+import loadingBtnAnim from "@/assets/lottie-btn-loading.json";
+import Lottie from "lottie-react";
 
 export default function MyPage() {
   const [userInfo, setUserInfo] = useState<IUserInfo>({
@@ -24,6 +26,7 @@ export default function MyPage() {
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
   const [showChargeModal, setShowChargeModal] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const pwRef = useRef<HTMLInputElement>(null);
   const { open, close } = useModal();
   const handleAccountModal = () => {
@@ -38,10 +41,22 @@ export default function MyPage() {
     }
   };
   const handleSubmit = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     if (disableSubmit) return;
-    await submitUserInfo({ userName: userInfo.userName, introduce: userInfo.introduce, credit: userInfo.credit });
-    open("알림", "회원정보가 변경되었습니다.", close);
+    const res = await submitUserInfo({
+      userName: userInfo.userName,
+      introduce: userInfo.introduce,
+      credit: userInfo.credit,
+    });
+    if (res) {
+      open("알림", "회원정보가 변경되었습니다.", close);
+    } else {
+      open("알림", "회원정보가 변경에 실패했습니다.", close);
+    }
+
     //수정완료되면 모달
+    setIsLoading(false);
   };
   useEffect(() => {
     async function init() {
@@ -56,8 +71,8 @@ export default function MyPage() {
   }
   return (
     <>
-      <div className="my-page-container sm:m-8 m-4 h-full">
-        <p className="text-xl text-bold mb-8 sm:pl-0 pl-4">{user.userName}의 페이지</p>
+      <div className="my-page-container md:my-4 md:mx-4 m-4 h-full">
+        <p className="text-xl mb-8 pl-10 md:pl-0">{user.userName}의 페이지</p>
         <div className="flex flex-col gap-2 border-2 rounded-md p-8 w-full py-10 max-w-[1043px]">
           <div className="submit-wrap b-4 flex flex-col gap-2 space-y-2 justify-center items-center">
             <div className="profile-photo w-16 h-16">
@@ -94,18 +109,29 @@ export default function MyPage() {
                 <Input type="password" id="password" placeholder="enter password" ref={pwRef} />
                 <Button
                   onClick={async () => {
-                    if (pwRef.current && pwRef.current.value) {
-                      const res = await setPassword(pwRef.current.value);
-                      if (res) {
-                        open("알림", "비밀번호가 변경되었습니다.", close);
-                      } else {
-                        open("알림", "비밀번호 변경에 실패했습니다!", close);
+                    setIsLoading(true);
+                    if (pwRef.current && pwRef.current.value && !isLoading) {
+                      try {
+                        const res = await setPassword(pwRef.current.value);
+                        if (res) {
+                          open("알림", "비밀번호가 변경되었습니다.", close);
+                        } else {
+                          open("알림", "비밀번호 변경에 실패했습니다!", close);
+                        }
+                      } finally {
+                        pwRef.current.value = "";
                       }
-                      pwRef.current.value = "";
                     }
+                    setIsLoading(false);
                   }}
                 >
-                  변경하기
+                  {isLoading ? (
+                    <div className="w-[42px]">
+                      <Lottie animationData={loadingBtnAnim} />
+                    </div>
+                  ) : (
+                    <p>변경하기</p>
+                  )}
                 </Button>
               </div>
             </div>
@@ -151,7 +177,13 @@ export default function MyPage() {
             disabled={disableSubmit}
             onClick={handleSubmit}
           >
-            저장하기
+            {isLoading ? (
+              <div className="w-[42px]">
+                <Lottie animationData={loadingBtnAnim} />
+              </div>
+            ) : (
+              <p>저장하기</p>
+            )}
           </Button>
         </div>
       </div>
