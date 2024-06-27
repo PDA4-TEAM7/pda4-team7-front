@@ -143,7 +143,7 @@ export function Myportfolio() {
         ) : (
           selectedAccount && (
             <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-24">
-              {tab === "StockList" && <StockList id={selectedAccount} title={null} />}
+              {tab === "StockList" && <StockList id={selectedAccount} />}
               {tab === "BackTest" && <BackTest id={selectedAccount} />}
               {tab === "Community" && isPublished && <CommPage id={selectedPortfolioId} />}
             </div>

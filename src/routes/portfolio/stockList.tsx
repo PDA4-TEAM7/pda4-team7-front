@@ -15,7 +15,6 @@ interface WordData extends d3.SimulationNodeDatum {
 }
 type Props = {
   id: string;
-  title: string | null;
 };
 
 const truncateText = (text: string, length: number) => {

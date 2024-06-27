@@ -27,7 +27,7 @@ export default function MainPortfolio() {
   const sortPortfolios = (portfolios: any[], sort: string) => {
     switch (sort) {
       case "10": // 수익률 순
-        return portfolios.sort((a, b) => Math.abs(b.profitLoss) - Math.abs(a.profitLoss));
+        return portfolios.sort((a, b) => b.profitLoss - a.profitLoss);
       case "20": // 구독자 순
         return portfolios.sort((a, b) => b.subscriberCount - a.subscriberCount);
       case "30": // 최신 순
@@ -37,28 +37,28 @@ export default function MainPortfolio() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const portfolioResponse = await portfolioApi.getAllPortfolios();
-        const portfolioDataWithSubscribers = await Promise.all(
-          portfolioResponse.map(async (portfolio: any) => {
-            const { subscriberCount } = await subscribeApi.getSubscriberCount(portfolio.id);
-            return { ...portfolio, subscriberCount };
-          })
-        );
-        setPortfolioData(sortPortfolios(portfolioDataWithSubscribers, sort));
+  const updatePortfolioData = async () => {
+    try {
+      const portfolioResponse = await portfolioApi.getAllPortfolios();
+      const portfolioDataWithSubscribers = await Promise.all(
+        portfolioResponse.map(async (portfolio: any) => {
+          const { subscriberCount } = await subscribeApi.getSubscriberCount(portfolio.id);
+          return { ...portfolio, subscriberCount };
+        })
+      );
+      setPortfolioData(sortPortfolios(portfolioDataWithSubscribers, sort));
 
-        if (user.userId) {
-          const subscriptionResponse = await subscribeApi.getUserSubscriptions();
-          setSubscribedPortfolios(subscriptionResponse);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      if (user.userId) {
+        const subscriptionResponse = await subscribeApi.getUserSubscriptions();
+        setSubscribedPortfolios(subscriptionResponse);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    updatePortfolioData();
   }, [user.userId, sort]);
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -101,7 +101,6 @@ export default function MainPortfolio() {
 
         await subscribeApi.subscribe(item.id);
         const updatedSubscriptions = await subscribeApi.getUserSubscriptions();
-
         await submitUserInfo({
           userName: userInfo.userName,
           introduce: userInfo.introduce,
@@ -109,6 +108,7 @@ export default function MainPortfolio() {
         });
 
         setSubscribedPortfolios(updatedSubscriptions);
+        updatePortfolioData(); // 구독 후 실시간 구독자 수 반영
         close();
       } catch (error) {
         console.error("Error subscribing to portfolio:", error);
@@ -129,6 +129,7 @@ export default function MainPortfolio() {
         await subscribeApi.unsubscribe(portfolio_id);
         const updatedSubscriptions = await subscribeApi.getUserSubscriptions();
         setSubscribedPortfolios(updatedSubscriptions);
+        updatePortfolioData(); // 구독 취소 후 실시간 구독자 반영
         close();
       } catch (error) {
         console.error("Error unsubscribing from portfolio:", error);
@@ -254,7 +255,7 @@ export default function MainPortfolio() {
                           }`}
                         >
                           {+item.profitLoss > 0 && <span>+</span>}
-                          {formatNumber(item.loss)} <span>({Math.abs(item.profitLoss.toFixed(2))}%)</span>
+                          {formatNumber(item.loss)} <span>({item.profitLoss.toFixed(2)}%)</span>
                         </p>
                       </div>
                     </div>

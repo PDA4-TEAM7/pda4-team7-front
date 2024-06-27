@@ -28,6 +28,7 @@ export default function DetailPage() {
 
   const modalContent = (
     <div className="text-left space-y-4">
+      <img src="\src\assets\chart-image.jpeg" style={{ width: "15%", height: "auto" }} />
       <h2 className="text-lg font-bold">과거 투자 성과란?</h2>
       <p>
         과거 투자 성과는 백테스팅 서비스를 의미하며, 2004년 1월부터 현재까지의 주식 시장 내역을 통해 현재 사용자가 보고
@@ -142,7 +143,7 @@ export default function DetailPage() {
         </div>
       </nav>
       <div className="tab-container md:px-6 px-2 overflow-y-auto flex-1 md:pt-12 pt-12">
-        {tab === "StockList" && <StockList id={accountId} title={title || ""} />}
+        {tab === "StockList" && <StockList id={accountId} />}
         {tab === "BackTest" && <BackTest id={accountId} />}
         {tab === "Community" && <CommPage id={id} />}
       </div>
