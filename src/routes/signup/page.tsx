@@ -145,7 +145,7 @@ export default function SignUp() {
   }, [checkId, checkName, agreedToPrivacy]);
   return (
     <>
-      <div className="relative min-h-screen w-full bg-blue-100 overflow-y-auto md:p-8 p-2">
+      <div className="relative min-h-screen w-full bg-blue-100 overflow-y-auto md:p-8 p-2 flex justify-center items-center md:block">
         <div
           className="relative bg-white shadow-lg rounded-lg md:p-10 p-4 max-w-screen-sm w-full md:w-1/2 inline-block"
           style={{ zIndex: 100 }}
