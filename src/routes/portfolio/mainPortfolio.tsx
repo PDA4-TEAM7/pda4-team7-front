@@ -27,7 +27,7 @@ export default function MainPortfolio() {
   const sortPortfolios = (portfolios: any[], sort: string) => {
     switch (sort) {
       case "10": // 수익률 순
-        return portfolios.sort((a, b) => Math.abs(b.profitLoss) - Math.abs(a.profitLoss));
+        return portfolios.sort((a, b) => b.profitLoss - a.profitLoss);
       case "20": // 구독자 순
         return portfolios.sort((a, b) => b.subscriberCount - a.subscriberCount);
       case "30": // 최신 순
@@ -255,7 +255,7 @@ export default function MainPortfolio() {
                           }`}
                         >
                           {+item.profitLoss > 0 && <span>+</span>}
-                          {formatNumber(item.loss)} <span>({Math.abs(item.profitLoss.toFixed(2))}%)</span>
+                          {formatNumber(item.loss)} <span>({item.profitLoss.toFixed(2)}%)</span>
                         </p>
                       </div>
                     </div>
