@@ -324,7 +324,7 @@ export default function Layout() {
         )}
       </Drawer>
       <div
-        className={`w-full fixed h-screen bg-[#23272c] absolute md:hidden ${
+        className={`w-full fixed h-screen bg-[#23272c] md:hidden ${
           open ? "block" : "hidden"
         } inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster`}
         style={{ background: "rgba(0,0,0,.7)", zIndex: "1001" }}
