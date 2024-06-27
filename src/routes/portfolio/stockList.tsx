@@ -204,8 +204,8 @@ export default function StockList({ id }: Props) {
 
   return (
     <>
-      <div className="portfolio-detail-container h-full w-full">
-        <div className="wrap-section flex sm:flex-row flex-col gap-6">
+      <div className="portfolio-detail-container h-full w-screen md:w-full">
+        <div className="wrap-section flex sm:flex-row flex-col gap-6 box-border">
           <div className="section inline-block sm:w-1/2 w-full box-border sm:h-calc-100vh-minus-2rem">
             <div className="section flex flex-col h-full">
               <p className="text-lg font-medium pt-2">자산 구성</p>

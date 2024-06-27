@@ -114,7 +114,7 @@ export default function BackTest({ id }: Props) {
     console.log("isloading useEffect:", backTestData);
   }, [backTestData]);
   return (
-    <div className="portfolio-detail-container md:h-full w-full">
+    <div className="portfolio-detail-container md:h-full w-screen md:w-full">
       <div className="wrap-section flex md:flex-row gap-10 flex-col">
         <div className="section inline-block md:w-1/2 w-full box-border md:px-4 px-1 md:overflow-y-auto pb-4 md:h-calc-100vh-minus-2rem ">
           <div className="section ">
