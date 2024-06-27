@@ -58,23 +58,23 @@ export default function SubscribePortfolio() {
     navigate("recency");
   };
   return (
-    <div>
+    <div className="mb-4">
       <main className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold mr-3">구독한 포트폴리오</h1>
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-start md:items-center">
+            <h1 className="text-xl font-semibold mr-3 pl-10 md:pl-0 truncate">구독한 포트폴리오</h1>
             <Button
-              className="text-l focus:outline-none px-8 bg-indigo-500 m-2 p-3 rounded-lg text-white hover:bg-indigo-400"
+              className="text-l focus:outline-none px-8 bg-indigo-500 md:m-1 m-0 p-3 py-1 rounded-lg text-white hover:bg-indigo-400  relative -top-1 md:-top-0"
               onClick={handleRecencyClick}
             >
-              통계 보기
+              <p className="text-sm">통계 보기</p>
             </Button>
           </div>
           <div className="flex items-center">
-            <FormControl fullWidth style={{ maxWidth: 200 }}>
-              <InputLabel id="demo-simple-select-label">정렬 순</InputLabel>
+            <FormControl fullWidth style={{ maxWidth: 200 }} size="small">
+              <InputLabel id="demo-select-small-label">정렬 순</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
+                labelId="demo-select-small-label"
                 id="demo-simple-select"
                 value={sort}
                 label="정렬 순"
@@ -87,7 +87,7 @@ export default function SubscribePortfolio() {
             </FormControl>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 xl:grid-cols-3 md:grid-cols-2 grid-cols-1">
           {subscribedPortfolios.length > 0 ? (
             subscribedPortfolios.map((item) => {
               const portfolio = item || {}; // 기본값 설정
@@ -97,21 +97,23 @@ export default function SubscribePortfolio() {
               return (
                 <div
                   key={item.portfolio_id}
-                  className="border p-4 rounded-md cursor-pointer"
+                  className="border p-4 rounded-md cursor-pointer flex flex-col justify-between"
                   onClick={() => handlePortfolioClick(item.portfolio_id)}
                 >
-                  <div className="flex justify-between mb-4">
-                    <div className="text-base font-bold">{portfolio.title || "N/A"}</div>
-                    <button
-                      className="text-base bg-red-500 text-white px-3 py-1 rounded"
-                      style={{ minWidth: "70px", whiteSpace: "nowrap" }}
-                      onClick={(e) => {
-                        e.stopPropagation(); // prevent triggering onClick on the parent div
-                        handleUnsubscribe(item.portfolio_id);
-                      }}
-                    >
-                      취소
-                    </button>
+                  <div>
+                    <div className="flex justify-between mb-4 items-start">
+                      <div className="text-base font-bold">{portfolio.title || "N/A"}</div>
+                      <button
+                        className="text-base bg-red-500 text-white px-3 py-1 rounded"
+                        style={{ minWidth: "70px", whiteSpace: "nowrap" }}
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent triggering onClick on the parent div
+                          handleUnsubscribe(item.portfolio_id);
+                        }}
+                      >
+                        취소
+                      </button>
+                    </div>
                   </div>
                   <div className="flex">
                     <div className="w-1/2">
@@ -182,10 +184,9 @@ export default function SubscribePortfolio() {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4">
-                    <h3 className="font-bold">{portfolio.title || "N/A"}</h3>
+                  <div className="mt-4 flex-1 flex flex-col justify-between">
                     <p>{portfolio.description || "N/A"}</p>
-                    <div className="mt-4">
+                    <div className="mt-4 text-end">
                       <span className="text-base text-gray-500">
                         생성일자 {portfolio.createDate ? new Date(portfolio.createDate).toLocaleString() : "N/A"}
                       </span>

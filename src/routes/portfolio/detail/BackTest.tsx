@@ -12,7 +12,6 @@ import { formatNumber } from "@/lib/nums";
 import Skeleton from "@mui/material/Skeleton";
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/chart-lottie.json"; // JSON 파일 경로
-
 type Props = {
   id: string;
 };
@@ -53,6 +52,7 @@ export default function BackTest({ id }: Props) {
       setBackTestData(backTestingDataRes);
 
       return backTestingDataRes;
+      // return dummyData;
     } finally {
       setIsLoading(false);
     }

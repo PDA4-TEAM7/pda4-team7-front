@@ -135,14 +135,6 @@ export default function SubscribePortfolioRecency() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex justify-between items-center p-4 border-b bg-gray-100">
-        <div></div>
-        <div className="flex items-center">
-          <img src="" alt="알림" className="w-5 h-5 mx-2" />
-          <img src="settings-icon.png" alt="설정" className="w-5 h-5 mx-2" />
-          <span className="mx-2">ENG</span>
-        </div>
-      </header>
       <main className="p-4">
         <div className="flex items-center mb-4 justify-between">
           <h1 className="text-2xl font-bold">구독한 포트폴리오 종합 분석 및 최근 변화</h1>
@@ -156,7 +148,6 @@ export default function SubscribePortfolioRecency() {
         </div>
         <div className="text-shadow-strong text-xl font-bold p-2">산업 및 종목별 투자 TOP5</div>
         <div className="flex justify-center mb-4 space-x-4">
-          {" "}
           {/* 수정된 부분 */}
           <Button
             className={`text-l focus:outline-none px-8 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 ${

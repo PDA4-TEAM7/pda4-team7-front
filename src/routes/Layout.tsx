@@ -159,7 +159,7 @@ export default function Layout() {
 
   return (
     <div className="flex">
-      <div className={`absolute md:hidden top-2 left-2`} onClick={handleDrawerOpen}>
+      <div className={`absolute md:hidden top-[10px] left-2`} onClick={handleDrawerOpen}>
         <IconButton
           aria-label="open drawer"
           onClick={handleDrawerOpen}
@@ -180,8 +180,8 @@ export default function Layout() {
               className="text-left flex-1 flex flex-row gap-2 items-center"
               onClick={() => handleNavigate("/portfolio/mainPortfolio")}
             >
-              <div className="profile-photo w-10 h-10">
-                <img src={"/public/icon-logo.png"} alt="logo" />
+              <div className="profile-photo w-10 h-10 ">
+                <img src={"/icon-logo.png"} alt="" />
               </div>
               <p className="text-white text-lg">E.G</p>
             </div>
