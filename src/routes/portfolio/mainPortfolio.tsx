@@ -93,7 +93,10 @@ export default function MainPortfolio() {
       });
       return;
     }
-
+    const userInfo = await getUserInfo();
+    if (userInfo && userInfo.credit < item.price) {
+      return open("알림", "소지 금액이 부족합니다.", close);
+    }
     open("구독 확인", `이 포트폴리오를 ${item.price}원에 구독하시겠습니까?`, async () => {
       try {
         const userInfo = await getUserInfo();
