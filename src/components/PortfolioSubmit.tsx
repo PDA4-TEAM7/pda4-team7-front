@@ -83,7 +83,7 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setI
         else setShowSheet(true);
       }}
     >
-      <SheetContent style={{ maxWidth: "45rem" }}>
+      <SheetContent style={{ maxWidth: "45rem", zIndex: 1000 }}>
         <SheetHeader>
           <SheetTitle style={{ fontSize: 30 }}>포트폴리오 게시하기</SheetTitle>
           <SheetDescription>포트폴리오에 대한 설명을 적어주세요</SheetDescription>
@@ -152,15 +152,15 @@ export function PortfolioSubmit({ selectedAccount, showSheet, setShowSheet, setI
           </div>
           <SheetFooter>
             <SheetClose asChild>
-              <Button
-                type="button"
-                className="bg-blue-100 text-blue-600 hover:bg-blue-200"
-                style={{ marginRight: "0.5rem" }}
-              >
+              <Button type="button" className="bg-blue-100 text-blue-600 hover:bg-blue-200 md:mr-1 mr-0">
                 Cancel
               </Button>
             </SheetClose>
-            <Button type="submit" className="bg-blue-600 text-white hover:bg-blue-700" disabled={disableSubmit}>
+            <Button
+              type="submit"
+              className="bg-blue-600 text-white hover:bg-blue-700  md:mb-0 mb-2"
+              disabled={disableSubmit}
+            >
               등록하기
             </Button>
           </SheetFooter>
