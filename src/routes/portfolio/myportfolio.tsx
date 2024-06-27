@@ -112,7 +112,7 @@ export function Myportfolio() {
               {isPublished ? (
                 <Button
                   variant="outline"
-                  className="bg-red-600 text-white hover:bg-red-700 px-2"
+                  className="bg-red-600 text-white hover:bg-red-700 px-4"
                   onClick={handleCancelRegistration}
                 >
                   등록 취소

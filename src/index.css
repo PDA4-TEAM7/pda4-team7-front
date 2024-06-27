@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer utilities {
+  .w-calc-100vh-minus-sm {
+    width: calc(100vw - 640px);
+  }
   .h-calc-100vh-minus-2rem {
     height: calc(100vh - 2rem);
   }
