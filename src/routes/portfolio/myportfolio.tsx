@@ -78,7 +78,7 @@ export function Myportfolio() {
       <div className="my-portfolio-container flex flex-col h-screen min-h-screen">
         <nav
           className="flex md:flex-row justify-between p-2 md:h-14 h-24 md:items-center box-border flex-col fixed md:relative w-full md:w-auto bg-white"
-          style={{ zIndex: 1000 }}
+          style={{ zIndex: 10 }}
         >
           <AccountSelector selectedAccount={selectedAccount} setSelectedAccount={setSelectedAccount} />
           <div className="flex flex-row md:justify-between justify-end md:gap-2 gap-4">
