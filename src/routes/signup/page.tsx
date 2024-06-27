@@ -145,36 +145,38 @@ export default function SignUp() {
   }, [checkId, checkName, agreedToPrivacy]);
   return (
     <>
-      <div className="relative min-h-screen w-full bg-blue-100 overflow-hidden">
-        <div className="absolute z-10 top-1/2 transform -translate-y-1/2 translate-x-12 m-auto w-2/5 bg-white shadow-lg rounded-lg p-10">
+      <div className="relative min-h-screen w-full bg-blue-100 overflow-y-auto md:p-8 p-2 flex justify-center items-center md:block">
+        <div
+          className="relative bg-white shadow-lg rounded-lg md:p-10 p-4 max-w-screen-sm w-full md:w-1/2 inline-block"
+          style={{ zIndex: 100 }}
+        >
           <h1 className="text-lg font-bold text-center">회원가입</h1>
           <p className="text-sm text-center text-gray-600">"하나의 바구니에 계란을 모두 넣지 말라"</p>
-          <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
+          <form className="space-y-4 mt-4 flex flex-col" onSubmit={handleSubmit}>
             {/* 아이디 필드 */}
-            <div className="flex flex-col space-y-2">
-              <label htmlFor="username" className="text-sm font-medium text-gray-700">
+            <div className="flex flex-col space-y-2 flex-1">
+              <label htmlFor="username" className="text-sm font-medium text-gray-700 flex-1">
                 아이디
               </label>
-              <div className="flex items-center">
+              <div className="flex items-center flex-1 gap-2">
                 <input
                   id="user_id"
                   name="user_id"
                   type="text"
                   placeholder="아이디를 입력해주세요"
-                  className="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-20"
                   value={formData.user_id}
                   onChange={(e) => handleChange(e)}
                 />
                 <Button
                   type="button"
                   onClick={() => checkDuplicate("user_id")}
-                  className="whitespace-nowrap ml-2 px-4 py-2 bg-blue-500 text-white rounded-r-md"
+                  className="whitespace-nowrap px-4 py-2 bg-blue-500 text-white rounded-r-md flex-1  max-w-20"
                 >
                   중복 확인
                 </Button>
               </div>
             </div>
-
             {/* 닉네임 필드 */}
             <div className="flex flex-col space-y-2">
               <label htmlFor="username" className="text-sm font-medium text-gray-700">
@@ -186,14 +188,14 @@ export default function SignUp() {
                   name="username"
                   type="text"
                   placeholder="닉네임을 입력해주세요"
-                  className="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  className="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 min-w-20"
                   value={formData.username}
                   onChange={(e) => handleChange(e)}
                 />
                 <Button
                   type="button"
                   onClick={() => checkDuplicate("username")}
-                  className="whitespace-nowrap ml-2 px-4 py-2 bg-blue-500 text-white rounded-r-md"
+                  className="whitespace-nowrap ml-2 px-4 py-2 bg-blue-500 text-white rounded-r-md  max-w-20"
                 >
                   중복 확인
                 </Button>
@@ -266,18 +268,20 @@ export default function SignUp() {
             </div>
           </div>
         </div>
-
-        <div className="absolute right-0 w-3/5 min-h-screen bg-blue-500 flex m-5 rounded-md items-center justify-center">
+        <div
+          className="absolute -top-2 right-0 w-1/2  xl:w-calc-100vh-minus-sm lg:w-1/2 inline-block min-h-screen h-full bg-blue-500 flex m-5 rounded-md items-center justify-center hidden md:flex"
+          style={{ zIndex: 90 }}
+        >
           <div className="w-1/7"></div>
           <div className="flex-1 ml-auto">
             <div className="text-center text-white whitespace-normal">
-              <h1 className="text-3xl font-bold">
+              <h1 className="lg:text-3xl text-2xl font-bold">
                 <b>E.G 서비스</b>를 이용하여
                 <br />
                 포트폴리오를 안전하게 거래하세요
                 <br />
               </h1>
-              <h4 className="text-xl whitespace-normal">
+              <h4 className="lg:text-xl text-lg whitespace-normal">
                 E.G와 함께, <br />
                 다양화된 투자로 리스크를 관리하고, <br />
                 수익을 최적화하세요!

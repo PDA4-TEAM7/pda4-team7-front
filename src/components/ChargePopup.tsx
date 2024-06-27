@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import useModal from "@/hooks/useModal";
 import useUser from "@/hooks/useUser";
+import Lottie from "lottie-react";
+import loadingBtnAnim from "../assets/lottie-btn-loading.json";
 
 type Props = { modalShow: boolean; modalClose: () => void; setCredit: (addCredit: number) => void };
 //TODO: userId 로 계좌 조회 해서 리스트 표시
@@ -12,6 +14,7 @@ export default function ChargePopup({ modalShow, modalClose, setCredit }: Props)
   const inputRef = useRef<HTMLInputElement>(null);
   const { open, close } = useModal();
   const { charge } = useUser();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const closeAddModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
@@ -19,7 +22,6 @@ export default function ChargePopup({ modalShow, modalClose, setCredit }: Props)
   };
   const handleModal = ({ title, text, success }: { title: string; text: string; success: boolean }) => {
     // DUMMY: 성공여부추가하기
-
     //TODO: 성공하면 닫기
     open(title, text, () => {
       modalClose();
@@ -37,8 +39,10 @@ export default function ChargePopup({ modalShow, modalClose, setCredit }: Props)
       handleModal({ title: "오류", text: "충전 금액은 0보다 크고 1억 이하이어야 합니다.", success: false });
       return;
     }
-
+    if (isLoading) return;
+    setIsLoading(true);
     const res = await charge(amount);
+    setIsLoading(false);
     if (res) {
       handleModal({ title: "성공!", text: "충전 완료했습니다!", success: true });
       setCredit(amount);
@@ -105,7 +109,13 @@ export default function ChargePopup({ modalShow, modalClose, setCredit }: Props)
               onClick={handleCharge}
               className="focus:outline-none px-4 bg-indigo-500 p-3 ml-3 rounded-lg text-white hover:bg-indigo-400 w-[120px]"
             >
-              충전하기
+              {isLoading ? (
+                <div className="w-[42px]">
+                  <Lottie animationData={loadingBtnAnim} />{" "}
+                </div>
+              ) : (
+                <p>충전하기</p>
+              )}
             </Button>
             <Button
               onClick={() => modalClose()}

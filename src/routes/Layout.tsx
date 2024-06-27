@@ -99,7 +99,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 }));
 
 export default function Layout() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -159,7 +159,7 @@ export default function Layout() {
 
   return (
     <div className="flex">
-      <div className={`absolute md:hidden top-2 left-2`} onClick={handleDrawerOpen}>
+      <div className={`absolute md:hidden top-[10px] left-2`} onClick={handleDrawerOpen}>
         <IconButton
           aria-label="open drawer"
           onClick={handleDrawerOpen}
@@ -176,9 +176,12 @@ export default function Layout() {
       <Drawer variant="permanent" open={open} className={`[&_div]:bg-[#23272c] h-screen [&_.MuiPaper-root]:h-screen`}>
         <DrawerHeader>
           {open && (
-            <div className="text-left flex-1 flex flex-row gap-2 items-center">
+            <div
+              className="text-left flex-1 flex flex-row gap-2 items-center"
+              onClick={() => handleNavigate("/portfolio/mainPortfolio")}
+            >
               <div className="profile-photo w-10 h-10 ">
-                <img src={"/public/icon-logo.png"} alt="" />
+                <img src={"/icon-logo.png"} alt="" />
               </div>
               <p className="text-white text-lg">E.G</p>
             </div>
@@ -225,7 +228,7 @@ export default function Layout() {
             )}
           </div>
         )}
-        {open && (
+        {true && (
           <List key={"list"}>
             {navMenu.map(({ text, page, icon, display }, index) => {
               if (display === "login" && !user.userId) return <></>;
@@ -321,7 +324,7 @@ export default function Layout() {
         )}
       </Drawer>
       <div
-        className={`w-full fixed h-screen bg-[#23272c] absolute md:hidden ${
+        className={`w-full fixed h-screen bg-[#23272c] md:hidden ${
           open ? "block" : "hidden"
         } inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster`}
         style={{ background: "rgba(0,0,0,.7)", zIndex: "1001" }}

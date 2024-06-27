@@ -3,6 +3,9 @@ import { SVGProps, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { JSX } from "react/jsx-runtime";
 import useAccount from "@/hooks/useAccount";
+import Lottie from "lottie-react";
+import loadingAnim from "@/assets/lottie-loading.json";
+import useModal from "@/hooks/useModal";
 type Props = {
   modalShow: boolean;
   modalClose: () => void;
@@ -15,6 +18,8 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
   const [accountList, setAccountList] = useState<any[]>([]);
   const [lastDeletedAccountId, setLastDeletedAccountId] = useState<string | null>(null);
   const { getAccountList, deleteMyAccount } = useAccount();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { open: alertOpen, close: alertClose } = useModal();
   const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
@@ -23,10 +28,12 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
 
   useEffect(() => {
     async function init() {
+      setIsLoading(true);
       const res = await getAccountList();
       if (res) {
         setAccountList(res);
       }
+      setIsLoading(false);
     }
 
     if (modalShow) {
@@ -50,7 +57,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     try {
       const data = await deleteMyAccount(account_id);
       setLastDeletedAccountId(account_id);
-      alert(data.message);
+      alertOpen("알림", data.message, alertClose);
     } catch (error) {
       let errorMessage = "An unexpected error occurred";
       if (typeof error === "object" && error !== null) {
@@ -59,7 +66,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
           errorMessage = response.data.message;
         }
       }
-      alert(errorMessage);
+      alertOpen("알림", errorMessage, alertClose);
     }
   };
 
@@ -89,7 +96,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
               </svg>
             </div>
           </div>
-          {accountList && accountList.length > 0 && (
+          {!isLoading && accountList && accountList.length > 0 && (
             <div className="py-4 space-y-4 overflow-scroll h-full pr-3 flex-1">
               {accountList.map((value) => {
                 return (
@@ -110,9 +117,16 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
               })}
             </div>
           )}
-          {accountList?.length === 0 && (
+          {!isLoading && accountList?.length === 0 && (
             <div>
               <p className="text-center text-slate-600">{"계좌가 없습니다. 등록해주세요!"}</p>
+            </div>
+          )}
+          {isLoading && (
+            <div className="w-full flex items-center justify-center">
+              <div className="w-[100px]">
+                <Lottie animationData={loadingAnim} />
+              </div>
             </div>
           )}
           <div className="flex justify-center pt-2">
