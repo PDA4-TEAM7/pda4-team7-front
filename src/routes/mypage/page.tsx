@@ -71,8 +71,8 @@ export default function MyPage() {
   }
   return (
     <>
-      <div className="my-page-container sm:m-8 m-4 h-full">
-        <p className="text-xl mb-8 sm:pl-0 pl-10 md:pl-0">{user.userName}의 페이지</p>
+      <div className="my-page-container md:my-4 md:mx-4 m-4 h-full">
+        <p className="text-xl mb-8 pl-10 md:pl-0">{user.userName}의 페이지</p>
         <div className="flex flex-col gap-2 border-2 rounded-md p-8 w-full py-10 max-w-[1043px]">
           <div className="submit-wrap b-4 flex flex-col gap-2 space-y-2 justify-center items-center">
             <div className="profile-photo w-16 h-16">

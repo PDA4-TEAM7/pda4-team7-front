@@ -14,12 +14,13 @@ import useUser from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
 import { formatNumber } from "@/lib/nums";
 import dayjs from "dayjs";
-
+import Skeleton from "@mui/material/Skeleton";
 export default function MainPortfolio() {
   const [sort, setSort] = useState("10");
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
   const [subscribedPortfolios, setSubscribedPortfolios] = useState<any[]>([]);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { open, close } = useModal();
   const { getUserInfo, submitUserInfo } = useUser();
   const { user } = useAuth();
@@ -39,6 +40,7 @@ export default function MainPortfolio() {
 
   const updatePortfolioData = async () => {
     try {
+      setIsLoading(true);
       const portfolioResponse = await portfolioApi.getAllPortfolios();
       const portfolioDataWithSubscribers = await Promise.all(
         portfolioResponse.map(async (portfolio: any) => {
@@ -48,12 +50,14 @@ export default function MainPortfolio() {
       );
       setPortfolioData(sortPortfolios(portfolioDataWithSubscribers, sort));
 
-      if (user.userId) {
+      if (user?.userId) {
         const subscriptionResponse = await subscribeApi.getUserSubscriptions();
         setSubscribedPortfolios(subscriptionResponse);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -166,7 +170,8 @@ export default function MainPortfolio() {
           </FormControl>
         </div>
         <div className="grid gap-4 xl:grid-cols-3 md:grid-cols-2 grid-cols-1">
-          {portfolioData.length > 0 &&
+          {!isLoading &&
+            portfolioData.length > 0 &&
             portfolioData.map((item) => {
               const isSubscribed = isPortfolioSubscribed(item.id);
               const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
@@ -266,7 +271,6 @@ export default function MainPortfolio() {
                     <div>
                       <p>{item.description}</p>
                     </div>
-
                     <div className="mt-4">
                       <div className="flex flex-row justify-between">
                         <div className="flex items-center flex-row">
@@ -295,8 +299,44 @@ export default function MainPortfolio() {
                 </div>
               );
             })}
+          {isLoading && (
+            <>
+              <Skeleton
+                sx={{ bgcolor: "grey.300" }}
+                variant="rectangular"
+                animation="wave"
+                key={1}
+                width={"100%"}
+                height={300}
+              />
+              <Skeleton
+                sx={{ bgcolor: "grey.300" }}
+                variant="rectangular"
+                animation="wave"
+                key={1}
+                width={"100%"}
+                height={300}
+              />
+              <Skeleton
+                sx={{ bgcolor: "grey.300" }}
+                variant="rectangular"
+                animation="wave"
+                key={1}
+                width={"100%"}
+                height={300}
+              />
+              <Skeleton
+                sx={{ bgcolor: "grey.300" }}
+                variant="rectangular"
+                animation="wave"
+                key={1}
+                width={"100%"}
+                height={300}
+              />
+            </>
+          )}
         </div>
-        {portfolioData.length === 0 && (
+        {!isLoading && portfolioData.length === 0 && (
           <div className="flex items-center justify-center flex-col w-full p-20">
             <img src="/icon-empty.png" alt="" className="sm:max-w-30 max-w-20" />
             <p className="text-center text-lg relative text-slate-700">데이터가 없어요!</p>
