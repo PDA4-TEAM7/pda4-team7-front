@@ -99,7 +99,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 }));
 
 export default function Layout() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -228,7 +228,7 @@ export default function Layout() {
             )}
           </div>
         )}
-        {open && (
+        {true && (
           <List key={"list"}>
             {navMenu.map(({ text, page, icon, display }, index) => {
               if (display === "login" && !user.userId) return <></>;
