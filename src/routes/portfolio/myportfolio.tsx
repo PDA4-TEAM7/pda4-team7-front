@@ -35,6 +35,7 @@ export function Myportfolio() {
 
   useEffect(() => {
     fetchAccounts();
+    setIsLoading(false);
   }, [showAddAccountModal]);
 
   useEffect(() => {
@@ -135,7 +136,7 @@ export function Myportfolio() {
             </div>
           </div>
         </nav>
-        {!isLoading && !accounts.length && (
+        {!isLoading && accounts.length === 0 && (
           <div className="flex flex-col flex-1 justify-center items-center pt-8">
             <p>연결된 계좌가 없습니다. </p>
             <p> 계좌를 추가해볼까요?</p>
