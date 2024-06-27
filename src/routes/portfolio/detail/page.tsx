@@ -4,7 +4,7 @@ import StockList from "../stockList";
 import BackTest from "./BackTest";
 import CommPage from "../comm_page";
 import { portfolioApi } from "@/apis/portfolioAPI";
-
+import chartImg from "@/assets/chart-image.jpeg";
 import useModal from "@/hooks/useModal";
 
 // portfolio/detail/1
@@ -28,7 +28,7 @@ export default function DetailPage() {
 
   const modalContent = (
     <div className="text-left space-y-4">
-      <img src="\src\assets\chart-image.jpeg" style={{ width: "15%", height: "auto" }} />
+      <img src={chartImg} style={{ width: "15%", height: "auto" }} />
       <h2 className="text-lg font-bold">과거 투자 성과란?</h2>
       <p>
         과거 투자 성과는 백테스팅 서비스를 의미하며, 2004년 1월부터 현재까지의 주식 시장 내역을 통해 현재 사용자가 보고
