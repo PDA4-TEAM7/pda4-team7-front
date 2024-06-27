@@ -176,9 +176,12 @@ export default function Layout() {
       <Drawer variant="permanent" open={open} className={`[&_div]:bg-[#23272c] h-screen [&_.MuiPaper-root]:h-screen`}>
         <DrawerHeader>
           {open && (
-            <div className="text-left flex-1 flex flex-row gap-2 items-center">
-              <div className="profile-photo w-10 h-10 ">
-                <img src={"/public/icon-logo.png"} alt="" />
+            <div
+              className="text-left flex-1 flex flex-row gap-2 items-center"
+              onClick={() => handleNavigate("/portfolio/mainPortfolio")}
+            >
+              <div className="profile-photo w-10 h-10">
+                <img src={"/public/icon-logo.png"} alt="logo" />
               </div>
               <p className="text-white text-lg">E.G</p>
             </div>
