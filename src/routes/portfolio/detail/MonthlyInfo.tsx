@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from "react";
 import { Dayjs } from "dayjs";
 import { Slider } from "@mui/material";
@@ -94,6 +93,7 @@ export default function MonthlyInfo({ startDate, endDate, backTestData }: Props)
       setShowBTData(result);
     }
   }, [backTestData]);
+
   return (
     <div className="monthly-data mt-12">
       <p className="text-xl pb-6">날짜 별 종목 성과</p>
@@ -116,7 +116,8 @@ export default function MonthlyInfo({ startDate, endDate, backTestData }: Props)
         <div className="stock-data-item">
           {showBTData.map((item, i) => {
             const key = Object.keys(item)[0];
-            const value = item[key][selectedMonth.format("YYYY-MM")] - 1;
+            const originalValue = item[key][selectedMonth.format("YYYY-MM")];
+            const value = originalValue === 0 ? 0 : originalValue - 1;
             console.log("value:", value);
             return (
               <div key={i} className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg shadow">
