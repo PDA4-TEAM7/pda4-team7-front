@@ -13,6 +13,7 @@ export class BaseApi {
       },
       validateStatus: function (status) {
         return status >= 200 && status < 500;
+        //return 값에 범위가 들어가면 정상처리
         // 모든 응답을 성공으로 처리
       },
     });

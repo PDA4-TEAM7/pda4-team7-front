@@ -15,6 +15,9 @@ export interface ISetUserData {
 export default class userAPI extends BaseApi {
   async getUserInfo() {
     const resp = await this.fetcher.get("/user/me");
+    if (resp.status >= 400) {
+      throw Error;
+    }
     return resp.data;
   }
   //post credit충전

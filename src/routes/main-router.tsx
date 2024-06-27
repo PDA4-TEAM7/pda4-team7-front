@@ -11,6 +11,7 @@ import SubscribePortfolio from "./portfolio/subscribe/page";
 import DetailPage from "./portfolio/detail/page";
 import Myportfolio from "./portfolio/myportfolio";
 import SubscribePortfolioRecency from "./portfolio/subscribe/recency/page";
+import ErrorPage from "./error/page";
 
 const routers = [
   {
@@ -75,6 +76,10 @@ const routers = [
   {
     path: "/signin",
     element: <SignIn />,
+  },
+  {
+    path: "/error",
+    element: <ErrorPage />,
   },
 ];
 
