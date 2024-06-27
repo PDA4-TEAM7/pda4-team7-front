@@ -15,6 +15,7 @@ export default class authAPI extends BaseApi {
       const resp = await this.fetcher.post("auth/signup", {
         ...auth,
       });
+
       console.log(resp.data);
       console.log(resp.data.message);
       if (resp.status === 200 && resp.data.user) {
@@ -36,6 +37,9 @@ export default class authAPI extends BaseApi {
       const resp = await this.fetcher.post("validate/check-userid", {
         user_id: user_id,
       });
+      if (resp.status >= 400) {
+        throw Error;
+      }
       return resp.data.available;
     } catch (error) {
       console.error(error);
@@ -47,6 +51,9 @@ export default class authAPI extends BaseApi {
       const resp = await this.fetcher.post("validate/check-username", {
         username: username,
       });
+      if (resp.status >= 400) {
+        throw Error;
+      }
       return resp.data.available;
     } catch (error) {
       console.error(error);
@@ -62,6 +69,9 @@ export default class authAPI extends BaseApi {
         ...auth,
       });
 
+      if (response.status >= 400) {
+        throw Error;
+      }
       if (response.status === 200) {
         // 로그인 성공
         return {
@@ -86,6 +96,9 @@ export default class authAPI extends BaseApi {
   async signOut() {
     try {
       const resp = await this.fetcher.post("/auth/signout");
+      if (resp.status >= 400) {
+        throw Error;
+      }
       return resp.data;
     } catch {
       console.log("로그아웃 에러");
@@ -96,6 +109,9 @@ export default class authAPI extends BaseApi {
   async isLogin() {
     try {
       const resp = await this.fetcher.post("/auth/islogin");
+      if (resp.status >= 400) {
+        throw Error;
+      }
       return resp.data;
     } catch {
       console.log("isLogin 에러  ");
