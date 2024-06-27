@@ -62,7 +62,7 @@ export default function SubscribePortfolio() {
       <main className="p-4">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-start md:items-center">
-            <h1 className="text-xl font-semibold mr-3 pl-10 md:pl-0 truncate">구독한 포트폴리오</h1>
+            <h1 className="text-xl mr-3 pl-10 md:pl-0 truncate">구독한 포트폴리오</h1>
             <Button
               className="text-l focus:outline-none px-8 bg-indigo-500 md:m-1 m-0 p-3 py-1 rounded-lg text-white hover:bg-indigo-400  relative -top-1 md:-top-0"
               onClick={handleRecencyClick}
@@ -212,7 +212,10 @@ export default function SubscribePortfolio() {
               );
             })
           ) : (
-            <p>구독한 포트폴리오가 없습니다.</p>
+            <div className="flex items-center justify-center flex-col w-full p-20">
+              <img src="/icon-empty.png" alt="" className="sm:max-w-30 max-w-20" />
+              <p className="text-center text-lg relative text-slate-700">구독한 포트폴리오가 없습니다.</p>
+            </div>
           )}
         </div>
       </main>

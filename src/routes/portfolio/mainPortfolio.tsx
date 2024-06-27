@@ -147,7 +147,7 @@ export default function MainPortfolio() {
     <div className="mb-10">
       <main className="p-4">
         <div className="flex justify-between items-start mb-4">
-          <h1 className="text-xl font-semibold text-nowrap pl-10 md:pl-0 relative">포트폴리오</h1>
+          <h1 className="text-xl text-nowrap pl-10 md:pl-0 relative">포트폴리오</h1>
           <FormControl fullWidth style={{ maxWidth: 200 }} size="small">
             <InputLabel id="demo-simple-select-label" className={""}>
               정렬 순
@@ -166,135 +166,142 @@ export default function MainPortfolio() {
           </FormControl>
         </div>
         <div className="grid gap-4 xl:grid-cols-3 md:grid-cols-2 grid-cols-1">
-          {portfolioData.map((item) => {
-            const isSubscribed = isPortfolioSubscribed(item.id);
-            const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
-            const stockNameData = item.stockData.map((stock: any) => stock.name);
-            return (
-              <div
-                key={item.id}
-                className={`border p-4 rounded-md cursor-pointer flex flex-col justify-between`}
-                onClick={() => handlePortfolioClick(item)}
-              >
-                <div>
-                  <div className="flex justify-between mb-4 items-start h-[48px]">
-                    <h3 className="font-bold">{item.title} </h3>
-                    <button
-                      className={`text-base ${
-                        isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                      } px-3 py-1 rounded`}
-                      style={{ minWidth: "70px", whiteSpace: "nowrap" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
-                      }}
-                    >
-                      {isSubscribed ? "취소" : "구독"}
-                    </button>
-                  </div>
-                  <div className="flex">
-                    <div className="w-1/2">
-                      <Pie
-                        data={{
-                          labels: stockNameData,
-                          datasets: [
-                            {
-                              label: "비율",
-                              data: stockAmtData,
-                              backgroundColor: [
-                                "rgba(255, 99, 132, 1)",
-                                "rgba(54, 162, 235, 1)",
-                                "rgba(255, 206, 86, 1)",
-                                "rgba(75, 192, 192, 1)",
-                                "rgba(153, 102, 255, 1)",
-                                "rgba(255, 159, 64, 1)",
-                                "rgba(255, 99, 132, 0.8)",
-                                "rgba(54, 162, 235, 0.8)",
-                                "rgba(255, 206, 86, 0.8)",
-                                "rgba(75, 192, 192, 0.8)",
-                                "rgba(153, 102, 255, 0.8)",
-                                "rgba(255, 159, 64, 0.8)",
-                              ],
-                              borderWidth: 1,
-                            },
-                          ],
+          {portfolioData.length > 0 &&
+            portfolioData.map((item) => {
+              const isSubscribed = isPortfolioSubscribed(item.id);
+              const stockAmtData = item.stockData.map((stock: any) => stock.ratio);
+              const stockNameData = item.stockData.map((stock: any) => stock.name);
+              return (
+                <div
+                  key={item.id}
+                  className={`border p-4 rounded-md cursor-pointer flex flex-col justify-between`}
+                  onClick={() => handlePortfolioClick(item)}
+                >
+                  <div>
+                    <div className="flex justify-between mb-4 items-start h-[48px]">
+                      <h3 className="font-bold">{item.title} </h3>
+                      <button
+                        className={`text-base ${
+                          isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                        } px-3 py-1 rounded`}
+                        style={{ minWidth: "70px", whiteSpace: "nowrap" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
                         }}
-                        options={{
-                          maintainAspectRatio: false,
-                          plugins: {
-                            datalabels: {
-                              display: false,
-                            },
-                            legend: {
-                              display: false,
-                            },
-                            tooltip: {
-                              callbacks: {
-                                label: (context) => {
-                                  const value: number = Number(context.raw);
-                                  return `${context.label}: ${Math.round(value * 100)}%`;
+                      >
+                        {isSubscribed ? "취소" : "구독"}
+                      </button>
+                    </div>
+                    <div className="flex">
+                      <div className="w-1/2">
+                        <Pie
+                          data={{
+                            labels: stockNameData,
+                            datasets: [
+                              {
+                                label: "비율",
+                                data: stockAmtData,
+                                backgroundColor: [
+                                  "rgba(255, 99, 132, 1)",
+                                  "rgba(54, 162, 235, 1)",
+                                  "rgba(255, 206, 86, 1)",
+                                  "rgba(75, 192, 192, 1)",
+                                  "rgba(153, 102, 255, 1)",
+                                  "rgba(255, 159, 64, 1)",
+                                  "rgba(255, 99, 132, 0.8)",
+                                  "rgba(54, 162, 235, 0.8)",
+                                  "rgba(255, 206, 86, 0.8)",
+                                  "rgba(75, 192, 192, 0.8)",
+                                  "rgba(153, 102, 255, 0.8)",
+                                  "rgba(255, 159, 64, 0.8)",
+                                ],
+                                borderWidth: 1,
+                              },
+                            ],
+                          }}
+                          options={{
+                            maintainAspectRatio: false,
+                            plugins: {
+                              datalabels: {
+                                display: false,
+                              },
+                              legend: {
+                                display: false,
+                              },
+                              tooltip: {
+                                callbacks: {
+                                  label: (context) => {
+                                    const value: number = Number(context.raw);
+                                    return `${context.label}: ${Math.round(value * 100)}%`;
+                                  },
                                 },
                               },
                             },
-                          },
-                        }}
-                        width={200}
-                        height={200}
-                      />
-                    </div>
-                    <div className="w-1/2 pl-4 flex flex-col justify-center">
-                      <div>
-                        <p className="font-bold">총 자산: {formatNumber(item.totalAsset)}원</p>
-                        <p
-                          className={`font-bold ${
-                            +item.profitLoss > 0
-                              ? "text-red-500"
-                              : +item.profitLoss == 0
-                              ? "text-black-900"
-                              : "text-blue-500"
-                          }`}
-                        >
-                          {+item.profitLoss > 0 && <span>+</span>}
-                          {formatNumber(item.loss)} <span>({item.profitLoss.toFixed(2)}%)</span>
-                        </p>
+                          }}
+                          width={200}
+                          height={200}
+                        />
                       </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <p>{item.description}</p>
-                  </div>
-
-                  <div className="mt-4">
-                    <div className="flex flex-row justify-between">
-                      <div className="flex items-center flex-row">
-                        <div className="profile-photo w-6 h-6 mr-2 inline-block">
-                          <img
-                            src={`https://source.boringavatars.com/beam/500/${item.username}`}
-                            alt="프로필 이미지"
-                            className="w-full h-full"
-                          />
+                      <div className="w-1/2 pl-4 flex flex-col justify-center">
+                        <div>
+                          <p className="font-bold">총 자산: {formatNumber(item.totalAsset)}원</p>
+                          <p
+                            className={`font-bold ${
+                              +item.profitLoss > 0
+                                ? "text-red-500"
+                                : +item.profitLoss == 0
+                                ? "text-black-900"
+                                : "text-blue-500"
+                            }`}
+                          >
+                            {+item.profitLoss > 0 && <span>+</span>}
+                            {formatNumber(item.loss)} <span>({item.profitLoss.toFixed(2)}%)</span>
+                          </p>
                         </div>
-                        <span className="text-base text-gray-500">{item.username}</span>
                       </div>
-                      <span className="text-base text-gray-500">
-                        {"작성일: " + dayjs(item.createDate).format("YYYY/MM/DD")}
-                      </span>
                     </div>
-                    <div className="flex justify-between mt-2">
-                      <span className=" text-base">구독료 : {formatNumber(item.price)} 원 /월</span>
-                      <div className="flex items-center ml-auto">
-                        <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
-                        <span className="text-base text-gray-500">구독자 수: {item.subscriberCount}</span>
+                  </div>
+                  <div className="mt-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p>{item.description}</p>
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="flex flex-row justify-between">
+                        <div className="flex items-center flex-row">
+                          <div className="profile-photo w-6 h-6 mr-2 inline-block">
+                            <img
+                              src={`https://source.boringavatars.com/beam/500/${item.username}`}
+                              alt="프로필 이미지"
+                              className="w-full h-full"
+                            />
+                          </div>
+                          <span className="text-base text-gray-500">{item.username}</span>
+                        </div>
+                        <span className="text-base text-gray-500">
+                          {"작성일: " + dayjs(item.createDate).format("YYYY/MM/DD")}
+                        </span>
+                      </div>
+                      <div className="flex justify-between mt-2">
+                        <span className=" text-base">구독료 : {formatNumber(item.price)} 원 /월</span>
+                        <div className="flex items-center ml-auto">
+                          <img src={Subscribe} alt="구독자 아이콘" className="w-6 h-6 mr-1" />
+                          <span className="text-base text-gray-500">구독자 수: {item.subscriberCount}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
+        {portfolioData.length === 0 && (
+          <div className="flex items-center justify-center flex-col w-full p-20">
+            <img src="/icon-empty.png" alt="" className="sm:max-w-30 max-w-20" />
+            <p className="text-center text-lg relative text-slate-700">데이터가 없어요!</p>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -6,7 +6,7 @@ import useModal from "@/hooks/useModal";
 import { IAccountInfo } from "@/apis/accountAPI";
 import useAccount from "@/hooks/useAccount";
 import Lottie from "lottie-react";
-import loadingAnim from "../assets/lottie-loading.json";
+import loadingBtnAnim from "../assets/lottie-btn-loading.json";
 //TODO: userId 로 계좌 조회 해서 리스트 표시
 export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: boolean; modalClose: () => void }) {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -140,7 +140,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
             >
               {isLoading ? (
                 <div className="w-[42px]">
-                  <Lottie animationData={loadingAnim} />{" "}
+                  <Lottie animationData={loadingBtnAnim} />{" "}
                 </div>
               ) : (
                 <p>계좌 추가하기</p>
