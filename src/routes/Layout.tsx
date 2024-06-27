@@ -159,7 +159,7 @@ export default function Layout() {
 
   return (
     <div className="flex">
-      <div className={`absolute md:hidden top-2 left-2`} onClick={handleDrawerOpen}>
+      <div className={`absolute md:hidden top-[10px] left-2`} onClick={handleDrawerOpen}>
         <IconButton
           aria-label="open drawer"
           onClick={handleDrawerOpen}

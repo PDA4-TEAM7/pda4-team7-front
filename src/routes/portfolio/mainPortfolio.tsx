@@ -146,13 +146,13 @@ export default function MainPortfolio() {
     <div className="mb-10">
       <main className="p-4">
         <div className="flex justify-between items-start mb-4">
-          <h1 className="text-xl font-semibold text-nowrap pl-10 md:pl-0">Stock Portfolio</h1>
-          <FormControl fullWidth style={{ maxWidth: 200 }} className="h-14">
+          <h1 className="text-xl font-semibold text-nowrap pl-10 md:pl-0 relative">포트폴리오</h1>
+          <FormControl fullWidth style={{ maxWidth: 200 }} size="small">
             <InputLabel id="demo-simple-select-label" className={""}>
               정렬 순
             </InputLabel>
             <Select
-              labelId="demo-simple-select-label"
+              labelId="demo-select-small-label"
               id="demo-simple-select"
               value={sort}
               label="정렬 순"
@@ -176,21 +176,20 @@ export default function MainPortfolio() {
                 onClick={() => handlePortfolioClick(item)}
               >
                 <div>
-                  <div className="flex justify-end mb-4 items-start">
-                    <div className="flex-none">
-                      <button
-                        className={`text-base ${
-                          isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                        } px-3 py-1 rounded`}
-                        style={{ minWidth: "70px", whiteSpace: "nowrap" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
-                        }}
-                      >
-                        {isSubscribed ? "취소" : "구독"}
-                      </button>
-                    </div>
+                  <div className="flex justify-between mb-4 items-start h-[48px]">
+                    <h3 className="font-bold">{item.title} </h3>
+                    <button
+                      className={`text-base ${
+                        isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                      } px-3 py-1 rounded`}
+                      style={{ minWidth: "70px", whiteSpace: "nowrap" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
+                      }}
+                    >
+                      {isSubscribed ? "취소" : "구독"}
+                    </button>
                   </div>
                   <div className="flex">
                     <div className="w-1/2">
@@ -263,7 +262,6 @@ export default function MainPortfolio() {
                 </div>
                 <div className="mt-4 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="font-bold">{item.title}</h3>
                     <p>{item.description}</p>
                   </div>
 
