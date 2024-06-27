@@ -78,7 +78,7 @@ const routers = [
     element: <SignIn />,
   },
   {
-    path: "/error",
+    path: "*",
     element: <ErrorPage />,
   },
 ];
