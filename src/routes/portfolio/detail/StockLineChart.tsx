@@ -43,11 +43,7 @@ export default function StockLineChart({ backTestData }: Props) {
             valueFormatter: (date) => dayjs(date).format("MMM D"),
           },
         ]}
-        yAxis={[]}
-        series={[
-          { label: "내 투자", data: rate },
-          { label: "U.S 500", data: rate },
-        ]}
+        series={[{ label: "내 투자", data: rate }]}
         height={400}
       />
     </div>
