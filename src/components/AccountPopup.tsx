@@ -5,6 +5,7 @@ import { JSX } from "react/jsx-runtime";
 import useAccount from "@/hooks/useAccount";
 import Lottie from "lottie-react";
 import loadingAnim from "@/assets/lottie-loading.json";
+import useModal from "@/hooks/useModal";
 type Props = {
   modalShow: boolean;
   modalClose: () => void;
@@ -18,6 +19,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
   const [lastDeletedAccountId, setLastDeletedAccountId] = useState<string | null>(null);
   const { getAccountList, deleteMyAccount } = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { open: alertOpen, close: alertClose } = useModal();
   const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       modalClose();
@@ -55,7 +57,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     try {
       const data = await deleteMyAccount(account_id);
       setLastDeletedAccountId(account_id);
-      alert(data.message);
+      alertOpen("알림", data.message, alertClose);
     } catch (error) {
       let errorMessage = "An unexpected error occurred";
       if (typeof error === "object" && error !== null) {
@@ -64,7 +66,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
           errorMessage = response.data.message;
         }
       }
-      alert(errorMessage);
+      alertOpen("알림", errorMessage, alertClose);
     }
   };
 

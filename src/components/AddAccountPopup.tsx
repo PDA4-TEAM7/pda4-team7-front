@@ -106,14 +106,14 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
               </svg>
             </div>
           </div>
-          <div className="py-4 space-y-4 overflow-x-auto h-full  flex-1 ">
-            <div className="grid max-w-sm items-center gap-1.5 mx-1">
+          <div className="py-4 space-y-4  h-full flex flex-col items-center overflow-x-visible">
+            <div className="grid max-w-sm items-center gap-1.5 mx-1 w-full">
               <Label htmlFor="appkey" className="text-lg">
                 App Key
               </Label>
               <Input type="string" id="appkey" name="appkey" placeholder="app key" onChange={handleChange} />
             </div>
-            <div className="grid  max-w-sm items-center gap-1.5 mx-1">
+            <div className="grid  max-w-sm items-center gap-1.5 mx-1 w-full">
               <Label htmlFor="appsecretkey" className="text-lg">
                 App Secret Key
               </Label>
@@ -125,7 +125,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
                 onChange={handleChange}
               />
             </div>
-            <div className="grid max-w-sm items-center gap-1.5 mx-1">
+            <div className="grid max-w-sm items-center gap-1.5 mx-1 w-full">
               <Label htmlFor="accountNo" className="text-lg">
                 Account
               </Label>
