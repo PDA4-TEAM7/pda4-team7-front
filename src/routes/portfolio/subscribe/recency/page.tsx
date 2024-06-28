@@ -134,12 +134,14 @@ export default function SubscribePortfolioRecency() {
   const chartData = selectedChart === "investIdstTop5" ? investIdstTop5 : investStockTop5;
 
   return (
-    <div className="flex flex-col h-full">
-      <main className="p-4">
-        <div className="flex items-center mb-4 justify-between">
-          <h1 className="text-2xl font-bold">구독한 포트폴리오 종합 분석 및 최근 변화</h1>
+    <div className="flex flex-col h-full w-full">
+      <main className="md:p-4 p-2 w-full">
+        <div className="flex items-start mb-4 justify-between md:items-center md:flex-row flex-col pt-2 md:pt-0">
+          <h1 className="text-xl  md:mb-8 mb-4 pl-10 md:pl-0 text-nowrap truncate">
+            구독한 포트폴리오 종합 분석 및 최근 변화
+          </h1>
           <Button
-            className="text-l focus:outline-none px-8 bg-indigo-500 m-2 p-3 rounded-lg text-white hover:bg-indigo-400"
+            className="text-l focus:outline-none px-8 bg-indigo-500 md:m-2 p-3 md:mb-8 rounded-lg text-white hover:bg-indigo-400"
             onClick={handleSubPortfolioClick}
           >
             <img src={Prev} alt="이전으로" className="w-6 h-6 ml-1" />
@@ -166,7 +168,7 @@ export default function SubscribePortfolioRecency() {
             종목별 투자
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-4 ">
+        <div className="grid md:grid-cols-2 gap-4 grid-cols-1">
           <div className="col-span-1 border rounded-lg border-gray-300">
             <ChartComponent
               data={createChartData(chartData, selectedChart === "investIdstTop5")}
