@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { IComment, commentApi } from "@/apis/commentAPI";
 import { replyApi } from "@/apis/replyAPI";
 import { portfolioApi } from "@/apis/portfolioAPI";
+import Lottie from "lottie-react";
+import loadingAnim from "@/assets/lottie-loading.json";
 
 type Reply = {
   author: string;
@@ -209,7 +211,12 @@ const CommPage = ({ id }: Props) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="w-[64px]"></div>
+        <Lottie animationData={loadingAnim} />
+      </div>
+    );
   }
 
   if (!ownerInfo) {
