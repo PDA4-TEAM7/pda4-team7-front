@@ -121,7 +121,7 @@ const TransactionCard = () => {
           {recencyHistory.map((transaction, index) => (
             <div
               key={index}
-              className={`m-2 p-4 rounded-lg shadow-md ${
+              className={`m-2 p-4 rounded-lg cursor-pointer shadow-md ${
                 transaction.sll_buy_dvsn_cd === "buy" ? "bg-red-200/50" : "bg-blue-200/50"
               }`}
               onClick={() => handleCardClick(index, transaction.account_id, transaction.name)}

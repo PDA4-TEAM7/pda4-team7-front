@@ -179,7 +179,11 @@ export default function SubscribePortfolioRecency() {
           </div>
           <DetailPanel selectedItem={selectedItem} selectedChart={selectedChart} />
         </div>
+
         <div className="mt-10 mb-3">
+          <span className="text-xs ">
+            ❗️투자자가 전량 매도시 평가지표가 없어 클릭해도 자세한 데이터가 나오지 않습니다.
+          </span>
           <TooltipProvider>
             <TransactionCard />
           </TooltipProvider>
