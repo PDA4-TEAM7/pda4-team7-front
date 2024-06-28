@@ -18,7 +18,7 @@ export default function Home() {
     <div className="main-container">
       <section className="hero">
         <div className="hero__waves" />
-        <h1 className="hero__title">Welcome to E.G</h1>
+        <h1 className="hero__title text-center">Welcome to E.G</h1>
         <div className="arrow-container" onClick={() => scrollToSection(section2)}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="arrow">
             <path d="M12 16l-6-6h12z" />

@@ -16,7 +16,7 @@ import IconMy from "@/assets/icon-my.svg?react";
 import IconSub from "@/assets/icon-sub.svg?react";
 import { useAuth } from "@/hooks/useAuth";
 import useModal from "@/hooks/useModal";
-
+import ScrollToTop from "@/components/scrollTopup";
 const drawerWidth = 240;
 const navMenu = [
   {
@@ -333,6 +333,7 @@ export default function Layout() {
         }}
       ></div>
       <div className="grow-[1]">
+        <ScrollToTop />
         <Outlet />
       </div>
     </div>
