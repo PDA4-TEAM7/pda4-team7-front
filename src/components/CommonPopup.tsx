@@ -9,15 +9,15 @@ export default function CommonPopup() {
   const dispatch = useDispatch();
   const modal = useSelector((state: RootState) => state.modal);
 
-  const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (e.currentTarget.classList.contains("main-modal")) {
-      if (modal.basic.show) {
-        dispatch(closeModal());
-      } else if (modal.extended.show) {
-        dispatch(closeExtendedModal());
-      }
-    }
-  };
+  // const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  //   if (e.currentTarget.classList.contains("main-modal")) {
+  //     if (modal.basic.show) {
+  //       dispatch(closeModal());
+  //     } else if (modal.extended.show) {
+  //       dispatch(closeExtendedModal());
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (modal.basic.show || modal.extended.show) {
@@ -40,7 +40,6 @@ export default function CommonPopup() {
     <div
       className="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
       style={{ background: "rgba(0,0,0,.7)", zIndex: "10000" }}
-      onClick={(e) => close(e)}
     >
       <div
         className={`border border-teal-500 shadow-lg modal-container bg-white w-11/12 ${
