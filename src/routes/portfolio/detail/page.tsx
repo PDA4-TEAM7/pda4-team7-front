@@ -6,6 +6,8 @@ import CommPage from "../comm_page";
 import { portfolioApi } from "@/apis/portfolioAPI";
 import chartImg from "@/assets/chart-image.jpeg";
 import useModal from "@/hooks/useModal";
+import Lottie from "lottie-react";
+import loadingAnim from "@/assets/lottie-loading.json";
 
 // portfolio/detail/1
 export default function DetailPage() {
@@ -80,7 +82,14 @@ export default function DetailPage() {
   };
 
   if (!id) return <div>param not found</div>;
-  if (!accountId) return <div>loading...</div>;
+  if (!accountId) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="w-[64px]"></div>
+        <Lottie animationData={loadingAnim} />
+      </div>
+    );
+  }
 
   return (
     <div className="portfolio-detail-container h-screen flex flex-col min-h-screen">

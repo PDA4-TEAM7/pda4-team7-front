@@ -188,18 +188,20 @@ export default function MainPortfolio() {
                   <div>
                     <div className="flex justify-between mb-4 items-start h-[48px]">
                       <h3 className="font-bold">{item.title} </h3>
-                      <button
-                        className={`text-base ${
-                          isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                        } px-3 py-1 rounded`}
-                        style={{ minWidth: "70px", whiteSpace: "nowrap" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
-                        }}
-                      >
-                        {isSubscribed ? "취소" : "구독"}
-                      </button>
+                      {item.username !== user.userName && (
+                        <button
+                          className={`text-base ${
+                            isSubscribed ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                          } px-3 py-1 rounded`}
+                          style={{ minWidth: "70px", whiteSpace: "nowrap" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            isSubscribed ? handleUnsubscribe(item.id) : handleSubscribe(item);
+                          }}
+                        >
+                          {isSubscribed ? "취소" : "구독"}
+                        </button>
+                      )}
                     </div>
                     <div className="flex">
                       <div className="w-1/2">

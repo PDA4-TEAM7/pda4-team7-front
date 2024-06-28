@@ -108,13 +108,13 @@ const TransactionCard = () => {
       <div className="col-span-1 bg-white p-4 rounded-lg border border-gray-300 overflow-auto">
         <div className="max-h-64 overflow-auto">
           {/* 헤더 추가 */}
-          <div className="ml-2 mr-2 pl-4 pr-4 pb-1 rounded bg-white border-b border-gray-200">
-            <div className="grid grid-cols-5 gap-4 text-center">
-              <div className="font-bold">종목명</div>
-              <div className="font-bold">매수/매도</div>
-              <div className="font-bold">체결 평균가(원)</div>
-              <div className="font-bold">총 체결 수량(주)</div>
-              <div className="font-bold">총 체결 금액(원)</div>
+          <div className="ml-2 mr-2 pl-4 pr-4 pb-1 rounded bg-white border-b border-gray-200 ">
+            <div className="grid grid-cols-5 gap-4 text-center min-w-full">
+              <div className="font-bold text-sm md:text-md">종목명</div>
+              <div className="font-bold text-sm md:text-md">매수/매도</div>
+              <div className="font-bold text-sm md:text-md">체결 평균가(원)</div>
+              <div className="font-bold text-sm md:text-md">총 체결 수량(주)</div>
+              <div className="font-bold text-sm md:text-md">총 체결 금액(원)</div>
             </div>
           </div>
 
