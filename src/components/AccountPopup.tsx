@@ -20,11 +20,11 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
   const { getAccountList, deleteMyAccount } = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { open: alertOpen, close: alertClose } = useModal();
-  const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      modalClose();
-    }
-  };
+  // const close = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  //   if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+  //     modalClose();
+  //   }
+  // };
 
   useEffect(() => {
     async function init() {
@@ -74,7 +74,7 @@ export default function AccountPopup({ modalShow, modalClose, openAddAccountModa
     <div
       className="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
       style={{ background: "rgba(0,0,0,.7)", zIndex: "10000" }}
-      onClick={close}
+      // onClick={close}
     >
       <div
         className="border border-teal-500 shadow-lg modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto"

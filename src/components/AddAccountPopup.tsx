@@ -25,11 +25,11 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
     setDisableSubmit(false);
     setAccountInfo((prev) => ({ ...prev, [name]: value }));
   };
-  const closeAddModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      modalClose();
-    }
-  };
+  // const closeAddModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  //   if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+  //     modalClose();
+  //   }
+  // };
   const handleModal = ({ title, text, success }: { title: string; text: string; success: boolean }) => {
     //TODO: 성공하면 닫기
     if (success) {
@@ -84,7 +84,7 @@ export default function AddAccountPopup({ modalShow, modalClose }: { modalShow: 
     <div
       className="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster"
       style={{ background: "rgba(0,0,0,.7)", zIndex: "10000" }}
-      onClick={closeAddModal}
+      // onClick={closeAddModal}
     >
       <div
         className="border border-teal-500 shadow-lg modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto"

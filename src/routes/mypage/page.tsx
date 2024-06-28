@@ -13,7 +13,7 @@ import { formatNumber } from "@/lib/nums";
 import { useEffect, useRef, useState } from "react";
 import loadingBtnAnim from "@/assets/lottie-btn-loading.json";
 import Lottie from "lottie-react";
-
+import loadingAnim from "@/assets/lottie-loading.json";
 export default function MyPage() {
   const [userInfo, setUserInfo] = useState<IUserInfo>({
     userId: "",
@@ -67,7 +67,12 @@ export default function MyPage() {
   }, []);
 
   if (!userInfo) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="w-[64px]"></div>
+        <Lottie animationData={loadingAnim} />
+      </div>
+    );
   }
   return (
     <>

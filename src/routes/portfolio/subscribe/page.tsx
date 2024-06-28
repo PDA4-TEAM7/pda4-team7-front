@@ -90,6 +90,7 @@ export default function SubscribePortfolio() {
         </div>
         <div className="grid gap-4 xl:grid-cols-3 md:grid-cols-2 grid-cols-1">
           {!isLoading &&
+            subscribedPortfolios &&
             subscribedPortfolios.length > 0 &&
             subscribedPortfolios.map((item) => {
               const portfolio = item || {}; // 기본값 설정
@@ -213,7 +214,7 @@ export default function SubscribePortfolio() {
                 </div>
               );
             })}
-          {!isLoading && subscribedPortfolios.length === 0 && (
+          {!isLoading && subscribedPortfolios && subscribedPortfolios.length === 0 && (
             <div className="flex items-center justify-center flex-col w-full p-20">
               <img src="/icon-empty.png" alt="" className="sm:max-w-30 max-w-20" />
               <p className="text-center text-lg relative text-slate-700">구독한 포트폴리오가 없습니다.</p>
